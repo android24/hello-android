@@ -4,6 +4,18 @@
 
 本节会正式带你认识 Android 应用开发中最核心的概念之一：Activity。你会理解应用入口、`AndroidManifest.xml`、生命周期回调、页面跳转和 Intent 的基础用法。它们是后续学习 Navigation、ViewModel、任务栈、进程保活、Framework 源码时绕不开的地基。
 
+## 本章通关画面
+
+完成第 3 章时，你的 App 会从“一个页面”变成“两个页面”：首页展示课程，点击后进入详情页，返回键能回到首页。更重要的是，你能打开 Logcat，说清楚这些页面在系统眼里经历了哪些状态。
+
+这一章的小目标是：
+
+- 找到 Manifest 中的入口 Activity。
+- 给 Activity 加生命周期日志。
+- 从首页打开详情页。
+- 用 Intent 传递课程数据。
+- 观察返回键和任务栈的关系。
+
 ## 本节定位
 
 本节属于 `03-activity-lifecycle-navigation`，也就是 Activity、生命周期与导航章节。

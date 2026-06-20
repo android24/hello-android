@@ -7,6 +7,17 @@
 
 这不是一本零散知识点合集，而是一条面向工程实践的路线。你会先学会搭建一个应用，再学会让它变得清晰、稳定、可维护，最后继续向下理解：一次启动、一次点击、一次页面跳转、一次渲染，究竟是怎样穿过 Framework、系统服务和底层机制，最终变成用户手中的 Android 体验。
 
+## 课程玩法
+
+这门课会围绕一个逐步长大的“课程 App”展开。你不是在一页页背知识点，而是在亲手搭建一个应用：
+
+- 第 1 章：点亮第一个工程，让 App 真正跑起来。
+- 第 2 章：做出课程首页，让界面从空白变得可看、可点、可变化。
+- 第 3 章：打开第二个页面，让 App 有页面流转和返回路径。
+- 第 4 章：接入数据能力，让 App 不再只展示写死的内容。
+
+每一章都像一个小关卡：先读文档拿地图，再运行示例看效果，最后改一处代码留下自己的痕迹。学完一章，你都应该能回答三个问题：我做出了什么？它为什么能运行？如果让我重新写一遍，我会从哪里开始？
+
 ## 项目受众
 本课程非常适合以下同学：
 
@@ -30,21 +41,25 @@
 ### 已完成章节
 
 - 第1章 Kotlin 与 Android 基础
+  - 通关目标：运行第一个 App，看懂工程骨架，并完成一次自己的修改
   - [1.1 开发环境与第一个 Android 工程](docs/chapter1/chapter1.md)
   - [1.2 Kotlin 基础与 Android 工程语法](docs/chapter1/chapter1_2.md)
   - [1.3 Android 工程结构与资源基础](docs/chapter1/chapter1_3.md)
   - [配套示例工程](examples/01-kotlin-and-android-basics/)
 - 第2章 Compose UI 基础
+  - 通关目标：做出一个课程首页，掌握布局、状态、点击和预览
   - [2.1 Jetpack Compose 入门](docs/chapter2/chapter2_1.md)
   - [2.2 Composable、Modifier 与基础布局](docs/chapter2/chapter2_2.md)
   - [2.3 状态与事件](docs/chapter2/chapter2_3.md)
   - [2.4 列表、主题与预览](docs/chapter2/chapter2_4.md)
   - [配套示例工程](examples/02-compose-ui-basics/)
 - 第3章 Activity、生命周期与导航
+  - 通关目标：完成首页到详情页的跳转，并能用日志解释页面生命周期
   - [3.1 Activity、生命周期与应用入口](docs/chapter3/chapter3_1/chapter3_1_1.md)
   - [3.2 Intent、页面跳转与参数传递](docs/chapter3/chapter3_1/chapter3_1_2.md)
   - [配套示例工程](examples/03-activity-lifecycle-navigation/)
 - 第4章 网络、Room 与 DataStore
+  - 通关目标：设计一条数据链路，让 App 具备网络、本地缓存和配置存储思路
   - [4.1 网络请求基础](docs/chapter4/chapter4_1.md)
   - [4.2 Room 本地数据库](docs/chapter4/chapter4_2.md)
   - [4.3 DataStore 配置存储](docs/chapter4/chapter4_3.md)
