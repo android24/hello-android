@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Hello Compose Basics</string>
+    <string name="course_title">Compose UI 基础</string>
+    <string name="course_subtitle">用 Kotlin 函数描述界面，用状态驱动页面变化。</string>
+    <string name="current_stage">当前章节：第2章 Compose UI 基础</string>
+    <string name="not_started">还没有点击按钮，页面保持初始状态。</string>
+    <string name="started_count">你已经点击开始学习 %1$d 次。</string>
+    <string name="start_learning">开始学习</string>
+    <string name="keep_learning">继续学习</string>
+</resources>

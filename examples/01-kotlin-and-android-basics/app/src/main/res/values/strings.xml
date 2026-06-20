@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Hello Android Basics</string>
+    <string name="course_name">从零开始的 Android 全栈开发课程</string>
+    <string name="course_stage">Kotlin 与 Android 基础</string>
+    <string name="course_description">本示例用于练习 Android 工程结构、Kotlin 基础、资源系统与 Logcat 输出。</string>
+</resources>

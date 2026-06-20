@@ -1,8 +1,10 @@
-- 第1章 [我是第1章的标题](chapter1/chapter1)
-- 第2章 我是第2章的标题
-    - [2.1 我是2.1的标题](chapter2/chapter2_1)
-    - [2.2 我是2.2的标题](chapter2/chapter2_2)
-- 第3章 我是第3章的标题
-    - 3.1 我是3.1的标题
-        - 3.1.1 [我是3.1.1的标题](chapter3/chapter3_1/chapter3_1_1)
-        - 3.1.2 [我是3.1.2的标题](chapter3/chapter3_1/chapter3_1_2)
+- 第1章 Kotlin 与 Android 基础
+    - [1.1 开发环境与第一个 Android 工程](chapter1/chapter1)
+    - [1.2 Kotlin 基础与 Android 工程语法](chapter1/chapter1_2)
+    - [1.3 Android 工程结构与资源基础](chapter1/chapter1_3)
+- 第2章 Compose UI 基础
+    - [2.1 Jetpack Compose 入门](chapter2/chapter2_1)
+    - [2.2 Composable、Modifier 与基础布局](chapter2/chapter2_2)
+- 第3章 Activity、生命周期与导航
+    - [3.1 Activity、生命周期与应用入口](chapter3/chapter3_1/chapter3_1_1)
+    - [3.2 Intent、页面跳转与参数传递](chapter3/chapter3_1/chapter3_1_2)
