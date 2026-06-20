@@ -9,6 +9,7 @@ examples/
   01-kotlin-and-android-basics/
   02-compose-ui-basics/
   03-activity-lifecycle-navigation/
+  04-network-room-datastore/
 ```
 
 ## 设计原则

@@ -26,18 +26,37 @@
 课程会通过阶段项目串联知识点，让每一步学习都能留下可展示、可复盘、可继续演进的代码。
 
 ## 目录
-*这里写你的项目目录，已完成的部分用添加上跳转链接*
+
+### 已完成章节
+
+- 第1章 Kotlin 与 Android 基础
+  - [1.1 开发环境与第一个 Android 工程](docs/chapter1/chapter1.md)
+  - [1.2 Kotlin 基础与 Android 工程语法](docs/chapter1/chapter1_2.md)
+  - [1.3 Android 工程结构与资源基础](docs/chapter1/chapter1_3.md)
+  - [配套示例工程](examples/01-kotlin-and-android-basics/)
+- 第2章 Compose UI 基础
+  - [2.1 Jetpack Compose 入门](docs/chapter2/chapter2_1.md)
+  - [2.2 Composable、Modifier 与基础布局](docs/chapter2/chapter2_2.md)
+  - [2.3 状态与事件](docs/chapter2/chapter2_3.md)
+  - [2.4 列表、主题与预览](docs/chapter2/chapter2_4.md)
+  - [配套示例工程](examples/02-compose-ui-basics/)
+- 第3章 Activity、生命周期与导航
+  - [3.1 Activity、生命周期与应用入口](docs/chapter3/chapter3_1/chapter3_1_1.md)
+  - [3.2 Intent、页面跳转与参数传递](docs/chapter3/chapter3_1/chapter3_1_2.md)
+  - [配套示例工程](examples/03-activity-lifecycle-navigation/)
+- 第4章 网络、Room 与 DataStore
+  - [4.1 网络请求基础](docs/chapter4/chapter4_1.md)
+  - [4.2 Room 本地数据库](docs/chapter4/chapter4_2.md)
+  - [4.3 DataStore 配置存储](docs/chapter4/chapter4_3.md)
+  - [4.4 网络、本地缓存与离线可用小项目](docs/chapter4/chapter4_4.md)
+  - [配套示例工程](examples/04-network-room-datastore/)
+
+### 项目说明
 
 - [总路线图](#总路线图)
-  - [阶段一：开发环境与 Kotlin 基础](#阶段一开发环境与-kotlin-基础)
-  - [阶段二：Android 应用基础](#阶段二android-应用基础)
-  - [阶段三：现代 UI 与 Jetpack Compose](#阶段三现代-ui-与-jetpack-compose)
-  - [阶段四：数据、网络与异步编程](#阶段四数据网络与异步编程)
-  - [阶段五：应用架构与工程化](#阶段五应用架构与工程化)
-  - [阶段六：质量、性能与发布](#阶段六质量性能与发布)
-  - [阶段七：Android Framework 与源码进阶](#阶段七android-framework-与源码进阶)
 - [学习顺序](#学习顺序)
 - [环境要求](#环境要求)
+- [示例工程](#示例工程)
 
 ### 总路线图
 
@@ -121,7 +140,7 @@
 - IDE：Android Studio 稳定版，建议使用当前官方稳定版本或更新版本。
 - JDK：JDK 17 及以上，优先使用 Android Studio 内置 JDK。
 - Android Gradle Plugin：建议使用课程工程中声明的版本，不建议自行随意升级。
-- Gradle：使用项目自带的 Gradle Wrapper，即通过 `./gradlew` 或 `gradlew.bat` 执行构建。
+- Gradle：正式工程建议使用项目自带的 Gradle Wrapper，即通过 `./gradlew` 或 `gradlew.bat` 执行构建；当前示例工程也可以直接用 Android Studio 打开并完成 Gradle Sync。
 - Android SDK：安装课程工程要求的 `compileSdk`、`minSdk` 以及对应 Build Tools。
 - 运行设备：Android 模拟器或 Android 8.0 及以上真机，推荐准备一台真机用于权限、性能和系统行为调试。
 - Git：用于拉取课程代码、提交练习记录和对比不同阶段的实现。
@@ -142,6 +161,7 @@
 - [第1章 Kotlin 与 Android 基础示例工程](examples/01-kotlin-and-android-basics/)
 - [第2章 Compose UI 基础示例工程](examples/02-compose-ui-basics/)
 - [第3章 Activity、生命周期与导航示例工程](examples/03-activity-lifecycle-navigation/)
+- [第4章 网络、Room 与 DataStore 示例工程](examples/04-network-room-datastore/)
 
 ## 贡献者名单
 

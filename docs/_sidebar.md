@@ -5,6 +5,13 @@
 - 第2章 Compose UI 基础
     - [2.1 Jetpack Compose 入门](chapter2/chapter2_1)
     - [2.2 Composable、Modifier 与基础布局](chapter2/chapter2_2)
+    - [2.3 状态与事件](chapter2/chapter2_3)
+    - [2.4 列表、主题与预览](chapter2/chapter2_4)
 - 第3章 Activity、生命周期与导航
     - [3.1 Activity、生命周期与应用入口](chapter3/chapter3_1/chapter3_1_1)
     - [3.2 Intent、页面跳转与参数传递](chapter3/chapter3_1/chapter3_1_2)
+- 第4章 网络、Room 与 DataStore
+    - [4.1 网络请求基础](chapter4/chapter4_1)
+    - [4.2 Room 本地数据库](chapter4/chapter4_2)
+    - [4.3 DataStore 配置存储](chapter4/chapter4_3)
+    - [4.4 网络、本地缓存与离线可用小项目](chapter4/chapter4_4)

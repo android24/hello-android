@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Hello Activity Navigation</string>
+    <string name="home_title">Activity、生命周期与导航</string>
+    <string name="home_subtitle">点击课程卡片进入详情页，并在 Logcat 中观察生命周期变化。</string>
+    <string name="open_detail">打开详情页</string>
+    <string name="detail_prefix">第 %1$d 节</string>
+    <string name="back_to_home">返回首页</string>
+    <string name="default_detail_title">未找到课程标题</string>
+    <string name="default_detail_description">当前页面没有收到 Intent 参数。</string>
+</resources>
