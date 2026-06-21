@@ -1,0 +1,9 @@
+<resources>
+    <color name="brand_indigo">#4338CA</color>
+    <color name="brand_teal">#0F766E</color>
+    <color name="card_background">#FFFFFF</color>
+    <color name="mode_background">#EEF2FF</color>
+    <color name="text_primary">#111827</color>
+    <color name="text_secondary">#6B7280</color>
+    <color name="page_background">#F8FAFC</color>
+</resources>

@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Hello Coroutines Flow WorkManager</string>
+    <string name="home_title">课程同步中心</string>
+    <string name="home_subtitle">从 Thread、线程池走到协程、Flow 和 WorkManager。</string>
+    <string name="run_thread">Thread 模拟任务</string>
+    <string name="run_executor">线程池并发任务</string>
+    <string name="refresh_courses">协程刷新课程</string>
+    <string name="fail_refresh">模拟失败刷新</string>
+    <string name="start_work">启动后台同步</string>
+    <string name="wifi_only">仅 Wi-Fi 同步</string>
+    <string name="empty_lessons">还没有课程缓存，先点一次协程刷新。</string>
+</resources>

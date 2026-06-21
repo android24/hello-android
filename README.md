@@ -15,6 +15,8 @@
 - 第 2 章：做出课程首页，让界面从空白变得可看、可点、可变化。
 - 第 3 章：打开第二个页面，让 App 有页面流转和返回路径。
 - 第 4 章：接入数据能力，让 App 不再只展示写死的内容。
+- 第 5 章：梳理架构边界，让同一个功能从能跑走向清晰、稳定、可维护。
+- 第 6 章：掌握异步与数据流，让刷新、取消、错误和后台任务都有章法。
 
 每一章都像一个小关卡：先读文档拿地图，再运行示例看效果，最后改一处代码留下自己的痕迹。学完一章，你都应该能回答三个问题：我做出了什么？它为什么能运行？如果让我重新写一遍，我会从哪里开始？
 
@@ -65,6 +67,27 @@
   - [4.3 DataStore 配置存储](docs/chapter4/chapter4_3.md)
   - [4.4 网络、本地缓存与离线可用小项目](docs/chapter4/chapter4_4.md)
   - [配套示例工程](examples/04-network-room-datastore/)
+- 第5章 Android 应用架构演进
+  - 通关目标：用同一个课程列表功能看懂 MVC、MVP、MVVM、MVI/UDF 和 Clean Architecture 的取舍
+  - [5.1 为什么需要架构](docs/chapter5/chapter5_1.md)
+  - [5.2 MVC：最朴素的分层尝试](docs/chapter5/chapter5_2.md)
+  - [5.3 MVP：把 View 和业务逻辑拆开](docs/chapter5/chapter5_3.md)
+  - [5.4 MVVM：用 ViewModel 承载 UI 状态](docs/chapter5/chapter5_4.md)
+  - [5.5 MVI / UDF：用单向数据流管理复杂交互](docs/chapter5/chapter5_5.md)
+  - [5.6 Repository、UseCase 与 Clean Architecture](docs/chapter5/chapter5_6.md)
+  - [5.7 从一个页面演进到可维护工程](docs/chapter5/chapter5_7.md)
+  - [配套示例工程](examples/05-android-architecture-evolution/)
+- 第6章 Kotlin Coroutines、Flow 与后台任务
+  - 通关目标：从进程、线程、Thread 与线程池过渡到协程、Flow 和后台任务，让 App 的异步逻辑清晰可控
+  - [6.1 为什么 Android 需要异步编程](docs/chapter6/chapter6_1.md)
+  - [6.2 从 Thread、线程池到 Coroutines](docs/chapter6/chapter6_2.md)
+  - [6.3 结构化并发、取消与超时](docs/chapter6/chapter6_3.md)
+  - [6.4 Flow：会随时间变化的数据](docs/chapter6/chapter6_4.md)
+  - [6.5 StateFlow、SharedFlow 与 Compose 状态](docs/chapter6/chapter6_5.md)
+  - [6.6 错误处理、重试与结果建模](docs/chapter6/chapter6_6.md)
+  - [6.7 WorkManager 与可靠后台任务](docs/chapter6/chapter6_7.md)
+  - [6.8 综合实践：课程同步中心](docs/chapter6/chapter6_8.md)
+  - [配套示例工程](examples/06-coroutines-flow-workmanager/)
 
 ### 项目说明
 
@@ -108,7 +131,7 @@
 
 ### 阶段五：应用架构与工程化
 
-- MVVM、UDF、Repository、UseCase
+- MVC、MVP、MVVM、MVI / UDF、Repository、UseCase、Clean Architecture
 - Hilt 依赖注入、分层架构与模块化
 - 多环境配置、构建变体、资源隔离
 - 组件边界、接口设计、可维护性与可测试性
@@ -177,6 +200,7 @@
 - [第2章 Compose UI 基础示例工程](examples/02-compose-ui-basics/)
 - [第3章 Activity、生命周期与导航示例工程](examples/03-activity-lifecycle-navigation/)
 - [第4章 网络、Room 与 DataStore 示例工程](examples/04-network-room-datastore/)
+- [第5章 Android 应用架构演进示例工程](examples/05-android-architecture-evolution/)
 
 ## 贡献者名单
 

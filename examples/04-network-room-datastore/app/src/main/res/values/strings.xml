@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Hello Network Room DataStore</string>
+    <string name="home_title">网络、Room 与 DataStore</string>
+    <string name="home_subtitle">先显示本地缓存，再模拟网络刷新，让课程列表具备离线可用能力。</string>
+    <string name="refresh_lessons">刷新课程</string>
+    <string name="refresh_failure">模拟失败刷新</string>
+    <string name="show_completed">显示已完成课程</string>
+    <string name="loading">正在同步课程数据...</string>
+    <string name="empty_lessons">还没有缓存课程，点击刷新试试看。</string>
+</resources>

@@ -1,0 +1,10 @@
+<resources>
+    <color name="brand_cyan">#0E7490</color>
+    <color name="brand_indigo">#4338CA</color>
+    <color name="card_background">#FFFFFF</color>
+    <color name="panel_background">#ECFEFF</color>
+    <color name="event_background">#EEF2FF</color>
+    <color name="text_primary">#111827</color>
+    <color name="text_secondary">#6B7280</color>
+    <color name="page_background">#F8FAFC</color>
+</resources>

@@ -20,6 +20,8 @@ examples/
   02-compose-ui-basics/
   03-activity-lifecycle-navigation/
   04-network-room-datastore/
+  05-android-architecture-evolution/
+  06-coroutines-flow-workmanager/
 ```
 
 ## 设计原则

@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Hello Architecture Evolution</string>
+    <string name="home_title">Android 应用架构演进</string>
+    <string name="home_subtitle">同一个课程列表，用五种组织方式写给你看。</string>
+    <string name="refresh">刷新课程</string>
+    <string name="show_completed">显示已完成课程</string>
+    <string name="empty_lessons">当前没有可展示课程。</string>
+</resources>
