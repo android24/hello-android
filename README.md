@@ -18,6 +18,7 @@
 - 第 5 章：梳理架构边界，让同一个功能从能跑走向清晰、稳定、可维护。
 - 第 6 章：掌握异步与数据流，让刷新、取消、错误和后台任务都有章法。
 - 第 7 章：引入依赖注入与模块化，让工程从一个包裹长成一座有边界的城市。
+- 第 8 章：建立测试与质量保障，让每一次修改都有安全网，每一次交付都有检查表。
 
 每一章都像一个小关卡：先读文档拿地图，再运行示例看效果，最后改一处代码留下自己的痕迹。学完一章，你都应该能回答三个问题：我做出了什么？它为什么能运行？如果让我重新写一遍，我会从哪里开始？
 
@@ -100,6 +101,17 @@
   - [7.7 组件边界、接口设计与工程治理](docs/chapter7/chapter7_7.md)
   - [7.8 综合实践：课程 App 工程化重组](docs/chapter7/chapter7_8.md)
   - [配套示例工程](examples/07-hilt-modularization-engineering/)
+- 第8章 测试、质量保障与可交付
+  - 通关目标：建立从单元测试、ViewModel 状态测试到 CI 与发布检查的质量链路，让课程 App 从“能运行”走向“可交付”
+  - [8.1 为什么需要测试与质量保障](docs/chapter8/chapter8_1.md)
+  - [8.2 单元测试：保护 UseCase 与业务规则](docs/chapter8/chapter8_2.md)
+  - [8.3 协程、Flow 与 ViewModel 测试](docs/chapter8/chapter8_3.md)
+  - [8.4 Compose UI 测试：验证关键用户路径](docs/chapter8/chapter8_4.md)
+  - [8.5 测试替身、Mock、Fake 与 Hilt 测试替换](docs/chapter8/chapter8_5.md)
+  - [8.6 CI、静态检查与质量门禁](docs/chapter8/chapter8_6.md)
+  - [8.7 发布前检查：从能运行到可交付](docs/chapter8/chapter8_7.md)
+  - [8.8 综合实践：课程 App 质量体检](docs/chapter8/chapter8_8.md)
+  - [配套示例工程](examples/08-testing-quality-delivery/)
 
 ### 项目说明
 
@@ -213,6 +225,9 @@
 - [第3章 Activity、生命周期与导航示例工程](examples/03-activity-lifecycle-navigation/)
 - [第4章 网络、Room 与 DataStore 示例工程](examples/04-network-room-datastore/)
 - [第5章 Android 应用架构演进示例工程](examples/05-android-architecture-evolution/)
+- [第6章 Kotlin Coroutines、Flow 与后台任务示例工程](examples/06-coroutines-flow-workmanager/)
+- [第7章 Hilt 依赖注入、模块化与工程化示例工程](examples/07-hilt-modularization-engineering/)
+- [第8章 测试、质量保障与可交付示例工程](examples/08-testing-quality-delivery/)
 
 ## 贡献者名单
 

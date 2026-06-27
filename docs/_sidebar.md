@@ -41,3 +41,12 @@
     - [7.6 Gradle、多环境配置与构建变体](chapter7/chapter7_6)
     - [7.7 组件边界、接口设计与工程治理](chapter7/chapter7_7)
     - [7.8 综合实践：课程 App 工程化重组](chapter7/chapter7_8)
+- 第8章 测试、质量保障与可交付
+    - [8.1 为什么需要测试与质量保障](chapter8/chapter8_1)
+    - [8.2 单元测试：保护 UseCase 与业务规则](chapter8/chapter8_2)
+    - [8.3 协程、Flow 与 ViewModel 测试](chapter8/chapter8_3)
+    - [8.4 Compose UI 测试：验证关键用户路径](chapter8/chapter8_4)
+    - [8.5 测试替身、Mock、Fake 与 Hilt 测试替换](chapter8/chapter8_5)
+    - [8.6 CI、静态检查与质量门禁](chapter8/chapter8_6)
+    - [8.7 发布前检查：从能运行到可交付](chapter8/chapter8_7)
+    - [8.8 综合实践：课程 App 质量体检](chapter8/chapter8_8)

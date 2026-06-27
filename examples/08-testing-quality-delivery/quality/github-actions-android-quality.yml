@@ -1,0 +1,36 @@
+name: Android Quality Gate
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Build dev debug
+        run: ./gradlew :app:assembleDevDebug
+
+      - name: Run domain tests
+        run: ./gradlew :domain-course:testDebugUnitTest
+
+      - name: Run data tests
+        run: ./gradlew :data-course:testDebugUnitTest
+
+      - name: Run feature tests
+        run: ./gradlew :feature-course:testDebugUnitTest
+
+      - name: Run lint
+        run: ./gradlew :app:lintDevDebug

@@ -23,6 +23,7 @@ examples/
   05-android-architecture-evolution/
   06-coroutines-flow-workmanager/
   07-hilt-modularization-engineering/
+  08-testing-quality-delivery/
 ```
 
 ## 设计原则
