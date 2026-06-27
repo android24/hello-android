@@ -24,6 +24,7 @@ examples/
   06-coroutines-flow-workmanager/
   07-hilt-modularization-engineering/
   08-testing-quality-delivery/
+  09-performance-stability-lab/
 ```
 
 ## 设计原则
