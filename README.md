@@ -17,6 +17,7 @@
 - 第 4 章：接入数据能力，让 App 不再只展示写死的内容。
 - 第 5 章：梳理架构边界，让同一个功能从能跑走向清晰、稳定、可维护。
 - 第 6 章：掌握异步与数据流，让刷新、取消、错误和后台任务都有章法。
+- 第 7 章：引入依赖注入与模块化，让工程从一个包裹长成一座有边界的城市。
 
 每一章都像一个小关卡：先读文档拿地图，再运行示例看效果，最后改一处代码留下自己的痕迹。学完一章，你都应该能回答三个问题：我做出了什么？它为什么能运行？如果让我重新写一遍，我会从哪里开始？
 
@@ -88,6 +89,17 @@
   - [6.7 WorkManager 与可靠后台任务](docs/chapter6/chapter6_7.md)
   - [6.8 综合实践：课程同步中心](docs/chapter6/chapter6_8.md)
   - [配套示例工程](examples/06-coroutines-flow-workmanager/)
+- 第7章 Hilt 依赖注入、模块化与工程化
+  - 通关目标：理解对象如何被装配、模块如何被拆分，让课程 App 从清晰分层走向可协作、可扩展的工程结构
+  - [7.1 为什么需要依赖注入](docs/chapter7/chapter7_1.md)
+  - [7.2 Hilt 入门：从手动创建到自动装配](docs/chapter7/chapter7_2.md)
+  - [7.3 Module、Provides、Binds 与作用域](docs/chapter7/chapter7_3.md)
+  - [7.4 ViewModel、Repository 与数据源注入](docs/chapter7/chapter7_4.md)
+  - [7.5 模块化：从单 App 到多 Module](docs/chapter7/chapter7_5.md)
+  - [7.6 Gradle、多环境配置与构建变体](docs/chapter7/chapter7_6.md)
+  - [7.7 组件边界、接口设计与工程治理](docs/chapter7/chapter7_7.md)
+  - [7.8 综合实践：课程 App 工程化重组](docs/chapter7/chapter7_8.md)
+  - [配套示例工程](examples/07-hilt-modularization-engineering/)
 
 ### 项目说明
 

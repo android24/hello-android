@@ -32,3 +32,12 @@
     - [6.6 错误处理、重试与结果建模](chapter6/chapter6_6)
     - [6.7 WorkManager 与可靠后台任务](chapter6/chapter6_7)
     - [6.8 综合实践：课程同步中心](chapter6/chapter6_8)
+- 第7章 Hilt 依赖注入、模块化与工程化
+    - [7.1 为什么需要依赖注入](chapter7/chapter7_1)
+    - [7.2 Hilt 入门：从手动创建到自动装配](chapter7/chapter7_2)
+    - [7.3 Module、Provides、Binds 与作用域](chapter7/chapter7_3)
+    - [7.4 ViewModel、Repository 与数据源注入](chapter7/chapter7_4)
+    - [7.5 模块化：从单 App 到多 Module](chapter7/chapter7_5)
+    - [7.6 Gradle、多环境配置与构建变体](chapter7/chapter7_6)
+    - [7.7 组件边界、接口设计与工程治理](chapter7/chapter7_7)
+    - [7.8 综合实践：课程 App 工程化重组](chapter7/chapter7_8)

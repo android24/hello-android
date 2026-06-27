@@ -22,6 +22,7 @@ examples/
   04-network-room-datastore/
   05-android-architecture-evolution/
   06-coroutines-flow-workmanager/
+  07-hilt-modularization-engineering/
 ```
 
 ## 设计原则
