@@ -6,8 +6,32 @@ data class PerformanceLabState(
     val cpuReport: String = "尚未执行后台 CPU 实验",
     val memoryReport: MemoryReport = MemoryReport(),
     val stabilityReport: String = "尚未捕获异常",
+    val observationHint: String = "先选择一个实验，再观察页面反馈、Logcat 或 Profiler 变化。",
+    val healthScore: HealthScore = HealthScore(),
     val checklist: List<HealthCheckItem> = defaultChecklist
 )
+
+data class HealthScore(
+    val startup: Int = 20,
+    val responsiveness: Int = 25,
+    val memory: Int = 20,
+    val stability: Int = 20,
+    val release: Int = 15
+) {
+    val total: Int
+        get() = startup + responsiveness + memory + stability + release
+
+    val status: String
+        get() = when (total) {
+            in 90..100 -> "健康"
+            in 70..89 -> "待优化"
+            in 50..69 -> "高风险"
+            else -> "需要立即治理"
+        }
+
+    val summary: String
+        get() = "$total / 100 · $status"
+}
 
 data class StartupReport(
     val elapsedFromProcessStartMs: Long = 0L,

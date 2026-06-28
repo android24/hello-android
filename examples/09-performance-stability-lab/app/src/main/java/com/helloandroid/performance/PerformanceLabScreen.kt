@@ -45,7 +45,8 @@ fun PerformanceLabApp(
         onAllocateMemory = viewModel::allocateMemoryChunk,
         onReleaseMemory = viewModel::releaseMemory,
         onCaptureCrash = viewModel::captureHandledCrash,
-        onAnrRisk = viewModel::simulateAnrRisk
+        onAnrRisk = viewModel::simulateAnrRisk,
+        onReset = viewModel::resetLab
     )
 }
 
@@ -57,7 +58,8 @@ fun PerformanceLabScreen(
     onAllocateMemory: () -> Unit,
     onReleaseMemory: () -> Unit,
     onCaptureCrash: () -> Unit,
-    onAnrRisk: () -> Unit
+    onAnrRisk: () -> Unit,
+    onReset: () -> Unit
 ) {
     MaterialTheme {
         Surface(
@@ -72,6 +74,11 @@ fun PerformanceLabScreen(
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 HeaderCard(uiState.startupReport)
+                ScoreCard(uiState.healthScore)
+                ObservationCard(
+                    hint = uiState.observationHint,
+                    onReset = onReset
+                )
                 StartupCard(uiState.startupReport)
                 JankCard(
                     report = uiState.mainThreadReport,
@@ -93,6 +100,97 @@ fun PerformanceLabScreen(
                 )
                 ComposeListCard()
                 ChecklistCard(uiState.checklist)
+            }
+        }
+    }
+}
+
+@Composable
+private fun ScoreCard(score: HealthScore) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = score.statusColor),
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = "性能体检分数",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color(0xFF0F172A),
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = score.summary,
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color(0xFF0F172A),
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "教学用风险可视化，不代表真实线上评分。分数用于理解：主线程阻塞、内存持有和异常风险都会影响体验。",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFF334155)
+            )
+            ScoreRow("启动", score.startup, 20)
+            ScoreRow("卡顿 / ANR", score.responsiveness, 25)
+            ScoreRow("内存", score.memory, 20)
+            ScoreRow("崩溃", score.stability, 20)
+            ScoreRow("发布检查", score.release, 15)
+        }
+    }
+}
+
+@Composable
+private fun ScoreRow(
+    label: String,
+    value: Int,
+    max: Int
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White, RoundedCornerShape(8.dp))
+            .padding(horizontal = 12.dp, vertical = 9.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = label,
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color(0xFF334155),
+            fontWeight = FontWeight.SemiBold
+        )
+        Text(
+            text = "$value/$max",
+            style = MaterialTheme.typography.bodyMedium,
+            color = scoreTextColor(value, max),
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+private fun ObservationCard(
+    hint: String,
+    onReset: () -> Unit
+) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFBEB)),
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            SectionTitle("实验观察点")
+            Text(
+                text = hint,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFF92400E)
+            )
+            OutlinedButton(onClick = onReset) {
+                Text("重置实验结果")
             }
         }
     }
@@ -398,3 +496,21 @@ private val CheckStatus.color: Color
         CheckStatus.Warning -> Color(0xFFB45309)
         CheckStatus.Passed -> Color(0xFF4338CA)
     }
+
+private val HealthScore.statusColor: Color
+    get() = when (status) {
+        "健康" -> Color(0xFFDCFCE7)
+        "待优化" -> Color(0xFFFEF3C7)
+        "高风险" -> Color(0xFFFFEDD5)
+        else -> Color(0xFFFEE2E2)
+    }
+
+private fun scoreTextColor(value: Int, max: Int): Color {
+    val ratio = value.toFloat() / max.toFloat()
+    return when {
+        ratio >= 0.9f -> Color(0xFF047857)
+        ratio >= 0.7f -> Color(0xFFB45309)
+        ratio >= 0.5f -> Color(0xFFC2410C)
+        else -> Color(0xFFB91C1C)
+    }
+}

@@ -50,3 +50,12 @@
     - [8.6 CI、静态检查与质量门禁](chapter8/chapter8_6)
     - [8.7 发布前检查：从能运行到可交付](chapter8/chapter8_7)
     - [8.8 综合实践：课程 App 质量体检](chapter8/chapter8_8)
+- 第9章 Android 性能优化与稳定性治理
+    - [9.1 为什么需要性能优化与稳定性治理](chapter9/chapter9_1)
+    - [9.2 启动优化：从点击图标到首屏展示](chapter9/chapter9_2)
+    - [9.3 卡顿分析：主线程、掉帧与 Compose 性能](chapter9/chapter9_3)
+    - [9.4 内存优化：泄漏、对象分配与图片资源](chapter9/chapter9_4)
+    - [9.5 ANR 治理：耗时任务、锁等待与线程调度](chapter9/chapter9_5)
+    - [9.6 崩溃治理：Crash 收集、日志与问题分级](chapter9/chapter9_6)
+    - [9.7 包体积优化：资源、依赖、R8 与构建产物](chapter9/chapter9_7)
+    - [9.8 综合实践：课程 App 性能与稳定性体检](chapter9/chapter9_8)

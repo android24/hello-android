@@ -19,6 +19,7 @@
 - 第 6 章：掌握异步与数据流，让刷新、取消、错误和后台任务都有章法。
 - 第 7 章：引入依赖注入与模块化，让工程从一个包裹长成一座有边界的城市。
 - 第 8 章：建立测试与质量保障，让每一次修改都有安全网，每一次交付都有检查表。
+- 第 9 章：进入性能与稳定性治理，让 App 不只是能交付，还要跑得快、稳得住、出了问题能定位。
 
 每一章都像一个小关卡：先读文档拿地图，再运行示例看效果，最后改一处代码留下自己的痕迹。学完一章，你都应该能回答三个问题：我做出了什么？它为什么能运行？如果让我重新写一遍，我会从哪里开始？
 
@@ -112,6 +113,17 @@
   - [8.7 发布前检查：从能运行到可交付](docs/chapter8/chapter8_7.md)
   - [8.8 综合实践：课程 App 质量体检](docs/chapter8/chapter8_8.md)
   - [配套示例工程](examples/08-testing-quality-delivery/)
+- 第9章 Android 性能优化与稳定性治理
+  - 通关目标：理解启动、卡顿、内存、ANR、崩溃和包体积治理，让课程 App 从“可交付”继续走向“体验稳定、问题可查、优化有据”
+  - [9.1 为什么需要性能优化与稳定性治理](docs/chapter9/chapter9_1.md)
+  - [9.2 启动优化：从点击图标到首屏展示](docs/chapter9/chapter9_2.md)
+  - [9.3 卡顿分析：主线程、掉帧与 Compose 性能](docs/chapter9/chapter9_3.md)
+  - [9.4 内存优化：泄漏、对象分配与图片资源](docs/chapter9/chapter9_4.md)
+  - [9.5 ANR 治理：耗时任务、锁等待与线程调度](docs/chapter9/chapter9_5.md)
+  - [9.6 崩溃治理：Crash 收集、日志与问题分级](docs/chapter9/chapter9_6.md)
+  - [9.7 包体积优化：资源、依赖、R8 与构建产物](docs/chapter9/chapter9_7.md)
+  - [9.8 综合实践：课程 App 性能与稳定性体检](docs/chapter9/chapter9_8.md)
+  - [配套示例工程](examples/09-performance-stability-lab/)
 
 ### 项目说明
 
@@ -228,6 +240,7 @@
 - [第6章 Kotlin Coroutines、Flow 与后台任务示例工程](examples/06-coroutines-flow-workmanager/)
 - [第7章 Hilt 依赖注入、模块化与工程化示例工程](examples/07-hilt-modularization-engineering/)
 - [第8章 测试、质量保障与可交付示例工程](examples/08-testing-quality-delivery/)
+- [第9章 Android 性能优化与稳定性治理示例工程](examples/09-performance-stability-lab/)
 
 ## 贡献者名单
 
