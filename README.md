@@ -20,6 +20,7 @@
 - 第 7 章：引入依赖注入与模块化，让工程从一个包裹长成一座有边界的城市。
 - 第 8 章：建立测试与质量保障，让每一次修改都有安全网，每一次交付都有检查表。
 - 第 9 章：进入性能与稳定性治理，让 App 不只是能交付，还要跑得快、稳得住、出了问题能定位。
+- 第 10 章：打开 Framework 的后台通道，从一次启动、一次消息和一次跨进程通信开始读懂系统。
 
 每一章都像一个小关卡：先读文档拿地图，再运行示例看效果，最后改一处代码留下自己的痕迹。学完一章，你都应该能回答三个问题：我做出了什么？它为什么能运行？如果让我重新写一遍，我会从哪里开始？
 
@@ -124,6 +125,17 @@
   - [9.7 包体积优化：资源、依赖、R8 与构建产物](docs/chapter9/chapter9_7.md)
   - [9.8 综合实践：课程 App 性能与稳定性体检](docs/chapter9/chapter9_8.md)
   - [配套示例工程](examples/09-performance-stability-lab/)
+- 第10章 Android Framework 入门、系统架构与源码阅读方法
+  - 通关目标：建立系统分层视角，理解 App 启动、主线程消息、Context、Binder 和 AOSP 源码阅读入口
+  - [10.1 为什么要学习 Android Framework](docs/chapter10/chapter10_1.md)
+  - [10.2 Android 系统架构全景：App、Framework、Native 与 Kernel](docs/chapter10/chapter10_2.md)
+  - [10.3 AOSP 源码阅读方法：从迷路到能定位](docs/chapter10/chapter10_3.md)
+  - [10.4 从一次 App 启动看 Framework 调用链](docs/chapter10/chapter10_4.md)
+  - [10.5 ActivityThread、Application、Instrumentation 与 Context](docs/chapter10/chapter10_5.md)
+  - [10.6 Handler、Looper、MessageQueue 与主线程模型](docs/chapter10/chapter10_6.md)
+  - [10.7 Binder 初识：为什么 Android 到处都是跨进程通信](docs/chapter10/chapter10_7.md)
+  - [10.8 综合实践：从一次点击追踪到 Framework 调用链](docs/chapter10/chapter10_8.md)
+  - [配套示例工程](examples/10-framework-source-walkthrough/)
 
 ### 项目说明
 
@@ -241,6 +253,7 @@
 - [第7章 Hilt 依赖注入、模块化与工程化示例工程](examples/07-hilt-modularization-engineering/)
 - [第8章 测试、质量保障与可交付示例工程](examples/08-testing-quality-delivery/)
 - [第9章 Android 性能优化与稳定性治理示例工程](examples/09-performance-stability-lab/)
+- [第10章 Android Framework 入门、系统架构与源码阅读方法示例工程](examples/10-framework-source-walkthrough/)
 
 ## 贡献者名单
 

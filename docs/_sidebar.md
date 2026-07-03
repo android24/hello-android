@@ -59,3 +59,12 @@
     - [9.6 崩溃治理：Crash 收集、日志与问题分级](chapter9/chapter9_6)
     - [9.7 包体积优化：资源、依赖、R8 与构建产物](chapter9/chapter9_7)
     - [9.8 综合实践：课程 App 性能与稳定性体检](chapter9/chapter9_8)
+- 第10章 Android Framework 入门、系统架构与源码阅读方法
+    - [10.1 为什么要学习 Android Framework](chapter10/chapter10_1)
+    - [10.2 Android 系统架构全景：App、Framework、Native 与 Kernel](chapter10/chapter10_2)
+    - [10.3 AOSP 源码阅读方法：从迷路到能定位](chapter10/chapter10_3)
+    - [10.4 从一次 App 启动看 Framework 调用链](chapter10/chapter10_4)
+    - [10.5 ActivityThread、Application、Instrumentation 与 Context](chapter10/chapter10_5)
+    - [10.6 Handler、Looper、MessageQueue 与主线程模型](chapter10/chapter10_6)
+    - [10.7 Binder 初识：为什么 Android 到处都是跨进程通信](chapter10/chapter10_7)
+    - [10.8 综合实践：从一次点击追踪到 Framework 调用链](chapter10/chapter10_8)
