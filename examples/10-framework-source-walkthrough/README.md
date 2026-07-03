@@ -18,6 +18,7 @@
 
 运行后你会看到一个“第 10 章 Framework 观察实验室”页面：
 
+- `Framework 追踪任务卡` 会把本章练习拆成四个可执行任务。
 - `进程、线程与 Context` 展示 PID、当前线程、主 Looper、SDK、Context 类型等信息。
 - `App 启动链路` 用简化步骤串起 Launcher、系统服务、Zygote、ActivityThread、Application 和 Activity。
 - `Handler / Looper 实验` 可以发送一次主线程 Handler 消息，并观察执行线程与等待耗时。
@@ -27,6 +28,29 @@
 - `生命周期与消息轨迹` 记录 `Application`、`Activity` 和 Handler 实验日志。
 
 这个 demo 不模拟完整 Android 系统。它的价值是把 Framework 源码阅读前的“路标”放到一个可运行 App 里，让学习者从现象出发，再去找源码。
+
+## 探索玩法
+
+建议不要把这个 demo 当成普通页面看完就关掉。请把它当成一次 Framework 现场追踪：
+
+```text
+先观察启动日志
+  -> 再发送 Handler 消息
+      -> 然后选择一个源码入口
+          -> 最后写一份 10 行以内的追踪报告
+```
+
+页面里的 `Framework 追踪任务卡` 就是本章的行动路线。每完成一张卡，都把结果写到 `quality/framework-trace-template.md` 对应的栏目里。
+
+最小通关报告可以长这样：
+
+```text
+问题：Handler.post() 为什么能回到主线程？
+现象：点击按钮后，日志显示 Runnable 在 main 线程执行。
+入口：Handler, MessageQueue, Looper
+链路：post -> enqueueMessage -> loop -> dispatchMessage -> run
+仍不确定：MessageQueue 底层如何等待下一条消息？
+```
 
 ## 运行方式
 
@@ -108,6 +132,7 @@ ContextImpl.startActivity() 为什么会走向系统服务？
 
 ### 基础任务
 
+- 按照页面里的 `Framework 追踪任务卡` 完成一轮观察。
 - 运行工程，观察首页展示的进程、线程和 Context 信息。
 - 打开 Logcat，搜索 `FrameworkWalkthrough`。
 - 点击 `发送 Handler 消息`，记录页面和日志变化。
@@ -131,3 +156,4 @@ ContextImpl.startActivity() 为什么会走向系统服务？
 - `Handler`、`Looper`、`MessageQueue` 如何协作。
 - Binder 为什么会出现在系统服务调用背后。
 - 如何把一次应用现象整理成一份源码阅读笔记。
+- 如何用一张任务卡，把抽象源码问题拆成可验证的小步骤。

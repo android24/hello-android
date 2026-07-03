@@ -58,6 +58,7 @@ fun FrameworkWalkthroughScreen(
         ) {
             item { Spacer(modifier = Modifier.height(8.dp)) }
             item { HeaderCard() }
+            item { MissionDeckCard(missions = state.missionCards) }
             item { ProcessCard(processInfo = state.processInfo) }
             item { LaunchChainCard(chain = state.launchChain) }
             item { HandlerCard(report = state.handlerReport, onSend = onSendHandlerMessage) }
@@ -89,6 +90,35 @@ private fun HeaderCard() {
             style = MaterialTheme.typography.bodyMedium,
             color = Color(0xFFDDEBE7)
         )
+    }
+}
+
+@Composable
+private fun MissionDeckCard(missions: List<MissionCard>) {
+    LabCard(background = Color(0xFFEAF4F1)) {
+        SectionTitle(title = "Framework 追踪任务卡")
+        Text(
+            text = "按顺序完成这些任务，你会把一次普通运行拆成可观察、可定位、可复盘的 Framework 线索。",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color(0xFF33413D)
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        missions.forEachIndexed { index, mission ->
+            TimelineRow(index = index + 1, text = mission.title)
+            Text(
+                text = mission.clue,
+                modifier = Modifier.padding(start = 34.dp),
+                style = MaterialTheme.typography.bodySmall,
+                color = Color(0xFF44514D)
+            )
+            Text(
+                text = mission.action,
+                modifier = Modifier.padding(start = 34.dp, bottom = 10.dp),
+                style = MaterialTheme.typography.bodySmall,
+                color = Color(0xFF315F8C),
+                fontWeight = FontWeight.SemiBold
+            )
+        }
     }
 }
 

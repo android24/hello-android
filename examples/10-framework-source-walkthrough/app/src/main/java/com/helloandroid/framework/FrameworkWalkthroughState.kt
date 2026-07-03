@@ -4,6 +4,7 @@ data class FrameworkWalkthroughState(
     val processInfo: ProcessInfo = ProcessInfo(),
     val handlerReport: String = "还没有发送 Handler 消息。点击按钮后，观察消息如何回到主线程执行。",
     val lifecycleEvents: List<TraceEvent> = emptyList(),
+    val missionCards: List<MissionCard> = defaultMissionCards,
     val layers: List<FrameworkLayer> = defaultLayers,
     val launchChain: List<String> = defaultLaunchChain,
     val sourceTargets: List<SourceTarget> = defaultSourceTargets,
@@ -27,6 +28,12 @@ data class TraceEvent(
     val timestamp: String
 )
 
+data class MissionCard(
+    val title: String,
+    val clue: String,
+    val action: String
+)
+
 data class FrameworkLayer(
     val name: String,
     val role: String,
@@ -37,6 +44,29 @@ data class SourceTarget(
     val name: String,
     val path: String,
     val question: String
+)
+
+val defaultMissionCards = listOf(
+    MissionCard(
+        title = "任务一：找到后台入口",
+        clue = "观察 Application 与 Activity 的日志顺序。",
+        action = "打开 Logcat，搜索 FrameworkWalkthrough。"
+    ),
+    MissionCard(
+        title = "任务二：追踪主线程传送带",
+        clue = "发送一次 Handler 消息，看 Runnable 回到哪个线程。",
+        action = "点击发送 Handler 消息，并记录等待耗时。"
+    ),
+    MissionCard(
+        title = "任务三：标记源码路标",
+        clue = "从页面里的源码入口卡片选择一个类。",
+        action = "优先搜索 ActivityThread.main 或 Looper.loop。"
+    ),
+    MissionCard(
+        title = "任务四：写出通关报告",
+        clue = "把现象、源码入口和调用链写成 10 行笔记。",
+        action = "参考 quality/framework-trace-template.md。"
+    )
 )
 
 val defaultLayers = listOf(
