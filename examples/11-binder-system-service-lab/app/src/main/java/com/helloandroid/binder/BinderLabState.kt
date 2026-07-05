@@ -8,6 +8,7 @@ data class BinderLabState(
     val requestCount: Int = 0,
     val missions: List<BinderMission> = defaultBinderMissions,
     val systemServices: List<SystemServiceItem> = defaultSystemServices,
+    val registryEntries: List<ServiceRegistryEntry> = defaultRegistryEntries,
     val binderModel: List<BinderModelStep> = defaultBinderModel,
     val callEvents: List<BinderCallEvent> = emptyList()
 )
@@ -30,6 +31,13 @@ data class SystemServiceItem(
     val appEntry: String,
     val responsibility: String,
     val binderHint: String
+)
+
+data class ServiceRegistryEntry(
+    val serviceName: String,
+    val registeredBy: String,
+    val clientEntry: String,
+    val binderRole: String
 )
 
 data class BinderModelStep(
@@ -90,6 +98,33 @@ val defaultSystemServices = listOf(
         appEntry = "getSystemService(ClipboardManager::class.java)",
         responsibility = "访问系统剪贴板。",
         binderHint = "剪贴板是跨应用共享能力，需要系统集中协调。"
+    )
+)
+
+val defaultRegistryEntries = listOf(
+    ServiceRegistryEntry(
+        serviceName = "activity",
+        registeredBy = "SystemServer / ActivityTaskManagerService",
+        clientEntry = "ActivityManager / startActivity",
+        binderRole = "管理 Activity 启动、任务栈和应用进程相关调度。"
+    ),
+    ServiceRegistryEntry(
+        serviceName = "window",
+        registeredBy = "SystemServer / WindowManagerService",
+        clientEntry = "WindowManager",
+        binderRole = "管理窗口添加、布局、显示层级和输入焦点。"
+    ),
+    ServiceRegistryEntry(
+        serviceName = "package",
+        registeredBy = "SystemServer / PackageManagerService",
+        clientEntry = "PackageManager",
+        binderRole = "管理安装包、组件解析、权限声明和应用信息查询。"
+    ),
+    ServiceRegistryEntry(
+        serviceName = "notification",
+        registeredBy = "SystemServer / NotificationManagerService",
+        clientEntry = "NotificationManager",
+        binderRole = "统一处理通知提交、更新、取消和展示策略。"
     )
 )
 

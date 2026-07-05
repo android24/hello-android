@@ -40,8 +40,10 @@ examples/11-binder-system-service-lab/
 第 11 章 demo 包含：
 
 - 系统服务任务卡。
+- Binder 观察分数。
 - App 进程信息。
 - 常见 Manager 观察卡片。
+- 系统服务通讯录模拟。
 - 远程 Service 绑定状态。
 - Binder 消息发送按钮。
 - 调用日志与往返耗时。
@@ -108,7 +110,22 @@ quality/binder-call-report-template.md
 
 写得短没关系，但要有证据。
 
-## 第六部分：本章通关检查
+## 第六部分：观察分数怎么用
+
+demo 顶部会显示一个 `Binder 观察分数`。
+
+它不是线上质量评分，而是学习用进度反馈：
+
+```text
+识别本地进程
+  -> 绑定远程 Service
+      -> 收到远程回复
+          -> 留下调用轨迹
+```
+
+当分数从低到高变化时，你应该能解释：是哪一次操作让 Binder 通道从“还没建立”变成“已经能观察往返”。
+
+## 第七部分：本章通关检查
 
 完成第 11 章后，请确认自己能回答：
 
@@ -134,6 +151,7 @@ quality/binder-call-report-template.md
 - 运行第 11 章 demo。
 - 绑定远程 Service。
 - 发送一次 Binder 消息。
+- 观察 `Binder 观察分数` 如何变化。
 - 写一份 10 行以内的 Binder 调用链报告。
 
 ### 进阶任务
@@ -141,6 +159,7 @@ quality/binder-call-report-template.md
 - 给远程 Service 增加延迟。
 - 观察往返耗时变化。
 - 新增一个系统服务观察项。
+- 在“系统服务通讯录模拟”中补充一个服务注册项。
 - 把 `getSystemService()` 和 Binder 调用链写到同一张笔记里。
 
 ## 本节小结

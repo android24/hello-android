@@ -19,6 +19,7 @@ Messenger 消息为什么能送到 :binder 进程中的 RemoteEchoService？
 ## 应用侧现象
 
 - 点击了哪个按钮？
+- Binder 观察分数是多少？
 - 本地 PID 是多少？
 - 远程 PID 是多少？
 - 远程处理线程是什么？

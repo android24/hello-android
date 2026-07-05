@@ -18,10 +18,12 @@
 
 运行后你会看到一个“第 11 章 Binder 与系统服务实验室”页面：
 
+- `Binder 观察分数` 会用 100 分制提示当前实验进度。
 - `系统服务追踪任务卡` 会把本章练习拆成四个可执行任务。
 - `App 进程观察` 展示本地 PID、线程名、进程启动年龄和包名。
 - `远程 Service / Binder 通道` 可以绑定、解绑、发送一次跨进程消息。
 - `系统服务观察` 展示 ActivityManager、WindowManager、NotificationManager、ClipboardManager 等 App 侧入口。
+- `系统服务通讯录模拟` 会把 ServiceManager 的注册与查找思想压缩成可读卡片。
 - `Binder 调用模型` 展示 Client、Proxy、Binder Driver、Server、Reply 的简化链路。
 - `Binder 调用轨迹` 记录绑定、发送、远程回复和错误信息。
 
@@ -33,11 +35,14 @@
 
 ```text
 看系统服务观察卡片
-  -> 绑定远程 Service
-      -> 发送 Binder 消息
-          -> 查看本地 PID、远程 PID、线程名和耗时
-              -> 写一份 10 行以内的 Binder 调用链报告
+  -> 对照系统服务通讯录
+      -> 绑定远程 Service
+          -> 发送 Binder 消息
+              -> 查看观察分数、PID、线程名和耗时
+                  -> 写一份 10 行以内的 Binder 调用链报告
 ```
+
+观察分数是教学用反馈，不代表真实系统评分。它的作用是提醒你：Binder 学习不能只看概念，至少要完成“识别进程、建立通道、收到回复、留下轨迹”这四步。
 
 最小报告可以写成：
 
@@ -119,6 +124,7 @@ Manager 如何继续走向远程系统服务？
 ### 基础任务
 
 - 按照页面里的 `系统服务追踪任务卡` 完成一轮观察。
+- 观察 `Binder 观察分数` 在绑定和发送消息后的变化。
 - 点击 `绑定`，确认远程 Service 已连接。
 - 点击 `发送`，记录本地 PID 和远程 PID 是否不同。
 - 打开 Logcat，搜索 `BinderSystemLab`。
@@ -129,6 +135,7 @@ Manager 如何继续走向远程系统服务？
 - 给远程 Service 增加一个新的返回字段。
 - 给远程处理增加轻微延迟，观察往返耗时变化。
 - 新增一个系统服务观察项，例如 `PowerManager` 或 `InputMethodManager`。
+- 在 `系统服务通讯录模拟` 中补充一个服务注册项。
 - 把某个 `getSystemService()` API 追到 `SystemServiceRegistry`。
 - 写出 `App API -> Manager -> Binder -> system_server 服务` 的简化链路。
 
@@ -142,3 +149,4 @@ Manager 如何继续走向远程系统服务？
 - Manager 和系统服务本体为什么不是同一个对象。
 - ServiceManager 和 SystemServer 在系统服务体系中的位置。
 - Binder 调用为什么要关注耗时、权限和稳定性。
+- 如何根据观察分数判断自己是否完成了一轮 Binder 实验。

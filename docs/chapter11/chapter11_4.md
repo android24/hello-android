@@ -112,14 +112,16 @@ Context
 ### 基础任务
 
 - 打开第 11 章 demo。
-- 查看系统服务列表。
+- 查看系统服务列表和“系统服务通讯录模拟”。
 - 找到 `NotificationManager`、`ActivityManager`、`WindowManager`。
+- 对照通讯录里的服务名、注册方和 App 入口，解释它们之间的关系。
 
 ### 进阶任务
 
 - 新增一个你熟悉的系统服务展示项。
 - 写出它可能对应的系统服务职责。
 - 说明 App 侧 Manager 和系统服务本体的区别。
+- 在通讯录里补充一个新服务，例如 `power`、`input_method` 或 `clipboard`。
 
 ## 本节小结
 

@@ -67,10 +67,12 @@ fun BinderLabScreen(
         ) {
             item { Spacer(modifier = Modifier.height(8.dp)) }
             item { HeaderCard() }
-            item { MissionCard(missions = state.missions) }
+            item { ObservationScoreCard(state = state) }
+            item { MissionCard(state = state) }
             item { ProcessCard(processInfo = state.processInfo) }
             item { RemoteBinderCard(state, onBindRemoteService, onUnbindRemoteService, onSendBinderMessage) }
             item { SystemServiceCard(services = state.systemServices) }
+            item { ServiceRegistryCard(entries = state.registryEntries) }
             item { BinderModelCard(steps = state.binderModel) }
             item { CallTraceCard(events = state.callEvents, onClearEvents = onClearEvents) }
             item { Spacer(modifier = Modifier.height(18.dp)) }
@@ -96,7 +98,35 @@ private fun HeaderCard() {
 }
 
 @Composable
-private fun MissionCard(missions: List<BinderMission>) {
+private fun ObservationScoreCard(state: BinderLabState) {
+    val score = calculateObservationScore(state)
+    val status = when {
+        score >= 90 -> "观察完成：已经能写一份像样的 Binder 调用链报告。"
+        score >= 70 -> "接近通关：再补一次远程回复观察和报告记录。"
+        score >= 40 -> "实验进行中：Binder 通道已经有线索了。"
+        else -> "准备开始：先绑定远程 Service。"
+    }
+
+    LabCard(background = Color(0xFFEFF3FF)) {
+        SectionTitle(title = "Binder 观察分数")
+        Text(
+            text = "$score / 100",
+            style = MaterialTheme.typography.headlineMedium,
+            color = Color(0xFF3258A8),
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(text = status, style = MaterialTheme.typography.bodyMedium, color = Color(0xFF39445C))
+        Spacer(modifier = Modifier.height(10.dp))
+        BulletText(text = "20 分：识别本地进程信息")
+        BulletText(text = "25 分：成功绑定远程 Service")
+        BulletText(text = "35 分：收到一次远程进程回复")
+        BulletText(text = "20 分：形成 Binder 调用轨迹")
+    }
+}
+
+@Composable
+private fun MissionCard(state: BinderLabState) {
     LabCard(background = Color(0xFFEAF6F7)) {
         SectionTitle(title = "系统服务追踪任务卡")
         Text(
@@ -105,8 +135,9 @@ private fun MissionCard(missions: List<BinderMission>) {
             color = Color(0xFF2D4248)
         )
         Spacer(modifier = Modifier.height(12.dp))
-        missions.forEachIndexed { index, mission ->
+        state.missions.forEachIndexed { index, mission ->
             TimelineRow(index = index + 1, text = mission.title)
+            MissionStatusText(done = isMissionDone(index, state))
             Text(
                 text = mission.clue,
                 modifier = Modifier.padding(start = 34.dp),
@@ -192,6 +223,35 @@ private fun SystemServiceCard(services: List<SystemServiceItem>) {
 }
 
 @Composable
+private fun ServiceRegistryCard(entries: List<ServiceRegistryEntry>) {
+    LabCard(background = Color(0xFFF4F1EA)) {
+        SectionTitle(title = "系统服务通讯录模拟")
+        Text(
+            text = "这张卡片把 ServiceManager 的思想压缩成一张小通讯录：服务先登记，客户端再按入口查找，并通过 Binder 与服务协作。",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color(0xFF4D4538)
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        entries.forEach { entry ->
+            Text(
+                text = entry.serviceName,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF8A5A28)
+            )
+            Text(text = "注册方：${entry.registeredBy}", style = MaterialTheme.typography.bodySmall)
+            Text(text = "App 入口：${entry.clientEntry}", style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = entry.binderRole,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFF5B4630)
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+        }
+    }
+}
+
+@Composable
 private fun BinderModelCard(steps: List<BinderModelStep>) {
     LabCard(background = Color(0xFFFFF5E8)) {
         SectionTitle(title = "Binder 调用模型")
@@ -205,6 +265,17 @@ private fun BinderModelCard(steps: List<BinderModelStep>) {
             )
         }
     }
+}
+
+@Composable
+private fun MissionStatusText(done: Boolean) {
+    Text(
+        text = if (done) "状态：已完成" else "状态：待观察",
+        modifier = Modifier.padding(start = 34.dp),
+        style = MaterialTheme.typography.bodySmall,
+        color = if (done) Color(0xFF146C78) else Color(0xFF8A5A28),
+        fontWeight = FontWeight.SemiBold
+    )
 }
 
 @Composable
@@ -316,6 +387,37 @@ private fun TimelineRow(index: Int, text: String) {
         }
         Spacer(modifier = Modifier.width(10.dp))
         Text(text = text, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+    }
+}
+
+@Composable
+private fun BulletText(text: String) {
+    Row(
+        modifier = Modifier.padding(vertical = 3.dp),
+        verticalAlignment = Alignment.Top
+    ) {
+        Text(text = "•", color = MaterialTheme.colorScheme.primary)
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(text = text, style = MaterialTheme.typography.bodySmall, color = Color(0xFF39445C))
+    }
+}
+
+private fun calculateObservationScore(state: BinderLabState): Int {
+    var score = 0
+    if (state.processInfo.pid > 0) score += 20
+    if (state.isRemoteServiceBound || state.callEvents.any { it.title == "Service connected" }) score += 25
+    if (state.lastReply.startsWith("requestId=")) score += 35
+    if (state.callEvents.size >= 2) score += 20
+    return score.coerceAtMost(100)
+}
+
+private fun isMissionDone(index: Int, state: BinderLabState): Boolean {
+    return when (index) {
+        0 -> state.processInfo.pid > 0
+        1 -> state.isRemoteServiceBound || state.callEvents.any { it.title == "Service connected" }
+        2 -> state.lastReply.startsWith("requestId=")
+        3 -> state.callEvents.any { it.title == "Remote reply" }
+        else -> false
     }
 }
 
