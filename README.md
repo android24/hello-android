@@ -136,6 +136,17 @@
   - [10.7 Binder 初识：为什么 Android 到处都是跨进程通信](docs/chapter10/chapter10_7.md)
   - [10.8 综合实践：从一次点击追踪到 Framework 调用链](docs/chapter10/chapter10_8.md)
   - [配套示例工程](examples/10-framework-source-walkthrough/)
+- 第11章 Binder、SystemServer 与系统服务入门
+  - 通关目标：理解系统服务为什么存在，Binder 如何连接 App 与 system_server，并能观察一次跨进程调用链
+  - [11.1 为什么系统服务是 Framework 的核心](docs/chapter11/chapter11_1.md)
+  - [11.2 Binder 通信模型：从本地调用到跨进程调用](docs/chapter11/chapter11_2.md)
+  - [11.3 AIDL、Stub、Proxy 与 Parcel](docs/chapter11/chapter11_3.md)
+  - [11.4 ServiceManager：系统服务的通讯录](docs/chapter11/chapter11_4.md)
+  - [11.5 SystemServer：系统服务从这里集结](docs/chapter11/chapter11_5.md)
+  - [11.6 从 getSystemService 看系统服务调用](docs/chapter11/chapter11_6.md)
+  - [11.7 Binder 线程、权限与稳定性风险](docs/chapter11/chapter11_7.md)
+  - [11.8 综合实践：系统服务观察与 Binder 调用链](docs/chapter11/chapter11_8.md)
+  - [配套示例工程](examples/11-binder-system-service-lab/)
 
 ### 项目说明
 
@@ -254,6 +265,7 @@
 - [第8章 测试、质量保障与可交付示例工程](examples/08-testing-quality-delivery/)
 - [第9章 Android 性能优化与稳定性治理示例工程](examples/09-performance-stability-lab/)
 - [第10章 Android Framework 入门、系统架构与源码阅读方法示例工程](examples/10-framework-source-walkthrough/)
+- [第11章 Binder、SystemServer 与系统服务入门示例工程](examples/11-binder-system-service-lab/)
 
 ## 贡献者名单
 

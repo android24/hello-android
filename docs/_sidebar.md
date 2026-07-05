@@ -68,3 +68,12 @@
     - [10.6 Handler、Looper、MessageQueue 与主线程模型](chapter10/chapter10_6)
     - [10.7 Binder 初识：为什么 Android 到处都是跨进程通信](chapter10/chapter10_7)
     - [10.8 综合实践：从一次点击追踪到 Framework 调用链](chapter10/chapter10_8)
+- 第11章 Binder、SystemServer 与系统服务入门
+    - [11.1 为什么系统服务是 Framework 的核心](chapter11/chapter11_1)
+    - [11.2 Binder 通信模型：从本地调用到跨进程调用](chapter11/chapter11_2)
+    - [11.3 AIDL、Stub、Proxy 与 Parcel](chapter11/chapter11_3)
+    - [11.4 ServiceManager：系统服务的通讯录](chapter11/chapter11_4)
+    - [11.5 SystemServer：系统服务从这里集结](chapter11/chapter11_5)
+    - [11.6 从 getSystemService 看系统服务调用](chapter11/chapter11_6)
+    - [11.7 Binder 线程、权限与稳定性风险](chapter11/chapter11_7)
+    - [11.8 综合实践：系统服务观察与 Binder 调用链](chapter11/chapter11_8)

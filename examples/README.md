@@ -26,6 +26,7 @@ examples/
   08-testing-quality-delivery/
   09-performance-stability-lab/
   10-framework-source-walkthrough/
+  11-binder-system-service-lab/
 ```
 
 ## 设计原则
