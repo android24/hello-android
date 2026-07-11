@@ -77,3 +77,12 @@
     - [11.6 从 getSystemService 看系统服务调用](chapter11/chapter11_6)
     - [11.7 Binder 线程、权限与稳定性风险](chapter11/chapter11_7)
     - [11.8 综合实践：系统服务观察与 Binder 调用链](chapter11/chapter11_8)
+- 第12章 AMS / ATMS、Activity 启动与任务栈调度
+    - [12.1 为什么要学习 AMS / ATMS 与 Activity 启动](chapter12/chapter12_1)
+    - [12.2 从 startActivity 到系统服务](chapter12/chapter12_2)
+    - [12.3 Task、返回栈与 Activity 调度对象](chapter12/chapter12_3)
+    - [12.4 进程创建、Zygote 与 ActivityThread 协作](chapter12/chapter12_4)
+    - [12.5 launchMode 与 Intent Flag](chapter12/chapter12_5)
+    - [12.6 启动限制、权限与异常路径](chapter12/chapter12_6)
+    - [12.7 启动体验问题：黑屏、白屏、重复页面与返回异常](chapter12/chapter12_7)
+    - [12.8 综合实践：Activity 启动与任务栈观察实验](chapter12/chapter12_8)

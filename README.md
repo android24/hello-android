@@ -147,6 +147,17 @@
   - [11.7 Binder 线程、权限与稳定性风险](docs/chapter11/chapter11_7.md)
   - [11.8 综合实践：系统服务观察与 Binder 调用链](docs/chapter11/chapter11_8.md)
   - [配套示例工程](examples/11-binder-system-service-lab/)
+- 第12章 AMS / ATMS、Activity 启动与任务栈调度
+  - 通关目标：理解 startActivity 如何进入系统服务，掌握 Task、返回栈、launchMode、Intent Flag 与生命周期调度的关系
+  - [12.1 为什么要学习 AMS / ATMS 与 Activity 启动](docs/chapter12/chapter12_1.md)
+  - [12.2 从 startActivity 到系统服务](docs/chapter12/chapter12_2.md)
+  - [12.3 Task、返回栈与 Activity 调度对象](docs/chapter12/chapter12_3.md)
+  - [12.4 进程创建、Zygote 与 ActivityThread 协作](docs/chapter12/chapter12_4.md)
+  - [12.5 launchMode 与 Intent Flag](docs/chapter12/chapter12_5.md)
+  - [12.6 启动限制、权限与异常路径](docs/chapter12/chapter12_6.md)
+  - [12.7 启动体验问题：黑屏、白屏、重复页面与返回异常](docs/chapter12/chapter12_7.md)
+  - [12.8 综合实践：Activity 启动与任务栈观察实验](docs/chapter12/chapter12_8.md)
+  - [配套示例工程](examples/12-activity-task-launch-lab/)
 
 ### 项目说明
 
@@ -266,6 +277,7 @@
 - [第9章 Android 性能优化与稳定性治理示例工程](examples/09-performance-stability-lab/)
 - [第10章 Android Framework 入门、系统架构与源码阅读方法示例工程](examples/10-framework-source-walkthrough/)
 - [第11章 Binder、SystemServer 与系统服务入门示例工程](examples/11-binder-system-service-lab/)
+- [第12章 AMS / ATMS、Activity 启动与任务栈调度示例工程](examples/12-activity-task-launch-lab/)
 
 ## 贡献者名单
 

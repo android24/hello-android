@@ -27,6 +27,7 @@ examples/
   09-performance-stability-lab/
   10-framework-source-walkthrough/
   11-binder-system-service-lab/
+  12-activity-task-launch-lab/
 ```
 
 ## 设计原则
