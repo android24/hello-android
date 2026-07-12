@@ -296,7 +296,11 @@
 
 ### GitHub Pages 文档站
 
-课程文档可以直接通过 GitHub Pages 发布。当前仓库已经准备好：
+课程文档已经通过 GitHub Pages 发布，可以直接访问：
+
+[https://android24.github.io/hello-android/](https://android24.github.io/hello-android/)
+
+当前文档站使用 Docsify 承载：
 
 - `docs/index.html`：Docsify 文档站入口。
 - `docs/README.md`：文档站首页。
@@ -304,13 +308,12 @@
 - `docs/.nojekyll`：确保 GitHub Pages 不会忽略 `_sidebar.md`。
 - `.github/workflows/deploy-pages.yml`：自动发布 `docs/` 到 GitHub Pages。
 
-发布方式：
+后续维护方式：
 
-1. 将代码推送到 `main` 或 `master` 分支。
-2. 在 GitHub 仓库设置里打开 `Settings -> Pages`。
-3. 将 `Build and deployment` 的 Source 选择为 `GitHub Actions`。
-4. 等待 `Deploy docs to GitHub Pages` 工作流完成。
-5. 打开工作流输出的 Pages 地址，即可访问课程文档站。
+1. 修改 `docs/` 下的章节内容或侧边栏。
+2. 推送到 `main` 分支。
+3. 等待 `Deploy docs to GitHub Pages` 工作流完成。
+4. 刷新上面的 Pages 地址，即可看到最新课程文档。
 
 ### 示例工程
 
