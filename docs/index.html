@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="从零开始的 Android 全栈开发课程：从 Kotlin、Compose、架构工程化一路走到 Android Framework。">
+  <title>从零开始的 Android 全栈开发课程</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <style>
+    :root {
+      --theme-color: #2f6f73;
+      --heading-color: #1d2b27;
+      --text-color-base: #2f3d39;
+    }
+
+    body {
+      color: var(--text-color-base);
+      background: #f7f8f5;
+    }
+
+    .sidebar {
+      border-right: 1px solid #e7ebe7;
+    }
+
+    .markdown-section {
+      max-width: 920px;
+    }
+
+    .markdown-section h1,
+    .markdown-section h2,
+    .markdown-section h3 {
+      color: var(--heading-color);
+      font-weight: 700;
+    }
+
+    .markdown-section code {
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">正在加载 Android 课程文档...</div>
+  <script>
+    window.$docsify = {
+      name: 'Hello Android',
+      repo: '',
+      loadSidebar: true,
+      subMaxLevel: 2,
+      auto2top: true,
+      maxLevel: 4,
+      search: {
+        maxAge: 86400000,
+        paths: 'auto',
+        placeholder: '搜索课程内容',
+        noData: '没有找到相关内容',
+        depth: 4,
+        hideOtherSidebarContent: false
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-copy-code@2/dist/docsify-copy-code.min.js"></script>
+</body>
+</html>

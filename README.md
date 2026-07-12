@@ -21,6 +21,9 @@
 - 第 8 章：建立测试与质量保障，让每一次修改都有安全网，每一次交付都有检查表。
 - 第 9 章：进入性能与稳定性治理，让 App 不只是能交付，还要跑得快、稳得住、出了问题能定位。
 - 第 10 章：打开 Framework 的后台通道，从一次启动、一次消息和一次跨进程通信开始读懂系统。
+- 第 11 章：进入 Binder 与系统服务，让 App 和 system_server 的协作不再神秘。
+- 第 12 章：拆解 Activity 启动与任务栈，让页面跳转背后的系统调度浮出水面。
+- 第 13 章：继续追踪窗口显示链路，看懂 Window、DecorView、ViewRootImpl 与 WMS 如何把页面送上屏幕。
 
 每一章都像一个小关卡：先读文档拿地图，再运行示例看效果，最后改一处代码留下自己的痕迹。学完一章，你都应该能回答三个问题：我做出了什么？它为什么能运行？如果让我重新写一遍，我会从哪里开始？
 
@@ -158,12 +161,24 @@
   - [12.7 启动体验问题：黑屏、白屏、重复页面与返回异常](docs/chapter12/chapter12_7.md)
   - [12.8 综合实践：Activity 启动与任务栈观察实验](docs/chapter12/chapter12_8.md)
   - [配套示例工程](examples/12-activity-task-launch-lab/)
+- 第13章 WMS、Window、DecorView 与窗口显示机制
+  - 通关目标：理解 Activity 内容如何进入 Window，掌握 DecorView、ViewRootImpl、WMS、窗口层级、特殊窗口与一帧刷新之间的关系
+  - [13.1 为什么要学习 WMS、Window 与窗口显示](docs/chapter13/chapter13_1.md)
+  - [13.2 从 setContentView / Compose 到 DecorView](docs/chapter13/chapter13_2.md)
+  - [13.3 Window、PhoneWindow 与 ViewRootImpl](docs/chapter13/chapter13_3.md)
+  - [13.4 WindowManager、WMS、Token 与窗口层级](docs/chapter13/chapter13_4.md)
+  - [13.5 Measure、Layout、Draw 与 Choreographer](docs/chapter13/chapter13_5.md)
+  - [13.6 Dialog、PopupWindow、Toast 与输入法窗口](docs/chapter13/chapter13_6.md)
+  - [13.7 窗口体验问题：白屏、遮挡、泄漏与 BadToken](docs/chapter13/chapter13_7.md)
+  - [13.8 综合实践：窗口显示链路观察实验](docs/chapter13/chapter13_8.md)
+  - [配套示例工程](examples/13-window-display-lab/)
 
 ### 项目说明
 
 - [总路线图](#总路线图)
 - [学习顺序](#学习顺序)
 - [环境要求](#环境要求)
+- [GitHub Pages 文档站](#github-pages-文档站)
 - [示例工程](#示例工程)
 
 ### 总路线图
@@ -224,6 +239,25 @@
 - SurfaceFlinger、渲染链路与应用显示原理
 - 阶段项目：从一次点击追踪到 Framework 调用链
 
+当前 Framework 阶段已经展开到第 13 章。它不是突然跳进源码深水区，而是沿着一条非常具体的应用行为往下走：先从一次点击和一次系统服务调用建立入口，再追踪 Activity 如何被启动、窗口如何被添加、内容如何走向屏幕。
+
+- 第 10 章负责打开入口：建立 Android 系统分层视角，认识 ActivityThread、Context、Handler、Looper、Binder 和 AOSP 源码阅读方法。它像一张进城地图，先告诉你 Framework 这座城市大概有哪些路。
+- 第 11 章负责建立通信主线：从 Binder、AIDL、ServiceManager、SystemServer 到系统服务调用，让你理解 App 为什么不能直接调用系统内部能力，而要通过 Binder 和 system_server 协作。
+- 第 12 章负责拆解页面启动：从 `startActivity()` 进入 AMS / ATMS，理解 Task、返回栈、ActivityRecord、launchMode、Intent Flag、进程创建和 ActivityThread 生命周期调度。学完这一章，你应该能解释“为什么这个页面会被创建、复用、销毁或回到前台”。
+- 第 13 章负责追踪窗口显示：从 `setContentView` / Compose `setContent` 进入 Window、PhoneWindow、DecorView、ViewRootImpl、WindowManager 和 WMS，继续理解 Dialog、PopupWindow、输入法、窗口层级、Token、BadToken、白屏和一帧刷新。学完这一章，你应该能解释“Activity 已经启动之后，页面为什么真的能显示到屏幕上”。
+
+这几章串起来后，会形成一条完整的 Framework 入门链路：
+
+```text
+一次点击
+  -> App 主线程消息
+      -> Binder 请求系统服务
+          -> AMS / ATMS 调度 Activity
+              -> Window / DecorView 接入窗口
+                  -> WMS 管理窗口层级
+                      -> Choreographer 驱动一帧刷新
+```
+
 ### 学习顺序
 
 建议按照目录顺序学习，不要急着跳到 Framework。Android 的底层知识并不是孤立存在的，它最好从真实业务问题里长出来：当你写过页面，才会真正关心 View 如何绘制；当你处理过页面跳转，才会理解 AMS / ATMS 的价值；当你遇到卡顿和内存问题，Framework 的调用链才不再是抽象名词。
@@ -260,6 +294,24 @@
 - 选择模拟器或真机运行 `app` 模块。
 - 如果构建失败，优先检查 JDK、SDK、Gradle Sync 日志和网络代理配置。
 
+### GitHub Pages 文档站
+
+课程文档可以直接通过 GitHub Pages 发布。当前仓库已经准备好：
+
+- `docs/index.html`：Docsify 文档站入口。
+- `docs/README.md`：文档站首页。
+- `docs/_sidebar.md`：章节侧边栏。
+- `docs/.nojekyll`：确保 GitHub Pages 不会忽略 `_sidebar.md`。
+- `.github/workflows/deploy-pages.yml`：自动发布 `docs/` 到 GitHub Pages。
+
+发布方式：
+
+1. 将代码推送到 `main` 或 `master` 分支。
+2. 在 GitHub 仓库设置里打开 `Settings -> Pages`。
+3. 将 `Build and deployment` 的 Source 选择为 `GitHub Actions`。
+4. 等待 `Deploy docs to GitHub Pages` 工作流完成。
+5. 打开工作流输出的 Pages 地址，即可访问课程文档站。
+
 ### 示例工程
 
 课程配套示例工程统一放在 [examples](examples/) 目录下。每个大章节对应一个独立示例工程，建议按照“阅读章节文档 -> 运行示例工程 -> 完成练习任务 -> 自己做一次改造”的方式学习。
@@ -278,6 +330,7 @@
 - [第10章 Android Framework 入门、系统架构与源码阅读方法示例工程](examples/10-framework-source-walkthrough/)
 - [第11章 Binder、SystemServer 与系统服务入门示例工程](examples/11-binder-system-service-lab/)
 - [第12章 AMS / ATMS、Activity 启动与任务栈调度示例工程](examples/12-activity-task-launch-lab/)
+- [第13章 WMS、Window、DecorView 与窗口显示机制示例工程](examples/13-window-display-lab/)
 
 ## 贡献者名单
 

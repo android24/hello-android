@@ -1,3 +1,4 @@
+- [课程首页](README)
 - 第1章 Kotlin 与 Android 基础
     - [1.1 开发环境与第一个 Android 工程](chapter1/chapter1)
     - [1.2 Kotlin 基础与 Android 工程语法](chapter1/chapter1_2)
@@ -86,3 +87,12 @@
     - [12.6 启动限制、权限与异常路径](chapter12/chapter12_6)
     - [12.7 启动体验问题：黑屏、白屏、重复页面与返回异常](chapter12/chapter12_7)
     - [12.8 综合实践：Activity 启动与任务栈观察实验](chapter12/chapter12_8)
+- 第13章 WMS、Window、DecorView 与窗口显示机制
+    - [13.1 为什么要学习 WMS、Window 与窗口显示](chapter13/chapter13_1)
+    - [13.2 从 setContentView / Compose 到 DecorView](chapter13/chapter13_2)
+    - [13.3 Window、PhoneWindow 与 ViewRootImpl](chapter13/chapter13_3)
+    - [13.4 WindowManager、WMS、Token 与窗口层级](chapter13/chapter13_4)
+    - [13.5 Measure、Layout、Draw 与 Choreographer](chapter13/chapter13_5)
+    - [13.6 Dialog、PopupWindow、Toast 与输入法窗口](chapter13/chapter13_6)
+    - [13.7 窗口体验问题：白屏、遮挡、泄漏与 BadToken](chapter13/chapter13_7)
+    - [13.8 综合实践：窗口显示链路观察实验](chapter13/chapter13_8)

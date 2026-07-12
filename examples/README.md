@@ -28,6 +28,7 @@ examples/
   10-framework-source-walkthrough/
   11-binder-system-service-lab/
   12-activity-task-launch-lab/
+  13-window-display-lab/
 ```
 
 ## 设计原则
