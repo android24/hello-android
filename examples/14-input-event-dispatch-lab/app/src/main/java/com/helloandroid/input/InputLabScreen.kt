@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -26,6 +28,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -76,7 +79,9 @@ fun InputLabScreen(
             item { HeaderCard() }
             item { ScoreCard(score = state.score) }
             item { ExperimentCard(experiment = state.currentExperiment) }
+            item { DispatchLinkCard(links = state.dispatchLinks) }
             item { NativeDispatchCard(interceptMove = state.interceptMove) }
+            item { ConflictLabCard(conflictLab = state.conflictLab) }
             item { ComposeGestureCard(onMainThreadBusy = onMainThreadBusy) }
             item { DiagnosticCard(cards = state.diagnosticCards) }
             item { EventTrailCard(events = state.eventTrail) }
@@ -109,9 +114,11 @@ private fun ScoreCard(score: InputScore) {
         score.childClickObserved,
         score.moveObserved,
         score.cancelObserved,
+        score.conflictObserved,
+        score.scrollObserved,
         score.composeGestureObserved,
         score.busyObserved
-    ).count { it } * 100 / 6
+    ).count { it } * 100 / 8
 
     LabCard(background = Color(0xFFFFF7D6)) {
         SectionTitle(title = "输入观察分数")
@@ -126,6 +133,8 @@ private fun ScoreCard(score: InputScore) {
         BulletText(text = "子 View 完成一次点击")
         BulletText(text = "观察 MOVE 事件")
         BulletText(text = "触发 CANCEL 或拦截路径")
+        BulletText(text = "完成滑动冲突方向判断")
+        BulletText(text = "滚动 Compose 列表")
         BulletText(text = "触发 Compose 手势")
         BulletText(text = "模拟主线程忙碌")
     }
@@ -140,6 +149,63 @@ private fun ExperimentCard(experiment: InputExperiment) {
         LabelText(label = "预期", text = experiment.expected, color = Color(0xFF9A6B22))
         LabelText(label = "实际", text = experiment.actual, color = Color(0xFF2F6F73))
         LabelText(label = "结论", text = experiment.conclusion, color = Color(0xFF4A5A89))
+    }
+}
+
+@Composable
+private fun DispatchLinkCard(links: List<DispatchLink>) {
+    LabCard(background = Color(0xFFF8FAFC)) {
+        SectionTitle(title = "分发链路卡片")
+        Text(
+            text = "把事件当成一张通行证：它先经过 Activity，再进入父容器和子 View；如果是 Compose 手势，则会被 Modifier 解释成点击、拖动或滚动。",
+            style = MaterialTheme.typography.bodySmall,
+            color = Color(0xFF66736F)
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        links.forEachIndexed { index, link ->
+            Row(verticalAlignment = Alignment.Top) {
+                Box(
+                    modifier = Modifier
+                        .size(28.dp)
+                        .clip(CircleShape)
+                        .background(
+                            when (link.latestAction) {
+                                "等待" -> Color(0xFFE5E7EB)
+                                "CANCEL" -> Color(0xFFF4C7C3)
+                                else -> Color(0xFFD6EEE9)
+                            }
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "${index + 1}",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF1D2B27)
+                    )
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = link.layer,
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Text(
+                            text = link.latestAction,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = Color(0xFF2F6F73),
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Text(text = link.role, style = MaterialTheme.typography.bodySmall, color = Color(0xFF66736F))
+                    Text(text = link.evidence, style = MaterialTheme.typography.bodySmall)
+                }
+            }
+            if (index != links.lastIndex) Spacer(modifier = Modifier.height(12.dp))
+        }
     }
 }
 
@@ -178,8 +244,70 @@ private fun NativeDispatchCard(interceptMove: Boolean) {
 }
 
 @Composable
+private fun ConflictLabCard(conflictLab: ConflictLabState) {
+    var dragTotalX by remember { mutableFloatStateOf(0f) }
+    var dragTotalY by remember { mutableFloatStateOf(0f) }
+
+    LabCard(background = Color(0xFFFFF2E8)) {
+        SectionTitle(title = "滑动冲突实验区")
+        Text(
+            text = "横向拖动更像外层容器要接管，纵向拖动更像内层列表要滚动。这个实验把方向判断先做成可观察的证据。",
+            style = MaterialTheme.typography.bodySmall,
+            color = Color(0xFF66736F)
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(118.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color(0xFF9A6B22))
+                .pointerInput(Unit) {
+                    detectDragGestures(
+                        onDragStart = {
+                            dragTotalX = 0f
+                            dragTotalY = 0f
+                        },
+                        onDrag = { _, dragAmount ->
+                            dragTotalX += dragAmount.x
+                            dragTotalY += dragAmount.y
+                            InputLabStore.recordConflictDrag(dragTotalX, dragTotalY)
+                        }
+                    )
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = "在这里横向或纵向拖动",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+                Text(
+                    text = "当前：${conflictLab.lastDirection} -> ${conflictLab.owner}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFFFFF7D6)
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        InfoRow(label = "横向 MOVE", value = "${conflictLab.horizontalMoves} 次")
+        InfoRow(label = "纵向 MOVE", value = "${conflictLab.verticalMoves} 次")
+        LabelText(label = "处理建议", text = conflictLab.advice, color = Color(0xFF9A6B22))
+    }
+}
+
+@Composable
 private fun ComposeGestureCard(onMainThreadBusy: () -> Unit) {
     var dragDistance by remember { mutableFloatStateOf(0f) }
+    val scrollState = rememberLazyListState()
+
+    LaunchedEffect(scrollState.firstVisibleItemIndex) {
+        if (scrollState.firstVisibleItemIndex > 0) {
+            InputLabStore.recordComposeScroll(scrollState.firstVisibleItemIndex)
+        }
+    }
 
     LabCard(background = Color(0xFFEFF3FA)) {
         SectionTitle(title = "Compose 手势实验区")
@@ -258,6 +386,45 @@ private fun ComposeGestureCard(onMainThreadBusy: () -> Unit) {
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedButton(onClick = onMainThreadBusy, modifier = Modifier.fillMaxWidth()) {
             Text(text = "模拟主线程忙碌 180ms")
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        Text(
+            text = "Compose 可滚动列表：滚动后观察 scroll 日志如何加入分发链路。",
+            style = MaterialTheme.typography.bodySmall,
+            color = Color(0xFF66736F)
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyColumn(
+            state = scrollState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(156.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color.White),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            items(12) { index ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(if (index % 2 == 0) Color(0xFFF8FAFC) else Color(0xFFEFF3FA))
+                        .padding(horizontal = 12.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "#${index + 1}",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF4A5A89),
+                        modifier = Modifier.width(42.dp)
+                    )
+                    Text(
+                        text = if (index % 3 == 0) "点击、拖动、滚动都来自同一条输入链路" else "滚动列表，观察 firstVisibleItem 变化",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFF1D2B27)
+                    )
+                }
+            }
         }
     }
 }
@@ -396,8 +563,23 @@ private fun InputLabScreenPreview() {
                     childClickObserved = true,
                     moveObserved = true,
                     cancelObserved = true,
+                    conflictObserved = true,
+                    scrollObserved = true,
                     composeGestureObserved = true,
                     busyObserved = false
+                ),
+                dispatchLinks = listOf(
+                    DispatchLink("Activity", "App 入口", "DOWN", "dispatchTouchEvent x=100, y=200"),
+                    DispatchLink("Parent", "分发与拦截", "MOVE", "onInterceptTouchEvent intercepted=true"),
+                    DispatchLink("Child", "消费触摸序列", "CANCEL", "onTouchEvent x=80, y=60"),
+                    DispatchLink("Compose", "声明式手势", "SCROLL", "LazyColumn visibleItem=2")
+                ),
+                conflictLab = ConflictLabState(
+                    horizontalMoves = 3,
+                    verticalMoves = 1,
+                    lastDirection = "横向 MOVE",
+                    owner = "外层横滑容器",
+                    advice = "横向距离更明显，父容器可以考虑拦截并接管手势。"
                 ),
                 eventTrail = listOf(
                     InputEventLog("Activity", "dispatchTouchEvent", "DOWN", "x=100, y=200", "12:30:01.100")

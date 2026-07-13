@@ -4,6 +4,8 @@ data class InputLabState(
     val interceptMove: Boolean = false,
     val currentExperiment: InputExperiment = InputExperiment(),
     val score: InputScore = InputScore(),
+    val dispatchLinks: List<DispatchLink> = defaultDispatchLinks,
+    val conflictLab: ConflictLabState = ConflictLabState(),
     val diagnosticCards: List<InputDiagnosticCard> = defaultInputDiagnosticCards,
     val eventTrail: List<InputEventLog> = emptyList()
 )
@@ -20,8 +22,25 @@ data class InputScore(
     val childClickObserved: Boolean = false,
     val moveObserved: Boolean = false,
     val cancelObserved: Boolean = false,
+    val conflictObserved: Boolean = false,
+    val scrollObserved: Boolean = false,
     val composeGestureObserved: Boolean = false,
     val busyObserved: Boolean = false
+)
+
+data class DispatchLink(
+    val layer: String,
+    val role: String,
+    val latestAction: String = "等待",
+    val evidence: String = "还没有日志"
+)
+
+data class ConflictLabState(
+    val horizontalMoves: Int = 0,
+    val verticalMoves: Int = 0,
+    val lastDirection: String = "等待滑动",
+    val owner: String = "尚未判定",
+    val advice: String = "在滑动冲突实验区横向或纵向拖动，观察处理权如何变化。"
 )
 
 data class InputEventLog(
@@ -30,6 +49,29 @@ data class InputEventLog(
     val action: String,
     val detail: String,
     val timestamp: String
+)
+
+val defaultDispatchLinks = listOf(
+    DispatchLink(
+        layer = "Activity",
+        role = "App 入口",
+        evidence = "等待 Activity.dispatchTouchEvent"
+    ),
+    DispatchLink(
+        layer = "Parent",
+        role = "分发与拦截",
+        evidence = "等待 Parent.dispatchTouchEvent / onInterceptTouchEvent"
+    ),
+    DispatchLink(
+        layer = "Child",
+        role = "消费触摸序列",
+        evidence = "等待 Child.dispatchTouchEvent / onTouchEvent"
+    ),
+    DispatchLink(
+        layer = "Compose",
+        role = "声明式手势",
+        evidence = "等待 pointerInput / click / scroll"
+    )
 )
 
 data class InputDiagnosticCard(

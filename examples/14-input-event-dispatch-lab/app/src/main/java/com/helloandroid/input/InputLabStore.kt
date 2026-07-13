@@ -39,6 +39,11 @@ object InputLabStore {
         _state.update {
             it.copy(
                 score = it.score.copy(activityObserved = true),
+                dispatchLinks = it.dispatchLinks.updateLink(
+                    layer = "Activity",
+                    action = action,
+                    evidence = "dispatchTouchEvent ${event.positionDetail()}"
+                ),
                 currentExperiment = it.currentExperiment.copy(
                     actual = "Activity.dispatchTouchEvent 已收到 $action。",
                     conclusion = "事件已经进入 App 的 Activity 层。"
@@ -59,7 +64,13 @@ object InputLabStore {
             it.copy(
                 score = it.score.copy(
                     moveObserved = it.score.moveObserved || sawMove,
-                    cancelObserved = it.score.cancelObserved || action == "CANCEL"
+                    cancelObserved = it.score.cancelObserved || action == "CANCEL",
+                    conflictObserved = it.score.conflictObserved || intercepted == true
+                ),
+                dispatchLinks = it.dispatchLinks.updateLink(
+                    layer = "Parent",
+                    action = action,
+                    evidence = "$phase ${detail}"
                 ),
                 currentExperiment = it.currentExperiment.copy(
                     actual = "Parent.$phase 收到 $action。",
@@ -94,6 +105,15 @@ object InputLabStore {
                 )
             )
         }
+        _state.update {
+            it.copy(
+                dispatchLinks = it.dispatchLinks.updateLink(
+                    layer = "Child",
+                    action = action,
+                    evidence = "$phase ${event.positionDetail()}"
+                )
+            )
+        }
         record("ChildView", phase, action, event.positionDetail())
     }
 
@@ -101,6 +121,11 @@ object InputLabStore {
         _state.update {
             it.copy(
                 score = it.score.copy(composeGestureObserved = true),
+                dispatchLinks = it.dispatchLinks.updateLink(
+                    layer = "Compose",
+                    action = "GESTURE",
+                    evidence = "$name $detail"
+                ),
                 currentExperiment = InputExperiment(
                     operation = "Compose 手势实验：$name",
                     expected = "Compose 通过 Modifier 描述手势，但仍运行在 Android 输入链路之上。",
@@ -110,6 +135,55 @@ object InputLabStore {
             )
         }
         record("Compose", name, "GESTURE", detail)
+    }
+
+    fun recordConflictDrag(deltaX: Float, deltaY: Float) {
+        val direction = if (kotlin.math.abs(deltaX) >= kotlin.math.abs(deltaY)) "横向 MOVE" else "纵向 MOVE"
+        val owner = if (direction == "横向 MOVE") "外层横滑容器" else "内层纵向列表"
+        val advice = if (direction == "横向 MOVE") {
+            "横向距离更明显，父容器可以考虑拦截并接管手势。"
+        } else {
+            "纵向距离更明显，父容器应该放行，让子列表继续滚动。"
+        }
+        _state.update {
+            it.copy(
+                score = it.score.copy(conflictObserved = true, moveObserved = true),
+                conflictLab = it.conflictLab.copy(
+                    horizontalMoves = it.conflictLab.horizontalMoves + if (direction == "横向 MOVE") 1 else 0,
+                    verticalMoves = it.conflictLab.verticalMoves + if (direction == "纵向 MOVE") 1 else 0,
+                    lastDirection = direction,
+                    owner = owner,
+                    advice = advice
+                ),
+                currentExperiment = InputExperiment(
+                    operation = "滑动冲突实验：$direction",
+                    expected = "根据 MOVE 的横向 / 纵向距离判断事件应该交给谁。",
+                    actual = "dx=${deltaX.toInt()}, dy=${deltaY.toInt()}, owner=$owner",
+                    conclusion = advice
+                )
+            )
+        }
+        record("ConflictLab", "drag", direction, "dx=${deltaX.toInt()}, dy=${deltaY.toInt()}, owner=$owner")
+    }
+
+    fun recordComposeScroll(index: Int) {
+        _state.update {
+            it.copy(
+                score = it.score.copy(scrollObserved = true, composeGestureObserved = true),
+                dispatchLinks = it.dispatchLinks.updateLink(
+                    layer = "Compose",
+                    action = "SCROLL",
+                    evidence = "LazyColumn visibleItem=$index"
+                ),
+                currentExperiment = InputExperiment(
+                    operation = "Compose 可滚动列表",
+                    expected = "列表滚动同样来自输入事件序列，只是被 Compose 滚动容器解释。",
+                    actual = "当前首个可见条目：#$index",
+                    conclusion = "scroll、drag、click 是同一条输入链路上的不同解释。"
+                )
+            )
+        }
+        record("Compose", "LazyColumn", "SCROLL", "firstVisibleItem=$index")
     }
 
     fun recordMainThreadBusy(durationMs: Long) {
@@ -132,7 +206,9 @@ object InputLabStore {
             it.copy(
                 eventTrail = emptyList(),
                 currentExperiment = InputExperiment(),
-                score = InputScore()
+                score = InputScore(),
+                dispatchLinks = defaultDispatchLinks,
+                conflictLab = ConflictLabState()
             )
         }
         Log.d(TAG, "Events cleared")
@@ -149,6 +225,20 @@ object InputLabStore {
         )
         _state.update { state ->
             state.copy(eventTrail = (listOf(event) + state.eventTrail).take(24))
+        }
+    }
+}
+
+private fun List<DispatchLink>.updateLink(
+    layer: String,
+    action: String,
+    evidence: String
+): List<DispatchLink> {
+    return map { link ->
+        if (link.layer == layer) {
+            link.copy(latestAction = action, evidence = evidence)
+        } else {
+            link
         }
     }
 }
