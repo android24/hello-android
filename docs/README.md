@@ -33,6 +33,7 @@
 - 第 11 章：Binder、SystemServer 与系统服务入门。
 - 第 12 章：AMS / ATMS、Activity 启动与任务栈调度。
 - 第 13 章：WMS、Window、DecorView 与窗口显示机制。
+- 第 14 章：Input 事件分发、触摸系统与交互响应机制。
 
 这几章会逐步串起一条完整路径：
 
@@ -44,6 +45,8 @@
               -> Window / DecorView 接入窗口
                   -> WMS 管理窗口层级
                       -> Choreographer 驱动一帧刷新
+                          -> InputDispatcher 派发触摸事件
+                              -> ViewRootImpl / ViewGroup / View 处理交互
 ```
 
 ## 配套工程

@@ -172,6 +172,17 @@
   - [13.7 窗口体验问题：白屏、遮挡、泄漏与 BadToken](docs/chapter13/chapter13_7.md)
   - [13.8 综合实践：窗口显示链路观察实验](docs/chapter13/chapter13_8.md)
   - [配套示例工程](examples/13-window-display-lab/)
+- 第14章 Input 事件分发、触摸系统与交互响应机制
+  - 通关目标：理解触摸事件如何从系统进入 App，掌握 MotionEvent、Activity 入口、ViewGroup 分发拦截、Compose 手势与 Input ANR 的排查思路
+  - [14.1 为什么要学习 Input 事件分发](docs/chapter14/chapter14_1.md)
+  - [14.2 从触摸屏到 App：InputReader、InputDispatcher 与 ViewRootImpl](docs/chapter14/chapter14_2.md)
+  - [14.3 MotionEvent、坐标体系与事件序列](docs/chapter14/chapter14_3.md)
+  - [14.4 Activity、Window、DecorView 的事件入口](docs/chapter14/chapter14_4.md)
+  - [14.5 ViewGroup 事件分发：dispatchTouchEvent、onInterceptTouchEvent 与 onTouchEvent](docs/chapter14/chapter14_5.md)
+  - [14.6 点击、手势、滑动冲突与 Compose pointer input](docs/chapter14/chapter14_6.md)
+  - [14.7 输入体验问题：点击无响应、误触、滑动冲突与 Input ANR](docs/chapter14/chapter14_7.md)
+  - [14.8 综合实践：输入事件分发观察实验](docs/chapter14/chapter14_8.md)
+  - [配套示例工程](examples/14-input-event-dispatch-lab/)
 
 ### 项目说明
 
@@ -239,12 +250,13 @@
 - SurfaceFlinger、渲染链路与应用显示原理
 - 阶段项目：从一次点击追踪到 Framework 调用链
 
-当前 Framework 阶段已经展开到第 13 章。它不是突然跳进源码深水区，而是沿着一条非常具体的应用行为往下走：先从一次点击和一次系统服务调用建立入口，再追踪 Activity 如何被启动、窗口如何被添加、内容如何走向屏幕。
+当前 Framework 阶段已经展开到第 14 章。它不是突然跳进源码深水区，而是沿着一条非常具体的应用行为往下走：先从一次点击和一次系统服务调用建立入口，再追踪 Activity 如何被启动、窗口如何被添加、内容如何走向屏幕，最后继续观察触摸事件如何被系统派发并在 View 树中找到处理者。
 
 - 第 10 章负责打开入口：建立 Android 系统分层视角，认识 ActivityThread、Context、Handler、Looper、Binder 和 AOSP 源码阅读方法。它像一张进城地图，先告诉你 Framework 这座城市大概有哪些路。
 - 第 11 章负责建立通信主线：从 Binder、AIDL、ServiceManager、SystemServer 到系统服务调用，让你理解 App 为什么不能直接调用系统内部能力，而要通过 Binder 和 system_server 协作。
 - 第 12 章负责拆解页面启动：从 `startActivity()` 进入 AMS / ATMS，理解 Task、返回栈、ActivityRecord、launchMode、Intent Flag、进程创建和 ActivityThread 生命周期调度。学完这一章，你应该能解释“为什么这个页面会被创建、复用、销毁或回到前台”。
 - 第 13 章负责追踪窗口显示：从 `setContentView` / Compose `setContent` 进入 Window、PhoneWindow、DecorView、ViewRootImpl、WindowManager 和 WMS，继续理解 Dialog、PopupWindow、输入法、窗口层级、Token、BadToken、白屏和一帧刷新。学完这一章，你应该能解释“Activity 已经启动之后，页面为什么真的能显示到屏幕上”。
+- 第 14 章负责拆解输入事件：从触摸屏、InputReader、InputDispatcher 到 ViewRootImpl、Activity、ViewGroup、View 和 Compose pointer input，理解点击、滑动、拦截、CANCEL、滑动冲突与 Input ANR。学完这一章，你应该能解释“用户点到屏幕后，事件为什么由这个控件处理，而不是另一个控件处理”。
 
 这几章串起来后，会形成一条完整的 Framework 入门链路：
 
@@ -256,6 +268,8 @@
               -> Window / DecorView 接入窗口
                   -> WMS 管理窗口层级
                       -> Choreographer 驱动一帧刷新
+                          -> InputDispatcher 派发触摸事件
+                              -> ViewRootImpl / ViewGroup / View 处理交互
 ```
 
 ### 学习顺序
@@ -334,6 +348,7 @@
 - [第11章 Binder、SystemServer 与系统服务入门示例工程](examples/11-binder-system-service-lab/)
 - [第12章 AMS / ATMS、Activity 启动与任务栈调度示例工程](examples/12-activity-task-launch-lab/)
 - [第13章 WMS、Window、DecorView 与窗口显示机制示例工程](examples/13-window-display-lab/)
+- [第14章 Input 事件分发、触摸系统与交互响应机制示例工程](examples/14-input-event-dispatch-lab/)
 
 ## 贡献者名单
 

@@ -96,3 +96,12 @@
     - [13.6 Dialog、PopupWindow、Toast 与输入法窗口](chapter13/chapter13_6)
     - [13.7 窗口体验问题：白屏、遮挡、泄漏与 BadToken](chapter13/chapter13_7)
     - [13.8 综合实践：窗口显示链路观察实验](chapter13/chapter13_8)
+- 第14章 Input 事件分发、触摸系统与交互响应机制
+    - [14.1 为什么要学习 Input 事件分发](chapter14/chapter14_1)
+    - [14.2 从触摸屏到 App：InputReader、InputDispatcher 与 ViewRootImpl](chapter14/chapter14_2)
+    - [14.3 MotionEvent、坐标体系与事件序列](chapter14/chapter14_3)
+    - [14.4 Activity、Window、DecorView 的事件入口](chapter14/chapter14_4)
+    - [14.5 ViewGroup 事件分发：dispatchTouchEvent、onInterceptTouchEvent 与 onTouchEvent](chapter14/chapter14_5)
+    - [14.6 点击、手势、滑动冲突与 Compose pointer input](chapter14/chapter14_6)
+    - [14.7 输入体验问题：点击无响应、误触、滑动冲突与 Input ANR](chapter14/chapter14_7)
+    - [14.8 综合实践：输入事件分发观察实验](chapter14/chapter14_8)

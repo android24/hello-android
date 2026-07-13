@@ -29,6 +29,7 @@ examples/
   11-binder-system-service-lab/
   12-activity-task-launch-lab/
   13-window-display-lab/
+  14-input-event-dispatch-lab/
 ```
 
 ## 设计原则
