@@ -1,0 +1,5 @@
+<resources>
+    <color name="render_lab_primary">#315F72</color>
+    <color name="render_lab_secondary">#8A6A25</color>
+    <color name="render_lab_background">#F7F8F6</color>
+</resources>

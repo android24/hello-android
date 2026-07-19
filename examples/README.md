@@ -30,6 +30,7 @@ examples/
   12-activity-task-launch-lab/
   13-window-display-lab/
   14-input-event-dispatch-lab/
+  15-rendering-frame-lab/
 ```
 
 ## 设计原则

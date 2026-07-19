@@ -183,6 +183,17 @@
   - [14.7 输入体验问题：点击无响应、误触、滑动冲突与 Input ANR](docs/chapter14/chapter14_7.md)
   - [14.8 综合实践：输入事件分发观察实验](docs/chapter14/chapter14_8.md)
   - [配套示例工程](examples/14-input-event-dispatch-lab/)
+- 第15章 View 绘制、RenderThread、SurfaceFlinger 与渲染链路
+  - 通关目标：理解 UI 状态变化如何被调度成一帧，掌握 measure / layout / draw、Choreographer、RenderThread、Surface、BufferQueue、SurfaceFlinger 与掉帧排查思路
+  - [15.1 为什么要学习 View 绘制与渲染链路](docs/chapter15/chapter15_1.md)
+  - [15.2 从 invalidate 到 Choreographer：一帧如何被调度](docs/chapter15/chapter15_2.md)
+  - [15.3 measure、layout、draw：View 树如何产出绘制命令](docs/chapter15/chapter15_3.md)
+  - [15.4 HardwareRenderer、DisplayList 与 RenderThread](docs/chapter15/chapter15_4.md)
+  - [15.5 Surface、BufferQueue 与 SurfaceFlinger](docs/chapter15/chapter15_5.md)
+  - [15.6 VSYNC、帧率、掉帧与 Jank](docs/chapter15/chapter15_6.md)
+  - [15.7 渲染体验问题：白屏、闪烁、过度绘制、黑屏与掉帧](docs/chapter15/chapter15_7.md)
+  - [15.8 综合实践：一帧渲染链路观察实验](docs/chapter15/chapter15_8.md)
+  - [配套示例工程](examples/15-rendering-frame-lab/)
 
 ### 项目说明
 
@@ -250,13 +261,14 @@
 - SurfaceFlinger、渲染链路与应用显示原理
 - 阶段项目：从一次点击追踪到 Framework 调用链
 
-当前 Framework 阶段已经展开到第 14 章。它不是突然跳进源码深水区，而是沿着一条非常具体的应用行为往下走：先从一次点击和一次系统服务调用建立入口，再追踪 Activity 如何被启动、窗口如何被添加、内容如何走向屏幕，最后继续观察触摸事件如何被系统派发并在 View 树中找到处理者。
+当前 Framework 阶段已经展开到第 15 章。它不是突然跳进源码深水区，而是沿着一条非常具体的应用行为往下走：先从一次点击和一次系统服务调用建立入口，再追踪 Activity 如何被启动、窗口如何被添加、内容如何走向屏幕，然后观察触摸事件如何被系统派发并在 View 树中找到处理者，最后继续追问 UI 状态变化如何变成屏幕上的下一帧。
 
 - 第 10 章负责打开入口：建立 Android 系统分层视角，认识 ActivityThread、Context、Handler、Looper、Binder 和 AOSP 源码阅读方法。它像一张进城地图，先告诉你 Framework 这座城市大概有哪些路。
 - 第 11 章负责建立通信主线：从 Binder、AIDL、ServiceManager、SystemServer 到系统服务调用，让你理解 App 为什么不能直接调用系统内部能力，而要通过 Binder 和 system_server 协作。
 - 第 12 章负责拆解页面启动：从 `startActivity()` 进入 AMS / ATMS，理解 Task、返回栈、ActivityRecord、launchMode、Intent Flag、进程创建和 ActivityThread 生命周期调度。学完这一章，你应该能解释“为什么这个页面会被创建、复用、销毁或回到前台”。
 - 第 13 章负责追踪窗口显示：从 `setContentView` / Compose `setContent` 进入 Window、PhoneWindow、DecorView、ViewRootImpl、WindowManager 和 WMS，继续理解 Dialog、PopupWindow、输入法、窗口层级、Token、BadToken、白屏和一帧刷新。学完这一章，你应该能解释“Activity 已经启动之后，页面为什么真的能显示到屏幕上”。
 - 第 14 章负责拆解输入事件：从触摸屏、InputReader、InputDispatcher 到 ViewRootImpl、Activity、ViewGroup、View 和 Compose pointer input，理解点击、滑动、拦截、CANCEL、滑动冲突与 Input ANR。学完这一章，你应该能解释“用户点到屏幕后，事件为什么由这个控件处理，而不是另一个控件处理”。
+- 第 15 章负责深入渲染链路：从 `invalidate()`、`requestLayout()`、Choreographer、measure / layout / draw 到 HardwareRenderer、RenderThread、Surface、BufferQueue 和 SurfaceFlinger，理解掉帧、Jank、白屏、闪烁、过度绘制和黑屏。学完这一章，你应该能解释“业务状态变化之后，下一帧为什么能真的出现在屏幕上”。
 
 这几章串起来后，会形成一条完整的 Framework 入门链路：
 
@@ -270,6 +282,8 @@
                       -> Choreographer 驱动一帧刷新
                           -> InputDispatcher 派发触摸事件
                               -> ViewRootImpl / ViewGroup / View 处理交互
+                                  -> Choreographer 调度 UI 刷新
+                                      -> RenderThread / SurfaceFlinger 完成渲染与合成
 ```
 
 ### 学习顺序
@@ -349,6 +363,7 @@
 - [第12章 AMS / ATMS、Activity 启动与任务栈调度示例工程](examples/12-activity-task-launch-lab/)
 - [第13章 WMS、Window、DecorView 与窗口显示机制示例工程](examples/13-window-display-lab/)
 - [第14章 Input 事件分发、触摸系统与交互响应机制示例工程](examples/14-input-event-dispatch-lab/)
+- [第15章 View 绘制、RenderThread、SurfaceFlinger 与渲染链路示例工程](examples/15-rendering-frame-lab/)
 
 ## 贡献者名单
 

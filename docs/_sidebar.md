@@ -105,3 +105,12 @@
     - [14.6 点击、手势、滑动冲突与 Compose pointer input](chapter14/chapter14_6)
     - [14.7 输入体验问题：点击无响应、误触、滑动冲突与 Input ANR](chapter14/chapter14_7)
     - [14.8 综合实践：输入事件分发观察实验](chapter14/chapter14_8)
+- 第15章 View 绘制、RenderThread、SurfaceFlinger 与渲染链路
+    - [15.1 为什么要学习 View 绘制与渲染链路](chapter15/chapter15_1)
+    - [15.2 从 invalidate 到 Choreographer：一帧如何被调度](chapter15/chapter15_2)
+    - [15.3 measure、layout、draw：View 树如何产出绘制命令](chapter15/chapter15_3)
+    - [15.4 HardwareRenderer、DisplayList 与 RenderThread](chapter15/chapter15_4)
+    - [15.5 Surface、BufferQueue 与 SurfaceFlinger](chapter15/chapter15_5)
+    - [15.6 VSYNC、帧率、掉帧与 Jank](chapter15/chapter15_6)
+    - [15.7 渲染体验问题：白屏、闪烁、过度绘制、黑屏与掉帧](chapter15/chapter15_7)
+    - [15.8 综合实践：一帧渲染链路观察实验](chapter15/chapter15_8)

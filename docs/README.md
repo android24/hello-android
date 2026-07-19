@@ -34,6 +34,7 @@
 - 第 12 章：AMS / ATMS、Activity 启动与任务栈调度。
 - 第 13 章：WMS、Window、DecorView 与窗口显示机制。
 - 第 14 章：Input 事件分发、触摸系统与交互响应机制。
+- 第 15 章：View 绘制、RenderThread、SurfaceFlinger 与渲染链路。
 
 这几章会逐步串起一条完整路径：
 
@@ -47,6 +48,8 @@
                       -> Choreographer 驱动一帧刷新
                           -> InputDispatcher 派发触摸事件
                               -> ViewRootImpl / ViewGroup / View 处理交互
+                                  -> Choreographer 调度 UI 刷新
+                                      -> RenderThread / SurfaceFlinger 完成渲染与合成
 ```
 
 ## 配套工程
