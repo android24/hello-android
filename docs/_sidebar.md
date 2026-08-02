@@ -133,3 +133,12 @@
     - [17.7 资源体验问题：NotFound、主题错乱、多语言失败、图片模糊与包体积](chapter17/chapter17_7)
     - [17.8 综合实践：资源系统、主题与配置观察实验](chapter17/chapter17_8)
     - [17 附录：主题替换、动态换肤与资源覆盖方案](chapter17/appendix_theme_skinning)
+- 第18章 ClassLoader、Dex、Dalvik / ART 与动态加载机制
+    - [18.1 为什么要学习 ClassLoader、Dex、ART 与动态加载](chapter18/chapter18_1)
+    - [18.2 从源码到 Dex：classes.dex、D8、R8 与 MultiDex](chapter18/chapter18_2)
+    - [18.3 ClassLoader：PathClassLoader、DexClassLoader 与类查找路径](chapter18/chapter18_3)
+    - [18.4 从 Dalvik 到 ART：解释执行、JIT、AOT 与 Profile](chapter18/chapter18_4)
+    - [18.5 Native 库加载：System.loadLibrary、JNI、ABI 与 so 冲突](chapter18/chapter18_5)
+    - [18.6 动态加载、插件化与热修复：能力边界与工程代价](chapter18/chapter18_6)
+    - [18.7 代码加载体验问题：ClassNotFound、NoSuchMethod、VerifyError 与 UnsatisfiedLinkError](chapter18/chapter18_7)
+    - [18.8 综合实践：代码加载、ClassLoader 与运行时观察实验](chapter18/chapter18_8)

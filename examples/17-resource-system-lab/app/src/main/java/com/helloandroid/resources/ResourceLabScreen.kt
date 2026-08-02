@@ -70,7 +70,10 @@ fun ResourceLabScreen(state: ResourceLabState) {
             item { ScoreCard(score = state.score) }
             item { ExperimentCard(experiment = state.experiment) }
             item { ResourceIdentityCard(identity = state.identity) }
+            item { LocaleProbeCard(localeProbe = state.localeProbe) }
+            item { DensityProbeCard(densityProbe = state.densityProbe) }
             item { DynamicLookupCard(dynamicLookup = state.dynamicLookup) }
+            item { ShrinkProbeCard(shrinkProbe = state.shrinkProbe) }
             item { ConfigurationCard(configuration = state.configuration) }
             item { ThemeCard(cards = state.themeCards) }
             item { DynamicReplacementCard(replacement = state.replacement) }
@@ -81,6 +84,7 @@ fun ResourceLabScreen(state: ResourceLabState) {
                 )
             }
             item { DependencySourceCard(cards = state.sourceCards) }
+            item { DependencyConflictProbeCard(probe = state.conflictProbe) }
             item { FileResourceCard(cards = state.fileCards) }
             item { DiagnosticCard(cards = state.diagnosticCards) }
             item { EventTrailCard(events = state.eventTrail) }
@@ -118,13 +122,17 @@ private fun ScoreCard(score: ResourceLabScore) {
         score.configurationObserved,
         score.themeObserved,
         score.replacementObserved,
+        score.localeObserved,
+        score.densityObserved,
         score.dynamicObserved,
+        score.shrinkObserved,
         score.dependencyObserved,
+        score.conflictObserved,
         score.fileObserved,
         score.diagnosisObserved,
         score.appendixObserved,
         score.reportObserved
-    ).count { it } * 100 / 10
+    ).count { it } * 100 / 14
 
     LabCard(background = Color(0xFFFFF4D8)) {
         SectionTitle(title = "资源观察分数")
@@ -137,10 +145,14 @@ private fun ScoreCard(score: ResourceLabScore) {
         Spacer(modifier = Modifier.height(8.dp))
         BulletText(text = "拆解资源 ID")
         BulletText(text = "观察 Configuration")
+        BulletText(text = "对比多语言资源")
+        BulletText(text = "观察图片密度")
         BulletText(text = "读取 Theme attr")
         BulletText(text = "切换动态资源槽位")
         BulletText(text = "对比 R 与 getIdentifier")
+        BulletText(text = "观察 shrink 风险")
         BulletText(text = "观察依赖资源来源")
+        BulletText(text = "分析依赖冲突")
         BulletText(text = "对比 assets / raw")
         BulletText(text = "阅读诊断卡")
         BulletText(text = "阅读动态换肤附录")
@@ -178,6 +190,58 @@ private fun ResourceIdentityCard(identity: ResourceIdentity) {
 }
 
 @Composable
+private fun LocaleProbeCard(localeProbe: LocaleProbe) {
+    val context = LocalContext.current
+    LabCard(background = Color(0xFFEFF4EA)) {
+        SectionTitle(title = "字符串多语言实验区")
+        Text(
+            text = "同一个 string 资源 ID 会跟着 Configuration 选择 values、values-zh 或 values-en。",
+            style = MaterialTheme.typography.bodySmall,
+            color = Color(0xFF66736F)
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        Button(onClick = { ResourceLabStore.markLocaleExperiment(context) }) {
+            Text(text = "记录多语言实验")
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        InfoRow(label = "resource", value = localeProbe.resourceName)
+        InfoRow(label = "currentLocale", value = localeProbe.currentLocale)
+        InfoRow(label = "current", value = localeProbe.currentValue)
+        InfoRow(label = "default", value = localeProbe.defaultValue)
+        InfoRow(label = "zh", value = localeProbe.zhValue)
+        InfoRow(label = "en", value = localeProbe.enValue)
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = localeProbe.conclusion, style = MaterialTheme.typography.bodySmall, color = Color(0xFF4D6B58))
+    }
+}
+
+@Composable
+private fun DensityProbeCard(densityProbe: DensityProbe) {
+    val context = LocalContext.current
+    LabCard(background = Color(0xFFF8FAFC)) {
+        SectionTitle(title = "图片密度实验区")
+        Text(
+            text = "这里用一个 drawable 探针观察 densityDpi、资源类型和 intrinsic size。真实 bitmap 还会比较 mdpi/hdpi/xhdpi 等候选目录。",
+            style = MaterialTheme.typography.bodySmall,
+            color = Color(0xFF66736F)
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        Button(onClick = { ResourceLabStore.markDensityExperiment(context) }) {
+            Text(text = "记录密度实验")
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        InfoRow(label = "drawable", value = densityProbe.drawableName)
+        InfoRow(label = "id", value = densityProbe.drawableId)
+        InfoRow(label = "densityDpi", value = densityProbe.densityDpi)
+        InfoRow(label = "bucket", value = densityProbe.densityBucket)
+        InfoRow(label = "intrinsic", value = densityProbe.intrinsicSize)
+        InfoRow(label = "type", value = densityProbe.resourceType)
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = densityProbe.conclusion, style = MaterialTheme.typography.bodySmall, color = Color(0xFF315F72))
+    }
+}
+
+@Composable
 private fun DynamicLookupCard(dynamicLookup: DynamicLookup) {
     LabCard(background = Color(0xFFF8FAFC)) {
         SectionTitle(title = "R 直接引用 vs getIdentifier")
@@ -188,6 +252,32 @@ private fun DynamicLookupCard(dynamicLookup: DynamicLookup) {
         InfoRow(label = "dynamicValue", value = dynamicLookup.dynamicValue)
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = dynamicLookup.conclusion, style = MaterialTheme.typography.bodySmall, color = Color(0xFF66736F))
+    }
+}
+
+@Composable
+private fun ShrinkProbeCard(shrinkProbe: ShrinkProbe) {
+    val context = LocalContext.current
+    LabCard(background = Color(0xFFFFFBEB)) {
+        SectionTitle(title = "混淆与 shrink 观察卡")
+        Text(
+            text = "代码混淆主要改变类名和字段名；资源 shrink 和资源名混淆会影响资源是否还在包里，以及字符串式查找还能不能命中。",
+            style = MaterialTheme.typography.bodySmall,
+            color = Color(0xFF66736F)
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        Button(onClick = { ResourceLabStore.markShrinkExperiment(context) }) {
+            Text(text = "记录 shrink 实验")
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        InfoRow(label = "directName", value = shrinkProbe.directName)
+        InfoRow(label = "directId", value = shrinkProbe.directId)
+        InfoRow(label = "dynamicName", value = shrinkProbe.dynamicName)
+        InfoRow(label = "dynamicId", value = shrinkProbe.dynamicId)
+        InfoRow(label = "missingName", value = shrinkProbe.missingName)
+        InfoRow(label = "missingId", value = shrinkProbe.missingId)
+        LabelText(label = "风险", text = shrinkProbe.shrinkRisk, color = Color(0xFF8A6A25))
+        LabelText(label = "建议", text = shrinkProbe.keepAdvice, color = Color(0xFF4D6B58))
     }
 }
 
@@ -353,6 +443,36 @@ private fun DependencySourceCard(cards: List<ResourceSourceCard>) {
             }
             if (index != cards.lastIndex) Spacer(modifier = Modifier.height(8.dp))
         }
+    }
+}
+
+@Composable
+private fun DependencyConflictProbeCard(probe: DependencyConflictProbe) {
+    val context = LocalContext.current
+    LabCard(background = Color(0xFFF3EDE6)) {
+        SectionTitle(title = "依赖冲突实验区")
+        Text(
+            text = "依赖冲突不只是同名文件冲突，还可能来自覆盖优先级、传递依赖、旧 AAR 和同库多版本漂移。",
+            style = MaterialTheme.typography.bodySmall,
+            color = Color(0xFF66736F)
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        Button(onClick = { ResourceLabStore.markConflictExperiment(context) }) {
+            Text(text = "记录依赖冲突实验")
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        probe.cards.forEachIndexed { index, card ->
+            NumberedBlock(index = index + 1) {
+                Text(text = card.scenario, fontWeight = FontWeight.Bold)
+                LabelText(label = "触发条件", text = card.trigger, color = Color(0xFF8A6A25))
+                LabelText(label = "第一证据", text = card.firstEvidence, color = Color(0xFF315F72))
+                LabelText(label = "风险", text = card.risk, color = Color(0xFF8A6A25))
+                LabelText(label = "修复方向", text = card.fixDirection, color = Color(0xFF4D6B58))
+            }
+            if (index != probe.cards.lastIndex) Spacer(modifier = Modifier.height(10.dp))
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = probe.conclusion, style = MaterialTheme.typography.bodySmall, color = Color(0xFF315F72))
     }
 }
 

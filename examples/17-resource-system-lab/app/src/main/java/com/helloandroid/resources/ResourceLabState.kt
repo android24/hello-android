@@ -3,12 +3,16 @@ package com.helloandroid.resources
 data class ResourceLabState(
     val identity: ResourceIdentity = ResourceIdentity(),
     val configuration: ConfigurationSnapshot = ConfigurationSnapshot(),
+    val localeProbe: LocaleProbe = LocaleProbe(),
+    val densityProbe: DensityProbe = DensityProbe(),
     val themeCards: List<ThemeAttrCard> = emptyList(),
     val replacement: DynamicReplacementState = DynamicReplacementState(),
     val skinningStrategies: List<SkinningStrategyCard> = defaultSkinningStrategyCards,
     val skinningWorkbench: SkinningWorkbenchState = SkinningWorkbenchState(),
     val dynamicLookup: DynamicLookup = DynamicLookup(),
+    val shrinkProbe: ShrinkProbe = ShrinkProbe(),
     val sourceCards: List<ResourceSourceCard> = emptyList(),
+    val conflictProbe: DependencyConflictProbe = DependencyConflictProbe(),
     val fileCards: List<ResourceFileCard> = emptyList(),
     val diagnosticCards: List<ResourceDiagnosticCard> = defaultResourceDiagnosticCards,
     val experiment: ResourceExperiment = ResourceExperiment(),
@@ -36,6 +40,26 @@ data class ConfigurationSnapshot(
     val uiMode: String = "-",
     val widthDp: String = "-",
     val heightDp: String = "-"
+)
+
+data class LocaleProbe(
+    val resourceName: String = "-",
+    val currentLocale: String = "-",
+    val currentValue: String = "-",
+    val defaultValue: String = "-",
+    val zhValue: String = "-",
+    val enValue: String = "-",
+    val conclusion: String = "等待多语言资源实验。"
+)
+
+data class DensityProbe(
+    val drawableName: String = "-",
+    val drawableId: String = "-",
+    val densityDpi: String = "-",
+    val densityBucket: String = "-",
+    val intrinsicSize: String = "-",
+    val resourceType: String = "-",
+    val conclusion: String = "等待图片密度实验。"
 )
 
 data class ThemeAttrCard(
@@ -103,12 +127,36 @@ data class DynamicLookup(
     val conclusion: String = "等待对比 R 直接引用和 getIdentifier。"
 )
 
+data class ShrinkProbe(
+    val directName: String = "-",
+    val directId: String = "-",
+    val dynamicName: String = "-",
+    val dynamicId: String = "-",
+    val missingName: String = "-",
+    val missingId: String = "-",
+    val shrinkRisk: String = "等待混淆与 shrink 实验。",
+    val keepAdvice: String = "-"
+)
+
 data class ResourceSourceCard(
     val owner: String,
     val resourceName: String,
     val idHex: String,
     val value: String,
     val sourceMeaning: String
+)
+
+data class DependencyConflictProbe(
+    val cards: List<DependencyConflictCard> = emptyList(),
+    val conclusion: String = "等待依赖冲突实验。"
+)
+
+data class DependencyConflictCard(
+    val scenario: String,
+    val trigger: String,
+    val firstEvidence: String,
+    val risk: String,
+    val fixDirection: String
 )
 
 data class ResourceFileCard(
@@ -137,8 +185,12 @@ data class ResourceLabScore(
     val configurationObserved: Boolean = false,
     val themeObserved: Boolean = false,
     val replacementObserved: Boolean = false,
+    val localeObserved: Boolean = false,
+    val densityObserved: Boolean = false,
     val dynamicObserved: Boolean = false,
+    val shrinkObserved: Boolean = false,
     val dependencyObserved: Boolean = false,
+    val conflictObserved: Boolean = false,
     val fileObserved: Boolean = false,
     val diagnosisObserved: Boolean = false,
     val appendixObserved: Boolean = false,

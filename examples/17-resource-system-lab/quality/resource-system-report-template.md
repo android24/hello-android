@@ -27,12 +27,15 @@ Resources 返回值：
 
 ```text
 Configuration：
+字符串多语言实验：
+图片密度实验：
 Theme attr：
 动态资源槽位：
 动态换肤方案：
 Context 类型：
 R 直接引用结果：
 getIdentifier 结果：
+missing dynamic resource 结果：
 ```
 
 ## 依赖与合并证据
@@ -45,6 +48,15 @@ getIdentifier 结果：
 是否是 transitive dependency：
 是否存在覆盖：
 是否存在同库多版本：
+```
+
+## 资源实验区证据
+
+```text
+字符串多语言实验：
+图片密度实验：
+混淆与 shrink 观察：
+依赖冲突实验：
 ```
 
 ## 动态换肤判断

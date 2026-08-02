@@ -65,15 +65,15 @@ examples/17-resource-system-lab/
 - `资源身份证`：展示 packageName、resource id、resource name、resource type，并拆解 `0xPPTTEEEE`。
 - `AAPT2 匹配卡`：展示源码资源名、R 常量、资源 ID、resources.arsc 条目的对应关系。
 - `Configuration 面板`：展示 locale、densityDpi、uiMode、orientation、fontScale。
-- `字符串多语言实验区`：对比默认、中文、英文资源。
-- `图片密度实验区`：展示当前 density 与图片资源选择推断。
+- `字符串多语言实验区`：对比当前 Locale、默认资源、中文资源和英文资源。
+- `图片密度实验区`：展示 drawable 资源 ID、densityDpi、密度桶和 intrinsic size。
 - `Theme attr 实验区`：读取 colorPrimary、colorSurface、textColor 等属性。
 - `动态资源替换实验区`：通过稳定业务槽位切换不同资源 ID，观察 ResourceProvider 思路。
 - `动态换肤附录实验区`：用五张可点击实验卡对比 Theme、ResourceProvider、Configuration、外部皮肤包和 RRO 的适用边界。
 - `assets / raw 实验区`：对比路径读取和资源 ID 读取。
-- `混淆与 shrink 观察卡`：对比 `R.xxx` 直接引用和 `getIdentifier` 字符串查找的风险。
+- `混淆与 shrink 观察卡`：对比 `R.xxx` 直接引用、`getIdentifier` 命中资源和缺失资源名返回 0 的风险。
 - `依赖覆盖观察卡`：记录某个资源最终来自 main、debug、flavor 还是依赖库。
-- `依赖冲突实验区`：模拟 app、feature、library、transitive AAR 的同名资源、覆盖和版本漂移。
+- `依赖冲突实验区`：模拟 app 覆盖 library、feature 传递依赖、旧 AAR 资源和同库多版本漂移。
 - `资源问题诊断卡`：整理 NotFound、多语言失败、主题错乱、图片模糊和包体积问题。
 - `资源事件轨迹`：记录每次资源读取和配置观察结果。
 
@@ -90,12 +90,15 @@ examples/17-resource-system-lab/
           -> 拆解 package / type / entry
               -> 读取 resourceName / resourceType
                   -> 观察 getString 返回值
+                      -> 点击混淆与 shrink 观察卡
 
 中级侦探：观察配置选择
   -> 打印 Configuration
-      -> 切换语言或夜间模式
-          -> 观察字符串和颜色变化
-              -> 对比 Resources 返回值
+      -> 点击字符串多语言实验区
+          -> 点击图片密度实验区
+              -> 切换语言或夜间模式
+                  -> 观察字符串和颜色变化
+                      -> 对比 Resources 返回值
 
 高级侦探：解释主题和资源问题
   -> 读取 Theme attr
@@ -105,6 +108,7 @@ examples/17-resource-system-lab/
                   -> 分析图片密度
                       -> 阅读诊断卡
                           -> 写一份资源系统诊断报告
+                              -> 点击依赖冲突实验区补充依赖证据
 ```
 
 读者不是“背资源目录规则”，而是在复原系统如何为当前设备选择资源。
@@ -309,6 +313,7 @@ frameworks/base/tools/aapt2/
 - 从 Theme 中读取一个 attr。
 - 对比 `assets` 和 `res/raw` 的读取方式。
 - 对比一次 `R.string.xxx` 和 `getIdentifier` 查找。
+- 点击字符串多语言、图片密度、混淆 shrink 和依赖冲突四个实验区。
 
 ### 进阶任务
 
@@ -317,6 +322,7 @@ frameworks/base/tools/aapt2/
 - 使用 APK Analyzer 查看资源体积。
 - 找出一个资源在 merged resources 中的最终来源。
 - 写一份资源问题诊断报告。
+- 为一个依赖资源冲突写出第一证据和修复方向。
 
 ## 本节小结
 

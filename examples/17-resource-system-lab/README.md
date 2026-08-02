@@ -26,13 +26,17 @@
 - `资源观察分数` 用 100 分制提示当前实验进度。
 - `预期 vs 实际` 展示每次资源实验的判断和证据。
 - `资源身份证与 AAPT2 匹配卡` 展示 resourceId、package/type/entry、resourceName、typeName、entryName 和返回值。
+- `字符串多语言实验区` 对比当前 Locale、默认资源、中文资源和英文资源的返回值。
+- `图片密度实验区` 展示 drawable 资源 ID、densityDpi、密度桶和 intrinsic size。
 - `R 直接引用 vs getIdentifier` 对比直接资源 ID 和字符串式动态查找。
+- `混淆与 shrink 观察卡` 对比 R 直接引用、动态查找和缺失资源名的结果。
 - `Configuration 面板` 展示 locale、orientation、densityDpi、fontScale、uiMode、screenWidthDp、screenHeightDp。
 - `Theme attr 实验区` 对比 Activity Context、Application Context、ContextThemeWrapper 的 attr 解析结果。
 - `动态资源替换实验区` 通过稳定业务槽位在两套资源 ID 之间切换。
 - `动态换肤附录实验区` 提供五张可点击实验卡：Theme attr、ResourceProvider、ConfigurationContext、外部皮肤包协议模拟、RRO 系统覆盖模拟。
 - `经典框架结构速览` 对照 Android-skin-support、MagicaSakura、MultipleTheme 的核心结构。
 - `依赖覆盖观察卡` 展示 app/debug、app/main、core-design、feature-catalog、legacy-widget 贡献的资源。
+- `依赖冲突实验区` 整理 app 覆盖 library、传递依赖、旧 AAR 和同库多版本漂移的排查证据。
 - `assets / raw 实验区` 对比 `Resources.openRawResource` 和 `assets.open`。
 - `资源问题诊断卡` 把 R 与资源表不匹配、release 动态资源找不到、依赖覆盖、主题异常、多语言异常变成排查清单。
 - `资源事件轨迹` 记录资源读取、依赖实验和诊断动作。
@@ -65,6 +69,7 @@ res 源文件
       -> 记录 resourceId
           -> 拆解 package / type / entry
               -> 对照 resourceName / typeName / entryName
+                  -> 点击混淆与 shrink 观察卡
 ```
 
 通关判断：
@@ -79,13 +84,15 @@ res 源文件
 
 ```text
 查看 Configuration
-  -> 切换系统语言
-      -> 切换深色模式
-          -> 观察字符串、颜色和 Theme attr
-              -> 切换动态资源槽位
-                  -> 打开动态换肤附录实验区
-                      -> 逐张点击五种方案实验卡
-                          -> 对比事件轨迹
+  -> 点击字符串多语言实验区
+      -> 点击图片密度实验区
+          -> 切换系统语言
+              -> 切换深色模式
+                  -> 观察字符串、颜色和 Theme attr
+                      -> 切换动态资源槽位
+                          -> 打开动态换肤附录实验区
+                              -> 逐张点击五种方案实验卡
+                                  -> 对比事件轨迹
 ```
 
 通关判断：
@@ -101,9 +108,10 @@ res 源文件
 ```text
 对比 R 直接引用和 getIdentifier
   -> 查看依赖覆盖观察卡
-      -> 记录 core-design / feature-catalog / legacy-widget 资源
-          -> 阅读诊断卡
-              -> 写一份资源系统诊断报告
+      -> 点击依赖冲突实验区
+          -> 记录 core-design / feature-catalog / legacy-widget 资源
+              -> 阅读诊断卡
+                  -> 写一份资源系统诊断报告
 ```
 
 通关判断：
@@ -118,7 +126,7 @@ res 源文件
 2. 等待 Gradle Sync 完成。
 3. 运行 `app` 模块。
 4. 打开 Logcat，搜索 `ResourceSystemLab`。
-5. 点击刷新、资源槽位切换、动态换肤方案卡、依赖资源实验、诊断卡，观察资源事件轨迹。
+5. 点击刷新、多语言实验、密度实验、shrink 实验、资源槽位切换、动态换肤方案卡、依赖资源实验、依赖冲突实验、诊断卡，观察资源事件轨迹。
 
 如果工程里配置了 Gradle Wrapper，也可以参考：
 
@@ -140,6 +148,7 @@ res 源文件
       ResourceLabScreen.kt
     src/main/res/
       values/
+      values-en/
       values-zh/
       values-night/
       raw/
@@ -162,9 +171,10 @@ res 源文件
 - `core-design`：模拟公共设计资源模块，并配置 `resourcePrefix = "design_"`。
 - `feature-catalog`：模拟业务 feature 模块，依赖 `core-design`。
 - `legacy-widget`：模拟旧三方 AAR 资源来源。
-- `ResourceLabStore.kt`：集中读取资源 ID、反查资源名、拆解 ID、读取 Theme attr、对比 `getIdentifier`、读取依赖资源和 assets/raw。
+- `ResourceLabStore.kt`：集中读取资源 ID、反查资源名、拆解 ID、多语言探针、图片密度探针、Theme attr、`getIdentifier` / shrink 风险、依赖资源和 assets/raw。
 - `DynamicReplacementCard`：展示业务槽位如何切换到不同资源 ID，这是 ResourceProvider 思路的最小实现。
 - `SkinningAppendixCard`：动态换肤工作台，展示五种方案的实现方式、操作玩法、替换目标、替换前后证据、风险和经典框架结构。
+- `LocaleProbeCard` / `DensityProbeCard` / `ShrinkProbeCard` / `DependencyConflictProbeCard`：把 17.8 中规划的四个实验区显性化。
 - `ResourceLabScreen.kt`：展示资源实验页面和事件轨迹。
 
 ## 动态换肤工作台怎么玩
@@ -228,7 +238,11 @@ frameworks/base/tools/aapt2/
 - 拆解 package / type / entry。
 - 对比 `resources.getResourceName`、`getResourceTypeName`、`getResourceEntryName`。
 - 对比 `R` 直接引用和 `getIdentifier`。
+- 点击字符串多语言实验区，记录 current / default / zh / en。
+- 点击图片密度实验区，记录 densityDpi、bucket 和 intrinsic size。
+- 点击混淆与 shrink 观察卡，解释 missingId 为什么是 0。
 - 切换动态资源槽位，记录 title、panel、signal 对应的资源 ID 和返回值。
+- 点击依赖冲突实验区，写出至少两类冲突原因。
 - 读取 `assets` 和 `res/raw`。
 - 逐张点击动态换肤工作台的五种方案实验卡。
 - 使用 `quality/resource-system-report-template.md` 写一份短报告。

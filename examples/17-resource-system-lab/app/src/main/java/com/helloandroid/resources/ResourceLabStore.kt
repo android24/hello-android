@@ -34,6 +34,8 @@ object ResourceLabStore {
         val state = ResourceLabState(
             identity = targetId.toResourceIdentity(context),
             configuration = context.toConfigurationSnapshot(),
+            localeProbe = context.collectLocaleProbe(),
+            densityProbe = context.collectDensityProbe(),
             themeCards = context.collectThemeCards(),
             replacement = context.collectReplacementState(replacementMode),
             skinningWorkbench = context.collectSkinningWorkbench(activeSkinningStrategy, replacementMode),
@@ -49,7 +51,9 @@ object ResourceLabStore {
                     "动态查找没有命中同一个 ID，请检查资源名、类型、包名、shrink 和混淆规则。"
                 }
             ),
+            shrinkProbe = context.collectShrinkProbe(dynamicName, dynamicId),
             sourceCards = context.collectSourceCards(),
+            conflictProbe = context.collectConflictProbe(),
             fileCards = context.collectFileCards(),
             experiment = ResourceExperiment(
                 operation = reason,
@@ -62,8 +66,12 @@ object ResourceLabStore {
                 configurationObserved = true,
                 themeObserved = true,
                 replacementObserved = _state.value.score.replacementObserved,
+                localeObserved = _state.value.score.localeObserved,
+                densityObserved = _state.value.score.densityObserved,
                 dynamicObserved = true,
+                shrinkObserved = _state.value.score.shrinkObserved,
                 dependencyObserved = true,
+                conflictObserved = _state.value.score.conflictObserved,
                 fileObserved = true,
                 appendixObserved = _state.value.score.appendixObserved,
                 diagnosisObserved = _state.value.score.diagnosisObserved,
@@ -114,6 +122,59 @@ object ResourceLabStore {
         record("Skinning", activeSkinningStrategy.key, "PLAY", activeSkinningStrategy.summary)
     }
 
+    fun markLocaleExperiment(context: Context) {
+        val probe = context.collectLocaleProbe()
+        _state.update {
+            it.copy(
+                localeProbe = probe,
+                score = it.score.copy(localeObserved = true),
+                experiment = ResourceExperiment(
+                    operation = "字符串多语言实验",
+                    expected = "同一个 string 资源 ID 会根据 Locale 选择不同 values 目录。",
+                    actual = "current=${probe.currentValue}, zh=${probe.zhValue}, en=${probe.enValue}",
+                    conclusion = "多语言问题要先看 Configuration，再看 values-xx 是否存在，最后看是否缓存了旧字符串。"
+                )
+            )
+        }
+        record("Locale", "configurationContext", "READ", probe.conclusion)
+    }
+
+    fun markDensityExperiment(context: Context) {
+        val probe = context.collectDensityProbe()
+        _state.update {
+            it.copy(
+                densityProbe = probe,
+                score = it.score.copy(densityObserved = true),
+                experiment = ResourceExperiment(
+                    operation = "图片密度实验",
+                    expected = "Resources 会根据 densityDpi 和 drawable 限定符选择最合适资源。",
+                    actual = "${probe.drawableName}, density=${probe.densityDpi}, size=${probe.intrinsicSize}",
+                    conclusion = "图片模糊通常不是 draw 代码坏了，而是资源密度、缩放策略或资源格式不合适。"
+                )
+            )
+        }
+        record("Density", "drawable", "READ", probe.conclusion)
+    }
+
+    fun markShrinkExperiment(context: Context) {
+        val dynamicName = context.getString(R.string.resource_lab_dynamic_name)
+        val dynamicId = context.resources.getIdentifier(dynamicName, "string", context.packageName)
+        val probe = context.collectShrinkProbe(dynamicName, dynamicId)
+        _state.update {
+            it.copy(
+                shrinkProbe = probe,
+                score = it.score.copy(shrinkObserved = true),
+                experiment = ResourceExperiment(
+                    operation = "混淆与 shrink 观察实验",
+                    expected = "R 直接引用依赖资源 ID；字符串式查找依赖资源名、包名、类型和 keep 规则。",
+                    actual = "direct=${probe.directId}, dynamic=${probe.dynamicId}, missing=${probe.missingId}",
+                    conclusion = "代码混淆通常不破坏 R ID 查表，但 shrink 和资源名混淆会让字符串式查找更危险。"
+                )
+            )
+        }
+        record("Shrink", "getIdentifier", "TRACE", probe.shrinkRisk)
+    }
+
     fun markDependencyExperiment(context: Context) {
         _state.update {
             it.copy(
@@ -127,6 +188,23 @@ object ResourceLabStore {
             )
         }
         record("Dependency", "mergedResources", "TRACE", context.getString(R.string.resource_origin_marker))
+    }
+
+    fun markConflictExperiment(context: Context) {
+        val probe = context.collectConflictProbe()
+        _state.update {
+            it.copy(
+                conflictProbe = probe,
+                score = it.score.copy(conflictObserved = true),
+                experiment = ResourceExperiment(
+                    operation = "依赖冲突实验",
+                    expected = "资源冲突来自身份撞车、覆盖优先级、传递依赖和多版本漂移。",
+                    actual = "已整理 ${probe.cards.size} 类依赖冲突证据。",
+                    conclusion = probe.conclusion
+                )
+            )
+        }
+        record("Conflict", "dependencyGraph", "TRACE", probe.conclusion)
     }
 
     fun markDiagnosisRead(title: String) {
@@ -223,6 +301,40 @@ private fun Context.toConfigurationSnapshot(): ConfigurationSnapshot {
         },
         widthDp = config.screenWidthDp.toString(),
         heightDp = config.screenHeightDp.toString()
+    )
+}
+
+private fun Context.collectLocaleProbe(): LocaleProbe {
+    val defaultContext = createConfigurationContext(Configuration(resources.configuration).apply {
+        setLocale(Locale.ROOT)
+    })
+    val zhContext = createConfigurationContext(Configuration(resources.configuration).apply {
+        setLocale(Locale.SIMPLIFIED_CHINESE)
+    })
+    val enContext = createConfigurationContext(Configuration(resources.configuration).apply {
+        setLocale(Locale.ENGLISH)
+    })
+    return LocaleProbe(
+        resourceName = resources.getResourceName(R.string.resource_lab_locale_probe),
+        currentLocale = resources.configuration.locales[0].toLanguageTag(),
+        currentValue = getString(R.string.resource_lab_locale_probe),
+        defaultValue = defaultContext.getString(R.string.resource_lab_locale_probe),
+        zhValue = zhContext.getString(R.string.resource_lab_locale_probe),
+        enValue = enContext.getString(R.string.resource_lab_locale_probe),
+        conclusion = "同一个 R.string.resource_lab_locale_probe 在 zh / en ConfigurationContext 中返回不同文案。"
+    )
+}
+
+private fun Context.collectDensityProbe(): DensityProbe {
+    val drawable = resources.getDrawable(R.drawable.resource_density_probe, theme)
+    return DensityProbe(
+        drawableName = resources.getResourceName(R.drawable.resource_density_probe),
+        drawableId = R.drawable.resource_density_probe.toHex(),
+        densityDpi = resources.displayMetrics.densityDpi.toString(),
+        densityBucket = resources.displayMetrics.densityDpi.toDensityBucket(),
+        intrinsicSize = "${drawable.intrinsicWidth} x ${drawable.intrinsicHeight}",
+        resourceType = resources.getResourceTypeName(R.drawable.resource_density_probe),
+        conclusion = "当前 demo 使用 vector 资源，密度变化主要影响 dp 到 px 的换算；bitmap 资源还会涉及 drawable-mdpi/hdpi/xhdpi 的候选选择。"
     )
 }
 
@@ -361,6 +473,61 @@ private fun Context.collectSkinningWorkbench(
     )
 }
 
+private fun Context.collectShrinkProbe(dynamicName: String, dynamicId: Int): ShrinkProbe {
+    val missingName = "resource_lab_removed_by_shrink"
+    val missingId = resources.getIdentifier(missingName, "string", packageName)
+    return ShrinkProbe(
+        directName = resources.getResourceName(R.string.resource_lab_greeting),
+        directId = R.string.resource_lab_greeting.toHex(),
+        dynamicName = dynamicName,
+        dynamicId = dynamicId.toHex(),
+        missingName = missingName,
+        missingId = missingId.toHex(),
+        shrinkRisk = if (dynamicId != 0 && missingId == 0) {
+            "已命中的动态名仍可查到；不存在或被 shrink / 资源名混淆的名字会返回 0。"
+        } else {
+            "动态资源查找异常，请检查资源名、类型、包名、资源 shrink 和资源名混淆。"
+        },
+        keepAdvice = "优先 R 直接引用；必须动态查找时维护映射表，并为动态资源配置 keep 规则。"
+    )
+}
+
+private fun Context.collectConflictProbe(): DependencyConflictProbe {
+    return DependencyConflictProbe(
+        cards = listOf(
+            DependencyConflictCard(
+                scenario = "app 覆盖 library 同名资源",
+                trigger = "app 和 core-design 都声明 design_shared_action_label。",
+                firstEvidence = "app 里 R.string.design_shared_action_label 的值是：${getString(R.string.design_shared_action_label)}",
+                risk = "升级设计库后，业务以为使用了库默认文案，实际被 app 侧覆盖。",
+                fixDirection = "明确 app 覆盖边界，公共模块使用 resourcePrefix，排查 merged resources。"
+            ),
+            DependencyConflictCard(
+                scenario = "feature 依赖 core-design",
+                trigger = "feature-catalog 通过代码导出 core-design 的颜色资源 ID。",
+                firstEvidence = "feature dependency color=${getColorCompat(CatalogResources.dependencyColor)}",
+                risk = "业务模块看到的是 feature API，最终资源却来自更底层依赖。",
+                fixDirection = "排查依赖图和资源来源时同时看 feature 与 transitive dependency。"
+            ),
+            DependencyConflictCard(
+                scenario = "旧 AAR 资源进入最终包",
+                trigger = "legacy-widget 模拟历史三方库贡献资源。",
+                firstEvidence = "legacy label=${getString(LegacyWidgetResources.sharedActionLabel)}",
+                risk = "旧依赖资源命名过于通用，容易和 app 或新库撞名。",
+                fixDirection = "隔离旧依赖，升级或替换库，并用 resourcePrefix 降低撞名概率。"
+            ),
+            DependencyConflictCard(
+                scenario = "同库多版本漂移",
+                trigger = "不同 feature 间接依赖同一设计库的不同版本。",
+                firstEvidence = "本 demo 用 core-design / feature-catalog / legacy-widget 标出这种依赖图排查入口。",
+                risk = "最终被 Gradle 选中的版本不符合某个业务模块的预期。",
+                fixDirection = "使用 dependencyInsight、版本约束和锁定策略，再核对最终 merged resources。"
+            )
+        ),
+        conclusion = "依赖冲突不是只搜当前模块源码，而是要把 app、variant、feature、library、transitive dependency 和最终资源表放在一起看。"
+    )
+}
+
 private fun Context.collectSourceCards(): List<ResourceSourceCard> {
     return listOf(
         sourceCard("app variant", R.string.resource_origin_marker, "main/debug 可以合法覆盖同名资源。"),
@@ -425,6 +592,17 @@ private fun Int.toHex(): String = "0x%08X".format(this)
 private fun Int.toHexByte(): String = "0x%02X".format(this)
 
 private fun Int.toHexEntry(): String = "0x%04X".format(this)
+
+private fun Int.toDensityBucket(): String {
+    return when {
+        this <= 120 -> "ldpi"
+        this <= 160 -> "mdpi"
+        this <= 240 -> "hdpi"
+        this <= 320 -> "xhdpi"
+        this <= 480 -> "xxhdpi"
+        else -> "xxxhdpi"
+    }
+}
 
 private enum class ReplacementMode(
     val label: String,
