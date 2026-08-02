@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.HelloPackageManagerLab" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">@color/package_lab_background</item>
+        <item name="android:navigationBarColor">@color/package_lab_background</item>
+    </style>
+</resources>

@@ -31,6 +31,7 @@ examples/
   13-window-display-lab/
   14-input-event-dispatch-lab/
   15-rendering-frame-lab/
+  16-package-manager-lab/
 ```
 
 ## 设计原则

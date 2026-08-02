@@ -34,13 +34,13 @@
 
 本节是第 16 章综合实践。
 
-后续可以配套工程：
+当前配套工程是：
 
 ```text
 examples/16-package-manager-lab/
 ```
 
-这个工程可以围绕 Manifest 信息、PackageManager 查询、Intent 解析、queries、权限状态和组件 enabled 状态做成一个可观察实验室。
+这个工程围绕 Manifest 信息、PackageManager 查询、Intent 解析、queries、权限状态和组件 enabled 状态做成一个可观察实验室。
 
 ## 学习目标
 
@@ -54,7 +54,7 @@ examples/16-package-manager-lab/
 
 ## 第一部分：实践工程规划
 
-第 16 章 demo 建议拆成这些可观察区域：
+第 16 章 demo 拆成这些可观察区域：
 
 - `包管理观察分数`：提示实验完成度。
 - `应用身份证`：展示 packageName、versionCode、targetSdk、sourceDir。

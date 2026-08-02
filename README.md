@@ -204,6 +204,7 @@
   - [16.6 应用升级、卸载、数据保留与多用户状态](docs/chapter16/chapter16_6.md)
   - [16.7 包管理体验问题：安装失败、组件找不到、权限异常与包不可见](docs/chapter16/chapter16_7.md)
   - [16.8 综合实践：包管理、安装与权限观察实验](docs/chapter16/chapter16_8.md)
+  - [配套示例工程](examples/16-package-manager-lab/)
 
 ### 项目说明
 
@@ -376,6 +377,7 @@
 - [第13章 WMS、Window、DecorView 与窗口显示机制示例工程](examples/13-window-display-lab/)
 - [第14章 Input 事件分发、触摸系统与交互响应机制示例工程](examples/14-input-event-dispatch-lab/)
 - [第15章 View 绘制、RenderThread、SurfaceFlinger 与渲染链路示例工程](examples/15-rendering-frame-lab/)
+- [第16章 PMS、应用安装、包管理与权限机制示例工程](examples/16-package-manager-lab/)
 
 ## 贡献者名单
 
