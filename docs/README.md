@@ -35,6 +35,7 @@
 - 第 13 章：WMS、Window、DecorView 与窗口显示机制。
 - 第 14 章：Input 事件分发、触摸系统与交互响应机制。
 - 第 15 章：View 绘制、RenderThread、SurfaceFlinger 与渲染链路。
+- 第 16 章：PMS、应用安装、包管理与权限机制。
 
 这几章会逐步串起一条完整路径：
 
@@ -50,6 +51,7 @@
                               -> ViewRootImpl / ViewGroup / View 处理交互
                                   -> Choreographer 调度 UI 刷新
                                       -> RenderThread / SurfaceFlinger 完成渲染与合成
+                                          -> PMS 管理安装包、组件、权限和签名
 ```
 
 ## 配套工程

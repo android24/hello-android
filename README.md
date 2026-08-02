@@ -194,6 +194,16 @@
   - [15.7 渲染体验问题：白屏、闪烁、过度绘制、黑屏与掉帧](docs/chapter15/chapter15_7.md)
   - [15.8 综合实践：一帧渲染链路观察实验](docs/chapter15/chapter15_8.md)
   - [配套示例工程](examples/15-rendering-frame-lab/)
+- 第16章 PMS、应用安装、包管理与权限机制
+  - 通关目标：理解系统如何识别、安装、解析和管理 App，掌握 Manifest、组件注册、Intent 解析、签名、权限、包可见性与安装失败排查思路
+  - [16.1 为什么要学习 PMS、应用安装与包管理](docs/chapter16/chapter16_1.md)
+  - [16.2 APK 安装流程：从文件到已安装应用](docs/chapter16/chapter16_2.md)
+  - [16.3 AndroidManifest 解析与组件注册](docs/chapter16/chapter16_3.md)
+  - [16.4 Intent 解析、组件匹配与包可见性](docs/chapter16/chapter16_4.md)
+  - [16.5 签名、权限与安装校验](docs/chapter16/chapter16_5.md)
+  - [16.6 应用升级、卸载、数据保留与多用户状态](docs/chapter16/chapter16_6.md)
+  - [16.7 包管理体验问题：安装失败、组件找不到、权限异常与包不可见](docs/chapter16/chapter16_7.md)
+  - [16.8 综合实践：包管理、安装与权限观察实验](docs/chapter16/chapter16_8.md)
 
 ### 项目说明
 
@@ -261,7 +271,7 @@
 - SurfaceFlinger、渲染链路与应用显示原理
 - 阶段项目：从一次点击追踪到 Framework 调用链
 
-当前 Framework 阶段已经展开到第 15 章。它不是突然跳进源码深水区，而是沿着一条非常具体的应用行为往下走：先从一次点击和一次系统服务调用建立入口，再追踪 Activity 如何被启动、窗口如何被添加、内容如何走向屏幕，然后观察触摸事件如何被系统派发并在 View 树中找到处理者，最后继续追问 UI 状态变化如何变成屏幕上的下一帧。
+当前 Framework 阶段已经展开到第 16 章。它不是突然跳进源码深水区，而是沿着一条非常具体的应用行为往下走：先从一次点击和一次系统服务调用建立入口，再追踪 Activity 如何被启动、窗口如何被添加、内容如何走向屏幕，然后观察触摸事件如何被系统派发并在 View 树中找到处理者，继续追问 UI 状态变化如何变成屏幕上的下一帧，最后回到系统识别 App 的入口，理解安装、包解析、组件、权限和签名。
 
 - 第 10 章负责打开入口：建立 Android 系统分层视角，认识 ActivityThread、Context、Handler、Looper、Binder 和 AOSP 源码阅读方法。它像一张进城地图，先告诉你 Framework 这座城市大概有哪些路。
 - 第 11 章负责建立通信主线：从 Binder、AIDL、ServiceManager、SystemServer 到系统服务调用，让你理解 App 为什么不能直接调用系统内部能力，而要通过 Binder 和 system_server 协作。
@@ -269,6 +279,7 @@
 - 第 13 章负责追踪窗口显示：从 `setContentView` / Compose `setContent` 进入 Window、PhoneWindow、DecorView、ViewRootImpl、WindowManager 和 WMS，继续理解 Dialog、PopupWindow、输入法、窗口层级、Token、BadToken、白屏和一帧刷新。学完这一章，你应该能解释“Activity 已经启动之后，页面为什么真的能显示到屏幕上”。
 - 第 14 章负责拆解输入事件：从触摸屏、InputReader、InputDispatcher 到 ViewRootImpl、Activity、ViewGroup、View 和 Compose pointer input，理解点击、滑动、拦截、CANCEL、滑动冲突与 Input ANR。学完这一章，你应该能解释“用户点到屏幕后，事件为什么由这个控件处理，而不是另一个控件处理”。
 - 第 15 章负责深入渲染链路：从 `invalidate()`、`requestLayout()`、Choreographer、measure / layout / draw 到 HardwareRenderer、RenderThread、Surface、BufferQueue 和 SurfaceFlinger，理解掉帧、Jank、白屏、闪烁、过度绘制和黑屏。学完这一章，你应该能解释“业务状态变化之后，下一帧为什么能真的出现在屏幕上”。
+- 第 16 章负责补齐包管理主线：从 APK 安装、Manifest 解析、组件注册、Intent 匹配到签名、权限、包可见性和多用户状态，理解安装失败、组件找不到、权限异常和查询不到 App。学完这一章，你应该能解释“系统为什么知道这个 App、组件和权限存在”。
 
 这几章串起来后，会形成一条完整的 Framework 入门链路：
 
@@ -284,6 +295,7 @@
                               -> ViewRootImpl / ViewGroup / View 处理交互
                                   -> Choreographer 调度 UI 刷新
                                       -> RenderThread / SurfaceFlinger 完成渲染与合成
+                                          -> PMS 管理安装包、组件、权限和签名
 ```
 
 ### 学习顺序

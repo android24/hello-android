@@ -114,3 +114,12 @@
     - [15.6 VSYNC、帧率、掉帧与 Jank](chapter15/chapter15_6)
     - [15.7 渲染体验问题：白屏、闪烁、过度绘制、黑屏与掉帧](chapter15/chapter15_7)
     - [15.8 综合实践：一帧渲染链路观察实验](chapter15/chapter15_8)
+- 第16章 PMS、应用安装、包管理与权限机制
+    - [16.1 为什么要学习 PMS、应用安装与包管理](chapter16/chapter16_1)
+    - [16.2 APK 安装流程：从文件到已安装应用](chapter16/chapter16_2)
+    - [16.3 AndroidManifest 解析与组件注册](chapter16/chapter16_3)
+    - [16.4 Intent 解析、组件匹配与包可见性](chapter16/chapter16_4)
+    - [16.5 签名、权限与安装校验](chapter16/chapter16_5)
+    - [16.6 应用升级、卸载、数据保留与多用户状态](chapter16/chapter16_6)
+    - [16.7 包管理体验问题：安装失败、组件找不到、权限异常与包不可见](chapter16/chapter16_7)
+    - [16.8 综合实践：包管理、安装与权限观察实验](chapter16/chapter16_8)
