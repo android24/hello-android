@@ -123,3 +123,12 @@
     - [16.6 应用升级、卸载、数据保留与多用户状态](chapter16/chapter16_6)
     - [16.7 包管理体验问题：安装失败、组件找不到、权限异常与包不可见](chapter16/chapter16_7)
     - [16.8 综合实践：包管理、安装与权限观察实验](chapter16/chapter16_8)
+- 第17章 资源系统、AssetManager、Resources 与主题机制
+    - [17.1 为什么要学习资源系统、AssetManager 与 Resources](chapter17/chapter17_1)
+    - [17.2 从 res 到 R 文件：AAPT2、资源 ID 与 resources.arsc](chapter17/chapter17_2)
+    - [17.3 AssetManager 与 Resources：运行时如何加载资源](chapter17/chapter17_3)
+    - [17.4 Configuration 与资源限定符：多语言、密度、横竖屏和夜间模式](chapter17/chapter17_4)
+    - [17.5 Theme、Style 与 Attribute：界面气质如何被资源系统塑形](chapter17/chapter17_5)
+    - [17.6 资源合并、依赖模块与资源冲突](chapter17/chapter17_6)
+    - [17.7 资源体验问题：NotFound、主题错乱、多语言失败、图片模糊与包体积](chapter17/chapter17_7)
+    - [17.8 综合实践：资源系统、主题与配置观察实验](chapter17/chapter17_8)

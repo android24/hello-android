@@ -205,6 +205,16 @@
   - [16.7 包管理体验问题：安装失败、组件找不到、权限异常与包不可见](docs/chapter16/chapter16_7.md)
   - [16.8 综合实践：包管理、安装与权限观察实验](docs/chapter16/chapter16_8.md)
   - [配套示例工程](examples/16-package-manager-lab/)
+- 第17章 资源系统、AssetManager、Resources 与主题机制
+  - 通关目标：理解 Android 资源从 res 编译到 R 文件、resources.arsc、AssetManager、Resources、Theme 与 Configuration 的运行链路，掌握多语言、夜间模式、密度适配、资源合并和资源问题排查思路
+  - [17.1 为什么要学习资源系统、AssetManager 与 Resources](docs/chapter17/chapter17_1.md)
+  - [17.2 从 res 到 R 文件：AAPT2、资源 ID 与 resources.arsc](docs/chapter17/chapter17_2.md)
+  - [17.3 AssetManager 与 Resources：运行时如何加载资源](docs/chapter17/chapter17_3.md)
+  - [17.4 Configuration 与资源限定符：多语言、密度、横竖屏和夜间模式](docs/chapter17/chapter17_4.md)
+  - [17.5 Theme、Style 与 Attribute：界面气质如何被资源系统塑形](docs/chapter17/chapter17_5.md)
+  - [17.6 资源合并、依赖模块与资源冲突](docs/chapter17/chapter17_6.md)
+  - [17.7 资源体验问题：NotFound、主题错乱、多语言失败、图片模糊与包体积](docs/chapter17/chapter17_7.md)
+  - [17.8 综合实践：资源系统、主题与配置观察实验](docs/chapter17/chapter17_8.md)
 
 ### 项目说明
 
@@ -272,7 +282,7 @@
 - SurfaceFlinger、渲染链路与应用显示原理
 - 阶段项目：从一次点击追踪到 Framework 调用链
 
-当前 Framework 阶段已经展开到第 16 章。它不是突然跳进源码深水区，而是沿着一条非常具体的应用行为往下走：先从一次点击和一次系统服务调用建立入口，再追踪 Activity 如何被启动、窗口如何被添加、内容如何走向屏幕，然后观察触摸事件如何被系统派发并在 View 树中找到处理者，继续追问 UI 状态变化如何变成屏幕上的下一帧，最后回到系统识别 App 的入口，理解安装、包解析、组件、权限和签名。
+当前 Framework 阶段已经展开到第 17 章。它不是突然跳进源码深水区，而是沿着一条非常具体的应用行为往下走：先从一次点击和一次系统服务调用建立入口，再追踪 Activity 如何被启动、窗口如何被添加、内容如何走向屏幕，然后观察触摸事件如何被系统派发并在 View 树中找到处理者，继续追问 UI 状态变化如何变成屏幕上的下一帧，再回到系统识别 App 的入口，理解安装、包解析、组件、权限和签名，最后进入资源系统，解释字符串、图片、主题和多语言资源为什么能被正确读取。
 
 - 第 10 章负责打开入口：建立 Android 系统分层视角，认识 ActivityThread、Context、Handler、Looper、Binder 和 AOSP 源码阅读方法。它像一张进城地图，先告诉你 Framework 这座城市大概有哪些路。
 - 第 11 章负责建立通信主线：从 Binder、AIDL、ServiceManager、SystemServer 到系统服务调用，让你理解 App 为什么不能直接调用系统内部能力，而要通过 Binder 和 system_server 协作。
@@ -281,6 +291,7 @@
 - 第 14 章负责拆解输入事件：从触摸屏、InputReader、InputDispatcher 到 ViewRootImpl、Activity、ViewGroup、View 和 Compose pointer input，理解点击、滑动、拦截、CANCEL、滑动冲突与 Input ANR。学完这一章，你应该能解释“用户点到屏幕后，事件为什么由这个控件处理，而不是另一个控件处理”。
 - 第 15 章负责深入渲染链路：从 `invalidate()`、`requestLayout()`、Choreographer、measure / layout / draw 到 HardwareRenderer、RenderThread、Surface、BufferQueue 和 SurfaceFlinger，理解掉帧、Jank、白屏、闪烁、过度绘制和黑屏。学完这一章，你应该能解释“业务状态变化之后，下一帧为什么能真的出现在屏幕上”。
 - 第 16 章负责补齐包管理主线：从 APK 安装、Manifest 解析、组件注册、Intent 匹配到签名、权限、包可见性和多用户状态，理解安装失败、组件找不到、权限异常和查询不到 App。学完这一章，你应该能解释“系统为什么知道这个 App、组件和权限存在”。
+- 第 17 章负责补齐资源系统主线：从 `res`、`R` 文件、`resources.arsc` 到 `AssetManager`、`Resources`、`Configuration`、Theme 和资源合并，理解多语言、夜间模式、密度适配、资源找不到、主题错乱和图片模糊。学完这一章，你应该能解释“系统为什么能为当前设备选出正确的字符串、图片和主题值”。
 
 这几章串起来后，会形成一条完整的 Framework 入门链路：
 
@@ -297,6 +308,7 @@
                                   -> Choreographer 调度 UI 刷新
                                       -> RenderThread / SurfaceFlinger 完成渲染与合成
                                           -> PMS 管理安装包、组件、权限和签名
+                                              -> Resources 选择字符串、图片、主题和配置资源
 ```
 
 ### 学习顺序
