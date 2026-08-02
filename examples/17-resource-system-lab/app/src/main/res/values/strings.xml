@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Resource System Lab</string>
+    <string name="resource_lab_title">Resource Warehouse Lab</string>
+    <string name="resource_lab_greeting">Hello from default resources</string>
+    <string name="resource_lab_dynamic_name">resource_lab_greeting</string>
+    <string name="resource_lab_replace_title_default">Default skin: Resource Table</string>
+    <string name="resource_lab_replace_title_forest">Forest skin: Resource Table</string>
+    <string name="shared_action_label">App override: Confirm</string>
+    <string name="design_shared_action_label">App override of core-design: Continue safely</string>
+    <string name="resource_origin_marker">app/main resource</string>
+</resources>

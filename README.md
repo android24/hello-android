@@ -215,6 +215,8 @@
   - [17.6 资源合并、依赖模块与资源冲突](docs/chapter17/chapter17_6.md)
   - [17.7 资源体验问题：NotFound、主题错乱、多语言失败、图片模糊与包体积](docs/chapter17/chapter17_7.md)
   - [17.8 综合实践：资源系统、主题与配置观察实验](docs/chapter17/chapter17_8.md)
+  - [17 附录：主题替换、动态换肤与资源覆盖方案](docs/chapter17/appendix_theme_skinning.md)
+  - [配套示例工程](examples/17-resource-system-lab/)
 
 ### 项目说明
 
@@ -390,6 +392,7 @@
 - [第14章 Input 事件分发、触摸系统与交互响应机制示例工程](examples/14-input-event-dispatch-lab/)
 - [第15章 View 绘制、RenderThread、SurfaceFlinger 与渲染链路示例工程](examples/15-rendering-frame-lab/)
 - [第16章 PMS、应用安装、包管理与权限机制示例工程](examples/16-package-manager-lab/)
+- [第17章 资源系统、AssetManager、Resources 与主题机制示例工程](examples/17-resource-system-lab/)
 
 ## 贡献者名单
 

@@ -1,0 +1,4 @@
+<resources>
+    <attr name="resourceLabPanelColor" format="color" />
+    <attr name="resourceLabSignalColor" format="color" />
+</resources>

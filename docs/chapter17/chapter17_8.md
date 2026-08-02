@@ -36,13 +36,13 @@
 
 本节是第 17 章综合实践。
 
-后续可以配套工程：
+当前配套工程是：
 
 ```text
 examples/17-resource-system-lab/
 ```
 
-这个工程可以围绕资源 ID、字符串切换、图片密度、Theme attr、Configuration、assets/raw 和资源诊断卡做成一个可观察实验室。
+这个工程围绕资源 ID、字符串切换、图片密度、Theme attr、Configuration、动态资源替换、动态换肤方案、assets/raw、依赖覆盖和资源诊断卡做成一个可观察实验室。
 
 ## 学习目标
 
@@ -52,12 +52,14 @@ examples/17-resource-system-lab/
 - 打印并解释当前 `Configuration`。
 - 观察 locale、night mode、orientation、density 对资源选择的影响。
 - 从 Theme 中读取 attr。
+- 设计并观察一个安全的动态资源替换入口。
+- 解释 Theme、ResourceProvider、Configuration、外部皮肤包和 RRO 在动态换肤中的分工。
 - 区分 `assets` 和 `res/raw` 的读取方式。
 - 写一份资源问题诊断报告。
 
 ## 第一部分：实践工程规划
 
-第 17 章 demo 建议拆成这些可观察区域：
+第 17 章 demo 拆成这些可观察区域：
 
 - `资源观察分数`：提示实验完成度。
 - `资源身份证`：展示 packageName、resource id、resource name、resource type，并拆解 `0xPPTTEEEE`。
@@ -66,9 +68,12 @@ examples/17-resource-system-lab/
 - `字符串多语言实验区`：对比默认、中文、英文资源。
 - `图片密度实验区`：展示当前 density 与图片资源选择推断。
 - `Theme attr 实验区`：读取 colorPrimary、colorSurface、textColor 等属性。
+- `动态资源替换实验区`：通过稳定业务槽位切换不同资源 ID，观察 ResourceProvider 思路。
+- `动态换肤附录实验区`：对比 Theme、ResourceProvider、Configuration、外部皮肤包和 RRO 的适用边界。
 - `assets / raw 实验区`：对比路径读取和资源 ID 读取。
 - `混淆与 shrink 观察卡`：对比 `R.xxx` 直接引用和 `getIdentifier` 字符串查找的风险。
 - `依赖覆盖观察卡`：记录某个资源最终来自 main、debug、flavor 还是依赖库。
+- `依赖冲突实验区`：模拟 app、feature、library、transitive AAR 的同名资源、覆盖和版本漂移。
 - `资源问题诊断卡`：整理 NotFound、多语言失败、主题错乱、图片模糊和包体积问题。
 - `资源事件轨迹`：记录每次资源读取和配置观察结果。
 
@@ -94,14 +99,21 @@ examples/17-resource-system-lab/
 
 高级侦探：解释主题和资源问题
   -> 读取 Theme attr
-      -> 对比 assets / raw
-          -> 对比 R 直接引用和 getIdentifier
-              -> 分析图片密度
-                  -> 阅读诊断卡
-                      -> 写一份资源系统诊断报告
+      -> 切换动态资源槽位
+          -> 对比 assets / raw
+              -> 对比 R 直接引用和 getIdentifier
+                  -> 分析图片密度
+                      -> 阅读诊断卡
+                          -> 写一份资源系统诊断报告
 ```
 
 读者不是“背资源目录规则”，而是在复原系统如何为当前设备选择资源。
+
+如果要继续研究主题替换和动态换肤，请接着阅读：
+
+```text
+docs/chapter17/appendix_theme_skinning.md
+```
 
 ## 第三部分：手动实验路线
 
@@ -113,9 +125,11 @@ examples/17-resource-system-lab/
 - 一组 `values` / `values-en` / `values-night`。
 - 一张 bitmap 或 vector 图片。
 - 一个自定义 theme attr。
+- 两套业务皮肤资源 ID 映射。
 - 一个 `assets/config.json`。
 - 一个 `res/raw/sample.txt`。
 - 一个通过 `getIdentifier` 动态查找的资源名。
+- 一个 library 模块和一个 feature 模块中的同名资源。
 
 观察路线：
 
@@ -126,9 +140,11 @@ examples/17-resource-system-lab/
           -> 打印 Configuration
               -> 切换语言或夜间模式
                   -> 对比 R 引用与 getIdentifier
-                      -> 读取 Theme attr
-                          -> 对比 assets 与 raw
-                              -> 写诊断报告
+                      -> 查 merged resources 的最终来源
+                          -> 读取 Theme attr
+                              -> 切换动态资源槽位
+                                  -> 对比 assets 与 raw
+                                      -> 写诊断报告
 ```
 
 ## 第四部分：资源 ID 观察
@@ -203,6 +219,7 @@ demo 可以把常见问题做成诊断卡：
 | 资源找不到 | 资源 ID、资源名、APK 内容 | 资源不存在、类型不匹配、被 shrink | 检查 R、resources.arsc、模块依赖 |
 | 多语言失败 | locale、values-xx、Context | 缺少语言资源、缓存旧字符串 | 补资源，更新 Context 和 UI 状态 |
 | 主题错乱 | Theme attr、Context | 用错 Context、硬编码颜色 | 使用 Activity Context 和 attr |
+| 动态替换失效 | 槽位映射和缓存值 | 绕过 ResourceProvider、缓存旧值 | 统一资源入口，切换后重新读取 |
 | 图片模糊 | densityDpi、图片目录 | 低密度资源、缩放策略错误 | 补合适资源或使用 vector |
 | 包体积过大 | APK Analyzer | 大图、重复、未使用资源 | 压缩、删除、开启 shrink |
 | release 动态资源找不到 | getIdentifier 返回 0 | shrink、资源名混淆、包名错误 | 使用 R 引用、keep 规则和映射表 |
@@ -219,6 +236,7 @@ demo 可以把常见问题做成诊断卡：
 资源类型：
 当前 Configuration：
 Theme attr：
+动态资源槽位：
 Resources 返回值：
 R 与 resources.arsc 匹配证据：
 getIdentifier 结果：
@@ -253,6 +271,8 @@ frameworks/base/tools/aapt2/
 - `Configuration` 如何影响资源选择？
 - 多语言、夜间模式、密度和横竖屏资源如何生效？
 - `Theme`、`Style`、`Attribute` 有什么关系？
+- 动态资源替换为什么不是修改 R 文件？
+- 动态换肤应该优先选择 Theme attr、ResourceProvider、Configuration、外部皮肤包还是 RRO？
 - 多模块资源为什么会冲突？
 - 资源覆盖优先级为什么会让最终资源和源码直觉不同？
 - 资源找不到、主题错乱、图片模糊应该如何排查？

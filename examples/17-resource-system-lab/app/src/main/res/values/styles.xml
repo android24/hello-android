@@ -1,0 +1,15 @@
+<resources>
+    <style name="Theme.HelloResourceSystemLab" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">@color/resource_lab_background</item>
+        <item name="android:navigationBarColor">@color/resource_lab_background</item>
+        <item name="android:colorAccent">@color/resource_lab_accent</item>
+        <item name="resourceLabPanelColor">@color/resource_lab_surface</item>
+        <item name="resourceLabSignalColor">@color/resource_lab_primary</item>
+    </style>
+
+    <style name="Theme.HelloResourceSystemLab.Alt" parent="Theme.HelloResourceSystemLab">
+        <item name="resourceLabPanelColor">#FFF4D8</item>
+        <item name="resourceLabSignalColor">#8A6A25</item>
+    </style>
+</resources>

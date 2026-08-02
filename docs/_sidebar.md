@@ -132,3 +132,4 @@
     - [17.6 资源合并、依赖模块与资源冲突](chapter17/chapter17_6)
     - [17.7 资源体验问题：NotFound、主题错乱、多语言失败、图片模糊与包体积](chapter17/chapter17_7)
     - [17.8 综合实践：资源系统、主题与配置观察实验](chapter17/chapter17_8)
+    - [17 附录：主题替换、动态换肤与资源覆盖方案](chapter17/appendix_theme_skinning)

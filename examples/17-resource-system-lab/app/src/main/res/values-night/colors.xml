@@ -1,0 +1,10 @@
+<resources>
+    <color name="resource_lab_background">#181C1F</color>
+    <color name="resource_lab_primary">#8FC6DA</color>
+    <color name="resource_lab_surface">#242A2E</color>
+    <color name="resource_lab_accent">#E5C063</color>
+    <color name="resource_lab_replace_panel_default">#263A45</color>
+    <color name="resource_lab_replace_panel_forest">#23362D</color>
+    <color name="resource_lab_replace_signal_default">#8FC6DA</color>
+    <color name="resource_lab_replace_signal_forest">#9ED0A8</color>
+</resources>

@@ -1,0 +1,5 @@
+<resources>
+    <string name="catalog_module_name">feature-catalog</string>
+    <string name="catalog_shared_action_label">Catalog feature: Open lesson</string>
+    <string name="catalog_dependency_note">feature-catalog depends on core-design and contributes its own resources.</string>
+</resources>

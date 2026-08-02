@@ -21,6 +21,7 @@ Theme
 - `attr` 是什么？
 - 为什么 Activity Context 和 Application Context 读取主题属性结果不同？
 - 为什么自定义 View 应该从 Theme 读取颜色，而不是硬编码？
+- 动态资源替换应该从哪些入口做，哪些方案不适合普通业务代码？
 
 ## 学习目标
 
@@ -30,6 +31,7 @@ Theme
 - 理解主题属性解析的大致流程。
 - 能排查主题错乱、颜色不对、控件样式不生效的问题。
 - 知道为什么 Material / AppCompat / Compose 都会重度使用主题。
+- 能区分 Theme 切换、资源提供器、配置 Context、AssetManager 插件化和 RRO 的适用边界。
 
 ## 第一部分：Style 是一组属性集合
 
@@ -123,7 +125,161 @@ Context
 - `Application` Context 可能缺少某些 Activity 主题属性。
 - `ContextThemeWrapper` 可以临时包一层主题。
 
-## 第五部分：主题错乱的常见原因
+## 第五部分：动态资源替换的几种方式
+
+动态资源替换不是“运行时修改 R 文件”。
+
+`R` 文件里的资源 ID 是构建期产物，运行时真正能变化的是：
+
+```text
+同一个资源 ID 在不同 Configuration 下选哪个 value
+同一个 attr 在不同 Theme 下解析到哪个资源
+同一个业务槽位在你的 ResourceProvider 中映射到哪个资源 ID
+AssetManager 当前加载了哪些资源路径
+系统 RRO 覆盖了哪些目标资源
+```
+
+所以动态资源替换要先分清层级。
+
+### 方式一：切换 Theme
+
+最常见、最安全的方式是让界面读 `?attr`，然后切换 Theme。
+
+```text
+Button 背景
+  -> ?attr/resourceLabPanelColor
+      -> Theme A: @color/resource_lab_surface
+      -> Theme B: @color/resource_lab_accent
+```
+
+优点：
+
+- 不破坏资源 ID。
+- 不依赖隐藏 API。
+- 适合换肤、品牌色、深色模式、局部样式切换。
+
+代价：
+
+- 控件必须从 Theme attr 读取值。
+- 硬编码颜色不会自动变。
+- 切换后可能需要 Activity recreate 或触发 UI 重组。
+
+### 方式二：业务 ResourceProvider
+
+如果替换的是业务文案、图标、卡片颜色，可以建立一个资源提供器。
+
+```kotlin
+data class SkinResources(
+    val title: Int,
+    val panelColor: Int,
+    val icon: Int
+)
+```
+
+运行时切换的是映射关系：
+
+```text
+default skin
+  -> title = R.string.default_title
+  -> panelColor = R.color.default_panel
+
+festival skin
+  -> title = R.string.festival_title
+  -> panelColor = R.color.festival_panel
+```
+
+优点：
+
+- 简单、可测试、可回滚。
+- 资源仍然来自编译期 R，安全稳定。
+- Compose 和 View 都容易接入。
+
+代价：
+
+- 所有可替换资源都要经过统一入口。
+- 不能替换未知 APK 里的任意资源。
+
+### 方式三：Configuration Context
+
+多语言、字体缩放、夜间模式这类更适合走 `Configuration`。
+
+```text
+createConfigurationContext(newConfig)
+  -> 新 Resources
+      -> 同一个 R.string.title
+          -> 按新的 locale 选择 value
+```
+
+这不是换资源 ID，而是换资源选择环境。
+
+适合：
+
+- App 内语言切换。
+- 局部 locale 预览。
+- 特定配置下的资源观察实验。
+
+要注意：
+
+- 不要长期混用旧 Context 和新 Context。
+- 文案不要永久缓存到单例。
+- UI 需要重新读取资源。
+
+### 方式四：AssetManager 加载外部资源路径
+
+插件化和部分换肤方案会尝试给 `AssetManager` 添加新的资源路径。
+
+```text
+host AssetManager
+  + skin.apk resources
+      -> 构造新的 Resources
+          -> 用名称或映射表读取外部资源
+```
+
+这类方案更接近框架/基础设施能力，不适合普通业务随手使用。
+
+风险包括：
+
+- 资源 ID 不同包之间不稳定。
+- 隐藏 API 和系统版本兼容问题。
+- 资源名混淆后字符串查找容易失效。
+- 宿主和皮肤包的版本映射要严格管理。
+
+如果项目没有插件化或独立皮肤包需求，优先不要走这条路。
+
+### 方式五：Runtime Resource Overlay
+
+RRO 是系统层资源覆盖机制，常见于系统主题、厂商定制和 AOSP 层能力。
+
+它的思路是：
+
+```text
+overlay package
+  -> 声明覆盖 target package 的某些资源
+      -> 系统资源管理层应用覆盖关系
+```
+
+普通 App 通常不会把 RRO 当作业务换肤方案。它更适合系统应用、设备定制、Framework 资源覆盖场景。
+
+## 第六部分：动态资源替换的选择建议
+
+| 场景 | 推荐方案 | 原因 |
+| --- | --- | --- |
+| 深色模式 | `values-night` + Theme | 系统 Configuration 原生支持 |
+| 品牌色换肤 | Theme attr / Compose Theme | 控件读取 attr 后可统一变化 |
+| 业务活动皮肤 | ResourceProvider | 映射清晰，避免隐藏 API |
+| App 内语言切换 | Configuration Context | 同一资源 ID 按 locale 选值 |
+| 插件皮肤包 | 独立资源包 + AssetManager 方案 | 需要基础设施和版本映射 |
+| 系统级主题覆盖 | RRO | 属于系统层资源覆盖能力 |
+
+一句话：
+
+```text
+能用 Theme 和 ResourceProvider，就不要急着碰 AssetManager 外部路径。
+能用 Configuration，就不要手动缓存一堆语言字符串。
+需要插件资源包时，必须设计资源名、版本和映射协议。
+```
+
+## 第七部分：主题错乱的常见原因
 
 | 现象 | 可能原因 | 排查入口 |
 | --- | --- | --- |
@@ -135,7 +291,7 @@ Context
 
 主题问题最怕只盯某个控件。要从当前 Context 和 Theme 往下查。
 
-## 第六部分：Compose 里的主题
+## 第八部分：Compose 里的主题
 
 Compose 也有主题：
 
@@ -181,13 +337,15 @@ Compose 主题和 XML Theme 不是同一个对象，但它们都承担类似职�
 - 定义一个 `colorPrimary`。
 - 在 XML 或代码中读取 `?attr/colorPrimary`。
 - 切换 night 资源，观察颜色变化。
+- 设计一个 `ResourceProvider`，让同一个业务槽位在两个资源 ID 之间切换。
 
 ### 进阶任务
 
 - 写一个自定义 View，从 Theme 读取颜色绘制背景。
 - 用 `ContextThemeWrapper` 切换主题，观察同一个 attr 返回不同值。
 - 对比 XML Theme 和 Compose MaterialTheme 的颜色来源。
+- 为 App 内语言切换创建一个 `ConfigurationContext`，观察同一个 `R.string.xxx` 的返回值。
 
 ## 本节小结
 
-`Style` 是属性集合，`Theme` 是作用范围更大的样式环境，`Attribute` 是可由主题填充的插槽。主题系统让控件不用硬编码所有视觉值，而是从当前上下文中读取颜色、字体和样式。理解 Theme / Style / Attribute 后，主题错乱、深色模式异常、自定义 View 不跟随主题变化等问题就不再神秘。
+`Style` 是属性集合，`Theme` 是作用范围更大的样式环境，`Attribute` 是可由主题填充的插槽。动态资源替换不是修改 `R`，而是改变 Theme、Configuration、业务资源映射或资源加载路径。普通业务优先使用 Theme attr、ResourceProvider 和 Configuration Context；AssetManager 外部资源路径和 RRO 更偏框架、插件化或系统层能力。理解这些边界后，主题错乱、深色模式异常、自定义 View 不跟随主题变化、动态换肤失效等问题就不再神秘。

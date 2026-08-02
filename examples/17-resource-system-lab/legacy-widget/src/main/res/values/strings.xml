@@ -1,0 +1,5 @@
+<resources>
+    <string name="legacy_module_name">legacy-widget</string>
+    <string name="legacy_shared_action_label">Legacy widget: OK</string>
+    <string name="legacy_dependency_note">legacy-widget simulates an old third-party AAR with its own resources.</string>
+</resources>

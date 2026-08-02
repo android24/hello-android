@@ -1,0 +1,5 @@
+<resources>
+    <string name="design_module_name">core-design</string>
+    <string name="design_shared_action_label">Design default: Continue</string>
+    <string name="design_primary_token">design_color_primary</string>
+</resources>

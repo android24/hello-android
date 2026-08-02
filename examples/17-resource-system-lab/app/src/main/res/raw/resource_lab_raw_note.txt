@@ -1,0 +1,1 @@
+raw resource: I have a resource ID and can be opened with Resources.openRawResource.
