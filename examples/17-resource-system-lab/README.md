@@ -30,7 +30,8 @@
 - `Configuration 面板` 展示 locale、orientation、densityDpi、fontScale、uiMode、screenWidthDp、screenHeightDp。
 - `Theme attr 实验区` 对比 Activity Context、Application Context、ContextThemeWrapper 的 attr 解析结果。
 - `动态资源替换实验区` 通过稳定业务槽位在两套资源 ID 之间切换。
-- `动态换肤附录实验区` 对比 Theme、ResourceProvider、Configuration、外部皮肤包和 RRO 的边界。
+- `动态换肤附录实验区` 提供五张可点击实验卡：Theme attr、ResourceProvider、ConfigurationContext、外部皮肤包协议模拟、RRO 系统覆盖模拟。
+- `经典框架结构速览` 对照 Android-skin-support、MagicaSakura、MultipleTheme 的核心结构。
 - `依赖覆盖观察卡` 展示 app/debug、app/main、core-design、feature-catalog、legacy-widget 贡献的资源。
 - `assets / raw 实验区` 对比 `Resources.openRawResource` 和 `assets.open`。
 - `资源问题诊断卡` 把 R 与资源表不匹配、release 动态资源找不到、依赖覆盖、主题异常、多语言异常变成排查清单。
@@ -82,8 +83,9 @@ res 源文件
       -> 切换深色模式
           -> 观察字符串、颜色和 Theme attr
               -> 切换动态资源槽位
-                  -> 对比 Activity Context 与 ContextThemeWrapper
-                      -> 阅读动态换肤附录实验区
+                  -> 打开动态换肤附录实验区
+                      -> 逐张点击五种方案实验卡
+                          -> 对比事件轨迹
 ```
 
 通关判断：
@@ -116,7 +118,7 @@ res 源文件
 2. 等待 Gradle Sync 完成。
 3. 运行 `app` 模块。
 4. 打开 Logcat，搜索 `ResourceSystemLab`。
-5. 点击刷新、依赖资源实验、诊断卡，观察资源事件轨迹。
+5. 点击刷新、资源槽位切换、动态换肤方案卡、依赖资源实验、诊断卡，观察资源事件轨迹。
 
 如果工程里配置了 Gradle Wrapper，也可以参考：
 
@@ -161,9 +163,50 @@ res 源文件
 - `feature-catalog`：模拟业务 feature 模块，依赖 `core-design`。
 - `legacy-widget`：模拟旧三方 AAR 资源来源。
 - `ResourceLabStore.kt`：集中读取资源 ID、反查资源名、拆解 ID、读取 Theme attr、对比 `getIdentifier`、读取依赖资源和 assets/raw。
-- `DynamicReplacementCard`：展示业务槽位如何切换到不同资源 ID。
-- `SkinningAppendixCard`：展示动态换肤方案地图，帮助选择 Theme、ResourceProvider、Configuration、外部皮肤包或 RRO。
+- `DynamicReplacementCard`：展示业务槽位如何切换到不同资源 ID，这是 ResourceProvider 思路的最小实现。
+- `SkinningAppendixCard`：动态换肤工作台，展示五种方案的实现方式、操作玩法、替换目标、替换前后证据、风险和经典框架结构。
 - `ResourceLabScreen.kt`：展示资源实验页面和事件轨迹。
+
+## 动态换肤工作台怎么玩
+
+这部分不是完整引入某个三方框架，而是把附录里的五类方案都做成可观察实验：
+
+```text
+Theme attr
+  -> 点击“演示此方案”
+      -> 对比 Default / Alt / Festival 三套 Theme 下同一个 attr 的值
+
+ResourceProvider
+  -> 点击“切换资源槽位”
+      -> 再点击 ResourceProvider 实验卡
+          -> 观察 title / panel / signal 槽位映射到的资源 ID
+
+ConfigurationContext
+  -> 点击语言探针实验卡
+      -> 对比 zh / en Context 读取同一个 R.string.resource_lab_locale_probe 的结果
+
+外部皮肤包协议模拟
+  -> 查看 assets/skin_package_manifest.json
+      -> 点击实验卡
+          -> 观察资源名映射、getIdentifier 结果和 fallback 风险
+
+RRO
+  -> 点击实验卡
+      -> 观察 targetPackage、目标资源、overlay candidate
+          -> 明确它属于系统层覆盖，不是普通业务按钮
+```
+
+这个设计故意没有直接调用隐藏 API，也没有真正安装 overlay 包。它更适合课程：能让读者看懂完整结构，同时避开普通 App 不该鼓励的系统级操作。
+
+## 经典框架速览
+
+这些框架适合当作结构参考，而不是要求学习者照搬：
+
+| 框架 | 可以重点看什么 | 和本 demo 的对应关系 |
+| --- | --- | --- |
+| Android-skin-support | `SkinCompatManager`、Inflater、Loader Strategy、插件皮肤包、自定义 View 换肤 | 对应外部皮肤包、View 收集、资源加载策略 |
+| MagicaSakura | 多主题 / 夜间主题、Tint 控件、主题色刷新 | 对应 Theme attr、Tint 和 UI 刷新 |
+| MultipleTheme | 多主题资源约定、无重启切换、控件刷新 | 对应主题切换入口和刷新边界 |
 
 ## 推荐对照的 AOSP 入口
 
@@ -187,6 +230,7 @@ frameworks/base/tools/aapt2/
 - 对比 `R` 直接引用和 `getIdentifier`。
 - 切换动态资源槽位，记录 title、panel、signal 对应的资源 ID 和返回值。
 - 读取 `assets` 和 `res/raw`。
+- 逐张点击动态换肤工作台的五种方案实验卡。
 - 使用 `quality/resource-system-report-template.md` 写一份短报告。
 
 ### 进阶任务
@@ -197,3 +241,4 @@ frameworks/base/tools/aapt2/
 - 给 library 模块新增不符合 `resourcePrefix` 的资源，观察 lint 或构建提示。
 - 尝试开启资源 shrink，验证 `getIdentifier` 的风险。
 - 为一个“春节皮肤”需求写出 Theme attr + ResourceProvider 的资源槽位设计。
+- 参考 `assets/skin_package_manifest.json`，再新增一套“会员皮肤”协议映射。

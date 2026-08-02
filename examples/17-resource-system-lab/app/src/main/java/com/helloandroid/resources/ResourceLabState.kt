@@ -6,6 +6,7 @@ data class ResourceLabState(
     val themeCards: List<ThemeAttrCard> = emptyList(),
     val replacement: DynamicReplacementState = DynamicReplacementState(),
     val skinningStrategies: List<SkinningStrategyCard> = defaultSkinningStrategyCards,
+    val skinningWorkbench: SkinningWorkbenchState = SkinningWorkbenchState(),
     val dynamicLookup: DynamicLookup = DynamicLookup(),
     val sourceCards: List<ResourceSourceCard> = emptyList(),
     val fileCards: List<ResourceFileCard> = emptyList(),
@@ -64,6 +65,33 @@ data class SkinningStrategyCard(
     val bestFor: String,
     val firstRisk: String,
     val evidence: String
+)
+
+data class SkinningWorkbenchState(
+    val activeStrategy: String = "Theme / Style / Attribute",
+    val activeSummary: String = "先从最稳的 Theme attr 开始观察。",
+    val evidenceCards: List<SkinningEvidenceCard> = emptyList(),
+    val frameworkCards: List<SkinningFrameworkCard> = defaultSkinningFrameworkCards
+)
+
+data class SkinningEvidenceCard(
+    val key: String,
+    val title: String,
+    val implementation: String,
+    val operation: String,
+    val target: String,
+    val before: String,
+    val after: String,
+    val evidence: String,
+    val risk: String,
+    val isActive: Boolean = false
+)
+
+data class SkinningFrameworkCard(
+    val name: String,
+    val repository: String,
+    val coreStructure: String,
+    val learningFocus: String
 )
 
 data class DynamicLookup(
@@ -160,6 +188,27 @@ val defaultSkinningStrategyCards = listOf(
         bestFor = "系统应用、ROM 定制、Framework 组件主题覆盖。",
         firstRisk = "把系统工程能力误用成普通业务 App 的换肤开关。",
         evidence = "确认 overlay 包、目标包、优先级和系统资源解析结果。"
+    )
+)
+
+val defaultSkinningFrameworkCards = listOf(
+    SkinningFrameworkCard(
+        name = "Android-skin-support",
+        repository = "github.com/ximsfei/Android-skin-support",
+        coreStructure = "SkinCompatManager + Inflater + Loader Strategy + Resource Manager。",
+        learningFocus = "学习它如何收集可换肤 View、解析原始 resId、支持应用内 / 插件式 / 自定义路径资源。"
+    ),
+    SkinningFrameworkCard(
+        name = "MagicaSakura",
+        repository = "github.com/bilibili/MagicaSakura",
+        coreStructure = "主题色变量 + Tint 控件 + ThemeUtils + refreshUI。",
+        learningFocus = "学习它如何围绕颜色变量和 Tint 控件完成日间、多彩主题与夜间模式。"
+    ),
+    SkinningFrameworkCard(
+        name = "MultipleTheme",
+        repository = "github.com/dersoncheng/MultipleTheme",
+        coreStructure = "多主题资源约定 + 主题切换入口 + 控件刷新。",
+        learningFocus = "把它当成早期 Android 多主题实践样本，重点看资源命名、切换入口和刷新边界。"
     )
 )
 

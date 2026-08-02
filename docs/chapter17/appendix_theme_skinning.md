@@ -279,26 +279,61 @@ APK Analyzer 中的最终资源
 examples/17-resource-system-lab/
 ```
 
-建议按这个顺序观察：
+这一次不要只读卡片说明，建议真的按顺序点击：
 
 ```text
 Theme attr 实验区
   -> 动态资源替换实验区
       -> 动态换肤附录实验区
-          -> 资源事件轨迹
-              -> 资源系统诊断报告
+          -> 逐张点击五种方案实验卡
+              -> 对比预期 vs 实际
+                  -> 查看资源事件轨迹
+                      -> 写资源系统诊断报告
 ```
 
 在 `动态资源替换实验区` 中点击“切换资源槽位”，观察 title、panel、signal 对应的资源 ID 和返回值如何变化。
 
-再进入 `动态换肤附录实验区`，对照每一种方案：
+再进入 `动态换肤附录实验区`，它已经把五类方案都做成了可观察实验：
+
+| 实验卡 | Demo 中怎么实现 | 观察重点 |
+| --- | --- | --- |
+| Theme / Style / Attribute | `ContextThemeWrapper` 对比 Default、Alt、Festival 三套 Theme | 同一个 attr 在不同 Theme 中解析出不同值 |
+| ResourceProvider | `ReplacementMode` 模拟业务槽位到资源 ID 的映射 | 切换皮肤 key 后，title / panel / signal 变成另一组资源 ID |
+| ConfigurationContext | 创建 zh / en 两个 Context 读取同一个 string | 同一个资源 ID 在不同 Locale 下返回不同文案 |
+| 外部皮肤包 | `assets/skin_package_manifest.json` 模拟皮肤包协议，再用资源名映射验证 | 外部包不是“随便找资源”，而是依赖版本协议、资源名和 fallback |
+| RRO | 展示 targetPackage、目标资源和 overlay candidate | RRO 是系统覆盖能力，不是普通业务 App 的首选换肤按钮 |
+
+读每张实验卡时，重点回答：
 
 - 它替换的是 Theme、Provider、Configuration，还是外部资源路径？
 - 它适合普通业务 App，还是系统 / 插件化工程？
 - 它的第一风险是什么？
 - 如果线上出问题，第一证据应该去哪里找？
 
-## 十、附录小挑战
+## 十、经典框架结构速览
+
+课程不要求学习者直接引入某个框架，但可以借经典框架理解换肤系统通常长什么样。
+
+| 框架 | 结构重点 | 适合学习什么 |
+| --- | --- | --- |
+| [Android-skin-support](https://github.com/ximsfei/Android-skin-support) | `SkinCompatManager`、Inflater、Loader Strategy、Resource Manager、插件皮肤包、自定义 View 换肤 | 学习完整换肤框架如何收集控件、解析 resId、支持应用内 / 插件式 / 自定义路径资源 |
+| [MagicaSakura](https://github.com/bilibili/MagicaSakura) | 多主题 / 夜间主题、Tint 控件、主题刷新 | 学习颜色型主题如何和控件刷新结合 |
+| [MultipleTheme](https://github.com/dersoncheng/MultipleTheme) | 多主题资源约定、主题切换入口、页面无重启刷新 | 学习早期多主题方案如何组织资源命名和刷新边界 |
+
+看这些框架时，不要一开始就陷入 API 细节。先画这张结构图：
+
+```text
+初始化入口
+  -> 拦截或收集需要换肤的 View
+      -> 保存原始资源 ID / attr / 资源名
+          -> 选择皮肤加载策略
+              -> 找到新资源
+                  -> 通知 View 重新应用资源
+```
+
+你会发现，框架名不同，核心问题很像：资源入口如何统一，控件如何被收集，皮肤资源如何加载，切换后如何刷新，失败时如何 fallback。
+
+## 十一、附录小挑战
 
 请为下面需求选择方案：
 

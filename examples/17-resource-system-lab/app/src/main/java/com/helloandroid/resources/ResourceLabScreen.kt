@@ -74,7 +74,12 @@ fun ResourceLabScreen(state: ResourceLabState) {
             item { ConfigurationCard(configuration = state.configuration) }
             item { ThemeCard(cards = state.themeCards) }
             item { DynamicReplacementCard(replacement = state.replacement) }
-            item { SkinningAppendixCard(cards = state.skinningStrategies) }
+            item {
+                SkinningAppendixCard(
+                    cards = state.skinningStrategies,
+                    workbench = state.skinningWorkbench
+                )
+            }
             item { DependencySourceCard(cards = state.sourceCards) }
             item { FileResourceCard(cards = state.fileCards) }
             item { DiagnosticCard(cards = state.diagnosticCards) }
@@ -251,11 +256,15 @@ private fun DynamicReplacementCard(replacement: DynamicReplacementState) {
 }
 
 @Composable
-private fun SkinningAppendixCard(cards: List<SkinningStrategyCard>) {
+private fun SkinningAppendixCard(
+    cards: List<SkinningStrategyCard>,
+    workbench: SkinningWorkbenchState
+) {
+    val context = LocalContext.current
     LabCard(background = Color(0xFFF7F0E8)) {
         SectionTitle(title = "动态换肤附录实验区")
         Text(
-            text = "把换肤需求先放到资源读取链路上定位：到底是换 Theme、换业务槽位、换 Configuration、换外部资源路径，还是系统 overlay。",
+            text = "把换肤需求先放到资源读取链路上定位：到底是换 Theme、换业务槽位、换 Configuration、换外部资源路径，还是系统 overlay。每张实验卡都能点，点完看预期、实际和事件轨迹。",
             style = MaterialTheme.typography.bodySmall,
             color = Color(0xFF66736F)
         )
@@ -264,6 +273,9 @@ private fun SkinningAppendixCard(cards: List<SkinningStrategyCard>) {
             Text(text = "记录换肤方案判断")
         }
         Spacer(modifier = Modifier.height(10.dp))
+        InfoRow(label = "当前方案", value = workbench.activeStrategy)
+        Text(text = workbench.activeSummary, style = MaterialTheme.typography.bodySmall, color = Color(0xFF315F72))
+        Spacer(modifier = Modifier.height(12.dp))
         cards.forEachIndexed { index, card ->
             NumberedBlock(index = index + 1) {
                 Text(text = card.name, fontWeight = FontWeight.Bold)
@@ -273,6 +285,45 @@ private fun SkinningAppendixCard(cards: List<SkinningStrategyCard>) {
                 LabelText(label = "证据入口", text = card.evidence, color = Color(0xFF315F72))
             }
             if (index != cards.lastIndex) Spacer(modifier = Modifier.height(10.dp))
+        }
+        Spacer(modifier = Modifier.height(14.dp))
+        SectionTitle(title = "五种方案实操证据")
+        Spacer(modifier = Modifier.height(8.dp))
+        workbench.evidenceCards.forEachIndexed { index, evidence ->
+            NumberedBlock(index = index + 1) {
+                Text(text = evidence.title, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(6.dp))
+                if (evidence.isActive) {
+                    Button(onClick = { ResourceLabStore.selectSkinningStrategy(context, evidence.key) }) {
+                        Text(text = "当前演示中")
+                    }
+                } else {
+                    OutlinedButton(onClick = { ResourceLabStore.selectSkinningStrategy(context, evidence.key) }) {
+                        Text(text = "演示此方案")
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                LabelText(label = "实现方式", text = evidence.implementation, color = Color(0xFF4D6B58))
+                LabelText(label = "操作玩法", text = evidence.operation, color = Color(0xFF315F72))
+                InfoRow(label = "替换目标", value = evidence.target)
+                InfoRow(label = "替换前", value = evidence.before)
+                InfoRow(label = "替换后", value = evidence.after)
+                LabelText(label = "证据入口", text = evidence.evidence, color = Color(0xFF315F72))
+                LabelText(label = "风险", text = evidence.risk, color = Color(0xFF8A6A25))
+            }
+            if (index != workbench.evidenceCards.lastIndex) Spacer(modifier = Modifier.height(12.dp))
+        }
+        Spacer(modifier = Modifier.height(14.dp))
+        SectionTitle(title = "经典框架结构速览")
+        Spacer(modifier = Modifier.height(8.dp))
+        workbench.frameworkCards.forEachIndexed { index, framework ->
+            NumberedBlock(index = index + 1) {
+                Text(text = framework.name, fontWeight = FontWeight.Bold)
+                InfoRow(label = "repo", value = framework.repository)
+                LabelText(label = "核心结构", text = framework.coreStructure, color = Color(0xFF4D6B58))
+                LabelText(label = "学习重点", text = framework.learningFocus, color = Color(0xFF315F72))
+            }
+            if (index != workbench.frameworkCards.lastIndex) Spacer(modifier = Modifier.height(10.dp))
         }
     }
 }

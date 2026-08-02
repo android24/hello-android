@@ -12,4 +12,9 @@
         <item name="resourceLabPanelColor">#FFF4D8</item>
         <item name="resourceLabSignalColor">#8A6A25</item>
     </style>
+
+    <style name="Theme.HelloResourceSystemLab.Festival" parent="Theme.HelloResourceSystemLab">
+        <item name="resourceLabPanelColor">@color/skin_pkg_spring_panel</item>
+        <item name="resourceLabSignalColor">@color/skin_pkg_spring_signal</item>
+    </style>
 </resources>

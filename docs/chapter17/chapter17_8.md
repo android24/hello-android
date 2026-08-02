@@ -69,7 +69,7 @@ examples/17-resource-system-lab/
 - `图片密度实验区`：展示当前 density 与图片资源选择推断。
 - `Theme attr 实验区`：读取 colorPrimary、colorSurface、textColor 等属性。
 - `动态资源替换实验区`：通过稳定业务槽位切换不同资源 ID，观察 ResourceProvider 思路。
-- `动态换肤附录实验区`：对比 Theme、ResourceProvider、Configuration、外部皮肤包和 RRO 的适用边界。
+- `动态换肤附录实验区`：用五张可点击实验卡对比 Theme、ResourceProvider、Configuration、外部皮肤包和 RRO 的适用边界。
 - `assets / raw 实验区`：对比路径读取和资源 ID 读取。
 - `混淆与 shrink 观察卡`：对比 `R.xxx` 直接引用和 `getIdentifier` 字符串查找的风险。
 - `依赖覆盖观察卡`：记录某个资源最终来自 main、debug、flavor 还是依赖库。
@@ -114,6 +114,8 @@ examples/17-resource-system-lab/
 ```text
 docs/chapter17/appendix_theme_skinning.md
 ```
+
+配套 demo 里已经把这部分做成一个动态换肤工作台：读者可以逐张点击方案卡，观察替换目标、替换前后、源码入口、风险和事件轨迹。
 
 ## 第三部分：手动实验路线
 

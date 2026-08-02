@@ -1,0 +1,12 @@
+{
+  "skinName": "spring",
+  "packageName": "com.helloandroid.resources.skin.spring",
+  "version": 1,
+  "hostProtocol": 17,
+  "mappings": {
+    "title": "skin_pkg_spring_title",
+    "panel": "skin_pkg_spring_panel",
+    "signal": "skin_pkg_spring_signal"
+  },
+  "fallback": "use app built-in default skin when a mapping cannot be resolved"
+}

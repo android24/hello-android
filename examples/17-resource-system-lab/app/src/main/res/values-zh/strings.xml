@@ -1,6 +1,8 @@
 <resources>
     <string name="resource_lab_title">资源仓库实验室</string>
     <string name="resource_lab_greeting">你好，来自中文资源</string>
+    <string name="resource_lab_locale_probe">来自中文限定符的 Locale 探针</string>
     <string name="resource_lab_replace_title_default">默认皮肤：资源表</string>
     <string name="resource_lab_replace_title_forest">森林皮肤：资源表</string>
+    <string name="skin_pkg_spring_title">春节皮肤包：灯笼资源表</string>
 </resources>

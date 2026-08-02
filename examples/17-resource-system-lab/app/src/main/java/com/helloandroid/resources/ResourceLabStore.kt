@@ -20,6 +20,7 @@ object ResourceLabStore {
     private val timeFormat = SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault())
     private val _state = MutableStateFlow(ResourceLabState())
     private var replacementMode = ReplacementMode.Default
+    private var activeSkinningStrategy = SkinningStrategy.ThemeAttr
 
     val state: StateFlow<ResourceLabState> = _state
 
@@ -35,6 +36,7 @@ object ResourceLabStore {
             configuration = context.toConfigurationSnapshot(),
             themeCards = context.collectThemeCards(),
             replacement = context.collectReplacementState(replacementMode),
+            skinningWorkbench = context.collectSkinningWorkbench(activeSkinningStrategy, replacementMode),
             dynamicLookup = DynamicLookup(
                 requestedName = dynamicName,
                 directId = targetId.toHex(),
@@ -82,6 +84,7 @@ object ResourceLabStore {
         _state.update {
             it.copy(
                 replacement = context.collectReplacementState(replacementMode),
+                skinningWorkbench = context.collectSkinningWorkbench(activeSkinningStrategy, replacementMode),
                 score = it.score.copy(replacementObserved = true),
                 experiment = ResourceExperiment(
                     operation = "动态资源替换：${replacementMode.label}",
@@ -92,6 +95,23 @@ object ResourceLabStore {
             )
         }
         record("Replacement", "toggle", "SWITCH", replacementMode.label)
+    }
+
+    fun selectSkinningStrategy(context: Context, key: String) {
+        activeSkinningStrategy = SkinningStrategy.fromKey(key)
+        _state.update {
+            it.copy(
+                skinningWorkbench = context.collectSkinningWorkbench(activeSkinningStrategy, replacementMode),
+                score = it.score.copy(appendixObserved = true),
+                experiment = ResourceExperiment(
+                    operation = "动态换肤方案演示：${activeSkinningStrategy.label}",
+                    expected = "观察这类方案替换了资源读取链路上的哪一层。",
+                    actual = activeSkinningStrategy.summary,
+                    conclusion = "换肤方案的关键是让资源入口稳定、证据可追踪、失败可兜底。"
+                )
+            )
+        }
+        record("Skinning", activeSkinningStrategy.key, "PLAY", activeSkinningStrategy.summary)
     }
 
     fun markDependencyExperiment(context: Context) {
@@ -252,6 +272,95 @@ private fun Context.collectReplacementState(mode: ReplacementMode): DynamicRepla
     )
 }
 
+private fun Context.collectSkinningWorkbench(
+    active: SkinningStrategy,
+    replacement: ReplacementMode
+): SkinningWorkbenchState {
+    val defaultThemePanel = resolveColorAttr(R.attr.resourceLabPanelColor)
+    val altTheme = ContextThemeWrapper(this, R.style.Theme_HelloResourceSystemLab_Alt)
+    val festivalTheme = ContextThemeWrapper(this, R.style.Theme_HelloResourceSystemLab_Festival)
+    val zhContext = createConfigurationContext(Configuration(resources.configuration).apply {
+        setLocale(Locale.SIMPLIFIED_CHINESE)
+    })
+    val enContext = createConfigurationContext(Configuration(resources.configuration).apply {
+        setLocale(Locale.ENGLISH)
+    })
+    val mappedTitleName = "skin_pkg_spring_title"
+    val mappedPanelName = "skin_pkg_spring_panel"
+    val mappedTitleId = resources.getIdentifier(mappedTitleName, "string", packageName)
+    val mappedPanelId = resources.getIdentifier(mappedPanelName, "color", packageName)
+    val skinManifest = assets.open("skin_package_manifest.json").bufferedReader().use { it.readText() }
+        .trim()
+        .replace('\n', ' ')
+
+    return SkinningWorkbenchState(
+        activeStrategy = active.label,
+        activeSummary = active.summary,
+        evidenceCards = listOf(
+            SkinningEvidenceCard(
+                key = SkinningStrategy.ThemeAttr.key,
+                title = "方案一：Theme / Style / Attribute",
+                implementation = "用 ContextThemeWrapper 模拟切换 Theme；同一个 attr 在默认、Alt、Festival 三套 Theme 中解析出不同值。",
+                operation = "点击本卡后观察 Theme attr 的解析环境。",
+                target = "?attr/resourceLabPanelColor",
+                before = "Default=$defaultThemePanel",
+                after = "Alt=${altTheme.resolveColorAttr(R.attr.resourceLabPanelColor)}, Festival=${festivalTheme.resolveColorAttr(R.attr.resourceLabPanelColor)}",
+                evidence = "代码入口：collectThemeCards() / collectSkinningWorkbench()；真实项目中 View 体系通常 recreate，Compose 则由主题状态驱动重组。",
+                risk = "如果页面硬编码颜色，Theme 切了也不会生效。",
+                isActive = active == SkinningStrategy.ThemeAttr
+            ),
+            SkinningEvidenceCard(
+                key = SkinningStrategy.Provider.key,
+                title = "方案二：ResourceProvider 业务槽位",
+                implementation = "用 ReplacementMode 模拟 Provider：同一个 title/panel/signal 槽位根据皮肤 key 返回不同资源 ID。",
+                operation = "先点“切换资源槽位”，再点本卡，观察 Provider 证据。",
+                target = "titleRes / panelColorRes / signalColorRes",
+                before = "当前皮肤 key=${replacement.label}",
+                after = "title=${resources.getResourceName(replacement.titleRes)}, panel=${resources.getResourceName(replacement.panelColorRes)}",
+                evidence = "代码入口：ReplacementMode + collectReplacementState()；真实项目可以抽成 SkinProvider.current()。",
+                risk = "Provider 没有成为唯一入口时，页面会散落 if/else 和旧资源缓存。",
+                isActive = active == SkinningStrategy.Provider
+            ),
+            SkinningEvidenceCard(
+                key = SkinningStrategy.Configuration.key,
+                title = "方案三：ConfigurationContext 语言探针",
+                implementation = "创建 zh / en 两个 ConfigurationContext，读取同一个 R.string.resource_lab_locale_probe。",
+                operation = "点击本卡，观察同一个资源 ID 在不同 Locale 下的返回值。",
+                target = "R.string.resource_lab_locale_probe",
+                before = "zh=${zhContext.getString(R.string.resource_lab_locale_probe)}",
+                after = "en=${enContext.getString(R.string.resource_lab_locale_probe)}",
+                evidence = "代码入口：createConfigurationContext(Configuration(...).setLocale(...))。",
+                risk = "只创建新 Context 不代表旧 UI 自动刷新，已经缓存的字符串仍然是旧值。",
+                isActive = active == SkinningStrategy.Configuration
+            ),
+            SkinningEvidenceCard(
+                key = SkinningStrategy.ExternalPackage.key,
+                title = "方案四：外部皮肤包协议模拟",
+                implementation = "用 assets/skin_package_manifest.json 模拟皮肤包 manifest，再用 getIdentifier 验证资源名映射。",
+                operation = "点击本卡，观察皮肤包协议、资源名映射和 fallback 证据。",
+                target = "skin_pkg_spring_title / skin_pkg_spring_panel",
+                before = "manifest=${skinManifest.take(180)}...",
+                after = "titleId=${mappedTitleId.toHex()}, title=${if (mappedTitleId != 0) getString(mappedTitleId) else "not found"}, panel=${if (mappedPanelId != 0) getColorCompat(mappedPanelId) else "not found"}",
+                evidence = "真实外部 APK 会通过额外 AssetManager 路径或加载策略取资源；本 demo 保留协议结构，避免依赖隐藏 API。",
+                risk = "主包和皮肤包资源名、版本、shrink 规则不一致时，运行时查找会错位或返回 0。",
+                isActive = active == SkinningStrategy.ExternalPackage
+            ),
+            SkinningEvidenceCard(
+                key = SkinningStrategy.Overlay.key,
+                title = "方案五：RRO 系统覆盖模拟",
+                implementation = "展示 overlay 要覆盖的目标资源和系统侧生效条件；普通 App 只观察结构，不直接执行系统 overlay。",
+                operation = "点击本卡，观察 RRO 与普通 App 内换肤的边界。",
+                target = resources.getResourceName(R.color.resource_lab_primary),
+                before = "base=${getColorCompat(R.color.resource_lab_primary)}",
+                after = "overlay candidate=#D93654, targetPackage=$packageName",
+                evidence = "真实 RRO 由系统 overlay 包、targetPackage、优先级和 Resources 解析共同决定。",
+                risk = "RRO 是系统层能力，不适合作为普通业务 App 的换肤按钮。",
+                isActive = active == SkinningStrategy.Overlay
+            )
+        )
+    )
+}
+
 private fun Context.collectSourceCards(): List<ResourceSourceCard> {
     return listOf(
         sourceCard("app variant", R.string.resource_origin_marker, "main/debug 可以合法覆盖同名资源。"),
@@ -335,4 +444,42 @@ private enum class ReplacementMode(
         panelColorRes = R.color.resource_lab_replace_panel_forest,
         signalColorRes = R.color.resource_lab_replace_signal_forest
     )
+}
+
+private enum class SkinningStrategy(
+    val key: String,
+    val label: String,
+    val summary: String
+) {
+    ThemeAttr(
+        key = "theme_attr",
+        label = "Theme / Style / Attribute",
+        summary = "替换的是 attr 解析环境，适合颜色、字体、圆角和控件默认样式。"
+    ),
+    Provider(
+        key = "resource_provider",
+        label = "ResourceProvider",
+        summary = "替换的是业务槽位到资源 ID 的映射，适合文案、图标、插画成套切换。"
+    ),
+    Configuration(
+        key = "configuration_context",
+        label = "ConfigurationContext",
+        summary = "替换的是资源选择时的 Configuration，适合语言、夜间模式和限定符资源验证。"
+    ),
+    ExternalPackage(
+        key = "external_package",
+        label = "外部皮肤包 / AssetManager",
+        summary = "替换的是资源加载路径或加载策略，适合插件化皮肤，但协议和兼容成本高。"
+    ),
+    Overlay(
+        key = "rro",
+        label = "RRO",
+        summary = "替换的是系统资源覆盖层，适合系统应用、ROM 定制和 Framework 资源覆盖。"
+    );
+
+    companion object {
+        fun fromKey(key: String): SkinningStrategy {
+            return values().firstOrNull { it.key == key } ?: ThemeAttr
+        }
+    }
 }

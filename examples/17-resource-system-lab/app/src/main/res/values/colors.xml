@@ -7,4 +7,6 @@
     <color name="resource_lab_replace_panel_forest">#EAF4EA</color>
     <color name="resource_lab_replace_signal_default">#315F72</color>
     <color name="resource_lab_replace_signal_forest">#3E6F58</color>
+    <color name="skin_pkg_spring_panel">#FFE7D6</color>
+    <color name="skin_pkg_spring_signal">#D93654</color>
 </resources>
