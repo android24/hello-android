@@ -29,13 +29,13 @@
 
 本节是第 18 章综合实践。
 
-后续可以配套工程：
+配套示例工程：
 
 ```text
 examples/18-code-loading-lab/
 ```
 
-这个工程可以围绕 ClassLoader 打印、Dex 路径观察、反射查找、R8 keep 风险、模拟插件入口、so 加载信息和崩溃诊断卡做成一个可运行实验。
+这个工程围绕 ClassLoader 打印、Dex 路径观察、反射查找、R8 keep 风险、真实插件 APK 动态加载、补丁类热修复逻辑、so 加载信息和崩溃诊断卡做成一个可运行实验。
 
 ## 学习目标
 
@@ -55,14 +55,18 @@ examples/18-code-loading-lab/
 
 - `代码加载分数`：提示实验完成度。
 - `ClassLoader 身份卡`：展示 Activity、Application、业务类、系统类的 ClassLoader。
+- `ClassLoader 查找链路卡`：展示 `loadClass -> parent -> findClass -> DexPathList -> DexFile`。
 - `Dex 路径观察卡`：展示 APK 路径、native library path、dexElements 概念。
 - `R 直接调用 vs 反射查找`：对比普通调用和 `Class.forName`。
 - `R8 / keep 风险卡`：模拟 release 中反射入口被混淆或 shrink 的风险。
+- `真实动态加载实验`：构建 `sample-plugin-debug.apk`，宿主运行时用 `DexClassLoader` 加载插件入口。
+- `热修复核心逻辑实验`：宿主保留一个错误实现，再从插件 APK 加载补丁类修正结果。
 - `MultiDex 观察卡`：说明 classes.dex、classes2.dex 和启动类边界。
 - `Dalvik vs ART 对比卡`：对比早期虚拟机和现代运行时在 JIT、AOT、Profile、安装和启动上的取舍。
 - `ART 运行时卡`：解释解释执行、JIT、AOT、Profile 和启动性能。
-- `native so 观察卡`：展示 ABI、`System.loadLibrary`、so 缺失风险。
-- `动态加载边界卡`：模拟插件入口类、插件资源、插件 so、插件生命周期四个边界。
+- `native so 观察卡`：展示 ABI、`System.loadLibrary`、native library path 和 so 缺失风险。
+- `JNI 匹配卡`：区分静态注册、动态注册、`JNI_OnLoad`、方法签名和 keep 风险。
+- `动态加载边界卡`：基于真实插件协议，说明插件入口类、插件资源、插件 so、插件生命周期四个边界。
 - `代码加载诊断卡`：整理 ClassNotFound、NoSuchMethod、VerifyError、UnsatisfiedLinkError。
 - `事件轨迹`：记录每次类加载、反射、诊断动作。
 
@@ -76,6 +80,7 @@ examples/18-code-loading-lab/
       -> 打印系统类 ClassLoader
           -> 对比业务类和系统类
               -> 解释 PathClassLoader
+                  -> 画出 DexPathList 查找链路
 
 中级侦探：观察反射和 R8 风险
   -> 普通调用一个类
@@ -84,11 +89,14 @@ examples/18-code-loading-lab/
               -> 写出 keep 规则
 
 高级侦探：解释插件化和 so
-  -> 模拟插件入口
-      -> 观察插件代码、资源、so、生命周期边界
-          -> 阅读 native so 观察卡
-              -> 阅读代码加载诊断卡
-                  -> 写代码加载诊断报告
+  -> 加载 sample-plugin-debug.apk
+      -> 通过 plugin-contract 调用插件入口
+          -> 从插件中加载热修复补丁类
+              -> 观察插件代码、资源、so、生命周期边界
+                  -> 阅读 native so 观察卡
+                      -> 区分 so 文件缺失和 JNI 方法缺失
+                          -> 阅读代码加载诊断卡
+                              -> 写代码加载诊断报告
 ```
 
 ## 第三部分：手动实验路线
@@ -130,14 +138,32 @@ String classLoader
 Activity classLoader
 packageCodePath
 nativeLibraryDir
+parent ClassLoader
+loadClass 查找路线
+DexPathList / dexElements 概念图
 ```
 
 你要回答：
 
 - 应用类和系统类是否来自同一个 ClassLoader？
 - PathClassLoader 主要加载什么？
+- `BaseDexClassLoader`、`DexPathList`、`dexElements` 分别负责什么？
+- 为什么 `dexElements` 顺序会影响热修复？
 - 为什么类型身份和 ClassLoader 有关？
 - 插件化为什么要设计公共 API 边界？
+
+建议在 demo 里把它做成一张链路图：
+
+```text
+loadClass(className)
+  -> parent
+      -> findClass
+          -> DexPathList
+              -> dexElements
+                  -> DexFile
+```
+
+学习者不一定要立刻读懂所有源码，但要能知道：类不是“直接从 APK 里飞出来”的，它经过了一条可解释、可观察、可排查的路径。
 
 ## 第五部分：反射与 R8 观察
 
@@ -191,6 +217,9 @@ nativeLibraryDir
 APK lib 目录
 System.loadLibrary 调用点
 目标 so 是否存在
+so 依赖是否存在
+JNI_OnLoad 是否可能执行
+静态注册 / 动态注册
 ```
 
 你要回答：
@@ -198,6 +227,27 @@ System.loadLibrary 调用点
 - `System.loadLibrary("foo")` 会找哪个文件？
 - `UnsatisfiedLinkError` 的第一证据是什么？
 - ABI 不匹配为什么只在部分设备崩溃？
+- 如果 APK 里有 so 但仍然崩溃，下一步查什么？
+- 静态注册和动态注册分别怕什么混淆问题？
+
+建议把 native 问题拆成三张状态卡：
+
+```text
+文件层
+  -> libfoo.so 是否存在
+  -> ABI 是否匹配
+
+依赖层
+  -> libfoo.so 依赖的其他 so 是否存在
+  -> 加载顺序是否正确
+
+符号层
+  -> JNI 方法签名是否匹配
+  -> RegisterNatives 是否成功
+  -> keep 规则是否保护了被 native 查找的类和方法
+```
+
+这样学习者看到 `UnsatisfiedLinkError` 时，不会只停在“so 没打进去吧”这一种猜测上。
 
 ## 第八部分：代码加载诊断报告
 
@@ -207,7 +257,9 @@ System.loadLibrary 调用点
 操作：
 目标类 / 方法 / so：
 当前 ClassLoader：
+parent ClassLoader：
 dex / apk 路径：
+dexElements 顺序：
 是否通过反射：
 是否开启 R8：
 mapping 证据：
@@ -215,6 +267,8 @@ keep 规则：
 依赖版本：
 设备 ABI：
 nativeLibraryDir：
+目标 so：
+JNI 注册方式：
 我的结论：
 仍不确定：
 ```
@@ -237,12 +291,16 @@ dalvik/system/PathClassLoader
 - D8 和 R8 分别负责什么？
 - shrink、optimize、obfuscate 分别会影响什么？
 - PathClassLoader 和 DexClassLoader 有什么区别？
+- ClassLoader 内部大致如何通过 DexPathList 查找类？
+- 为什么热修复要关心 dexElements 顺序？
 - 为什么同名类由不同 ClassLoader 加载后可能不能强转？
 - ART 的解释执行、JIT、AOT 和 Profile 大致解决什么问题？
 - Dalvik 和 ART 的主要差异是什么？
 - 为什么现代 ART 不是单纯 AOT？
 - Baseline Profile 为什么能影响启动性能？
 - `System.loadLibrary` 如何查找 so？
+- `System.loadLibrary("foo")` 和 `libfoo.so` 如何对应？
+- JNI 静态注册和动态注册有什么差异？
 - `UnsatisfiedLinkError` 常见原因有哪些？
 - 动态加载、插件化和热修复分别适合什么场景？
 - 为什么插件化不只是 DexClassLoader？
@@ -275,8 +333,10 @@ release 包启动后崩溃
 
 - 打印 Activity、Application、业务类、系统类 ClassLoader。
 - 使用 `Class.forName` 查找一个存在类和一个不存在类。
+- 画出一次 `loadClass` 的内部查找路线。
 - 查看 APK 中的 `classes.dex`。
 - 查看 APK 中的 `lib/` 目录。
+- 打印或记录 `nativeLibraryDir`。
 - 写一段 Dalvik vs ART 的对比说明。
 - 写一份代码加载诊断报告。
 
@@ -286,7 +346,9 @@ release 包启动后崩溃
 - 给反射入口写 keep 规则。
 - 查一次 dependencyInsight。
 - 阅读 `BaseDexClassLoader` 和 `DexPathList`。
+- 对照源码解释 `pathList` 和 `dexElements`。
 - 画出一个插件化最小结构图。
+- 画出 `System.loadLibrary -> nativeLibraryDir -> linker -> JNI_OnLoad` 的 native 加载链路。
 - 查阅一篇 Dalvik / ART 过渡时期的 MultiDex 或热修复文章，标注哪些结论今天仍然成立。
 
 ## 本节小结

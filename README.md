@@ -227,6 +227,7 @@
   - [18.6 动态加载、插件化与热修复：能力边界与工程代价](docs/chapter18/chapter18_6.md)
   - [18.7 代码加载体验问题：ClassNotFound、NoSuchMethod、VerifyError 与 UnsatisfiedLinkError](docs/chapter18/chapter18_7.md)
   - [18.8 综合实践：代码加载、ClassLoader 与运行时观察实验](docs/chapter18/chapter18_8.md)
+  - [配套示例工程](examples/18-code-loading-lab/)
 
 ### 项目说明
 
@@ -405,6 +406,7 @@
 - [第15章 View 绘制、RenderThread、SurfaceFlinger 与渲染链路示例工程](examples/15-rendering-frame-lab/)
 - [第16章 PMS、应用安装、包管理与权限机制示例工程](examples/16-package-manager-lab/)
 - [第17章 资源系统、AssetManager、Resources 与主题机制示例工程](examples/17-resource-system-lab/)
+- [第18章 ClassLoader、Dex、Dalvik / ART 与动态加载机制示例工程](examples/18-code-loading-lab/)
 
 ## 贡献者名单
 

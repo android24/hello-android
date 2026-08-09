@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">第18章 代码加载实验室</string>
+    <string name="generated_route_table_name">com.helloandroid.codeloading.GeneratedRouteTable</string>
+    <string name="missing_route_table_name">com.helloandroid.codeloading.MissingRouteTable</string>
+    <string name="native_probe_library">code_loading_probe</string>
+</resources>

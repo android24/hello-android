@@ -28,6 +28,7 @@ Dex 已经在 APK 里了
 - 打印并解释当前类的 ClassLoader。
 - 区分系统类、应用类、动态 dex 类的加载路径。
 - 理解双亲委派在 Android 中的意义。
+- 说清楚 `BaseDexClassLoader -> DexPathList -> dexElements -> DexFile` 的查找链路。
 - 能解释 ClassLoader 隔离为什么会导致类型转换失败。
 - 知道插件化常见的加载策略。
 
@@ -51,6 +52,42 @@ ClassLoader 会沿着自己的路径去查找这个类所在的 Dex。
       -> dex path
           -> class definition
 ```
+
+这句话如果继续往下拆，Android 里常见的应用类加载链路大致是：
+
+```text
+loadClass("com.example.HomeActivity")
+  -> 先询问 parent ClassLoader
+      -> parent 找不到
+          -> 当前 ClassLoader.findClass()
+              -> BaseDexClassLoader
+                  -> DexPathList.findClass()
+                      -> 遍历 dexElements
+                          -> DexFile 里查 class definition
+```
+
+这里有几个关键词很重要：
+
+| 关键词 | 粗略理解 |
+| --- | --- |
+| `BaseDexClassLoader` | Android 上很多 dex 类加载器的共同基础 |
+| `DexPathList` | 保存 dex 路径、native 库路径等查找信息 |
+| `dexElements` | 一个有顺序的 dex 元素数组 |
+| `DexFile` | 真正能从 dex 内容里查找 class definition 的对象 |
+
+所以 ClassLoader 不是只拿着一个字符串到处喊“谁见过这个类”。它内部其实有一张路径表：
+
+```text
+ClassLoader
+  -> pathList
+      -> dexElements[0]
+      -> dexElements[1]
+      -> dexElements[2]
+```
+
+当多个 dex 里存在同名类时，谁排在前面，谁就更可能先被命中。
+
+这也是热修复喜欢讨论 `dexElements` 顺序的原因。
 
 ## 第二部分：Android 常见 ClassLoader
 
@@ -95,6 +132,24 @@ Log.d("ClassLoader", "app=${applicationContext::class.java.classLoader}")
 这样可以避免应用随便替换系统核心类。
 
 Android 中具体实现和普通 JVM 不完全一样，但“先看父加载器，再看自己路径”的思想仍然很重要。
+
+你可以把它理解成一道门禁流程：
+
+```text
+我要找 java.lang.String
+  -> 先问 BootClassLoader
+      -> 系统类命中，应用不能随便替换
+
+我要找 com.example.Feature
+  -> BootClassLoader 找不到
+      -> App 的 PathClassLoader 再到自己的 dexElements 里找
+```
+
+这样设计的直接收益是：
+
+- 系统核心类更稳定，不容易被应用覆盖。
+- 宿主和插件可以通过父加载器共享一部分公共 API。
+- 但不同加载器之间也会形成边界，边界处理不好就会出现类型隔离问题。
 
 ## 第五部分：同名类不一定是同一个类型
 
@@ -158,9 +213,43 @@ ClassCastException
 
 这就要求你理解 ClassLoader 的查找路径顺序。
 
+更接近内部视角的表达是：
+
+```text
+修复前：
+pathList.dexElements = [
+  classes.dex,
+  classes2.dex
+]
+
+修复后：
+pathList.dexElements = [
+  patch.dex,
+  classes.dex,
+  classes2.dex
+]
+```
+
+当运行时第一次查找：
+
+```text
+com.example.BuggyCalculator
+```
+
+如果 `patch.dex` 里有同名类，并且它排在原 dex 前面，就可能先被找到。
+
 如果类已经被加载过，后面再替换就很困难。
 
 所以热修复不是简单“下载一个 dex”，而是在和类加载时机赛跑。
+
+这也解释了为什么很多热修复框架会强调：
+
+- 尽量早地安装补丁。
+- 避免补丁类在安装前就被原类触发加载。
+- 谨慎修改字段、方法签名、父类、接口等结构。
+- 针对不同 Android 版本做兼容处理。
+
+因为 ClassLoader 的顺序只能影响“还没被加载的类”。已经进入运行时类型系统的类，不会因为你改了数组顺序就自动消失。
 
 ## 第八部分：ClassLoader 问题排查
 
@@ -170,6 +259,19 @@ ClassCastException
 | 强转失败 | 类名、两个对象的 classLoader | 同名类由不同加载器加载 | 抽公共 API 到宿主父加载器 |
 | 插件资源错乱 | 类能加载但资源不对 | 只处理代码，没处理资源 | 配套 AssetManager / Resources |
 | 热修复不生效 | 类是否已加载 | 补丁加入太晚 | 提前加载补丁或调整方案 |
+
+排查时可以按这条证据链走：
+
+```text
+类名是否正确
+  -> APK / 插件 dex 中是否真的有这个类
+      -> 当前 ClassLoader 是谁
+          -> parent 是谁
+              -> dexElements 顺序是什么
+                  -> 类是否已经被加载过
+```
+
+其中最容易被忽略的是最后两点：顺序和时机。
 
 ## 本节小挑战
 
@@ -194,10 +296,12 @@ pluginApiFromHost.class.name == pluginApiFromPlugin.class.name
 - 在 Activity 中打印当前类的 ClassLoader。
 - 打印 `String`、`Activity`、业务类的 ClassLoader。
 - 搜索项目中是否使用 `Class.forName`。
+- 画出 `loadClass -> parent -> findClass -> DexPathList -> DexFile` 的查找链路。
 
 ### 进阶任务
 
 - 阅读 `BaseDexClassLoader`、`DexPathList` 的源码。
+- 尝试解释 `pathList`、`dexElements`、`nativeLibraryDirectories` 分别服务什么查找。
 - 画出一个插件类从 plugin.apk 被加载的流程。
 - 思考插件资源和插件类为什么要一起处理。
 

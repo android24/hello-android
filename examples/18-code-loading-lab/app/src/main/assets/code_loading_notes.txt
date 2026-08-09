@@ -1,0 +1,7 @@
+第18章观察目标：
+1. 源码存在不等于 Dex 中存在。
+2. Dex 中存在不等于当前 ClassLoader 可见。
+3. so 存在不等于 JNI 方法一定能匹配。
+4. 插件化不是 DexClassLoader 一句话，还要处理资源、组件、so、安全和回滚。
+5. 动态加载至少要闭合：插件 APK、ClassLoader、入口类、宿主 contract。
+6. 热修复的核心是让补丁逻辑优先命中；真实框架可能修改 dexElements 顺序，本 demo 用补丁策略替换演示这个思想。

@@ -1,0 +1,9 @@
+{
+  "pluginName": "sample-dynamic-plugin",
+  "apkAsset": "sample-plugin-debug.apk",
+  "entryClass": "com.helloandroid.sampleplugin.SamplePluginEntry",
+  "hotfixClass": "com.helloandroid.sampleplugin.CheckoutHotfixPatch",
+  "resourcePackage": "inside sample-plugin-debug.apk",
+  "nativeLibraries": ["libplugin_filter.so"],
+  "contract": "plugin-contract 模块由宿主和插件共同依赖，公共 API 放在父 ClassLoader 可见的位置，避免同名接口被不同 ClassLoader 加载后无法强转。"
+}
