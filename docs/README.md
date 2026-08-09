@@ -37,6 +37,8 @@
 - 第 15 章：View 绘制、RenderThread、SurfaceFlinger 与渲染链路。
 - 第 16 章：PMS、应用安装、包管理与权限机制。
 - 第 17 章：资源系统、AssetManager、Resources 与主题机制。
+- 第 18 章：ClassLoader、Dex、Dalvik / ART 与动态加载机制。
+- 第 19 章：Android 进程模型、Zygote、应用沙箱与内存管理机制。
 
 这几章会逐步串起一条完整路径：
 
@@ -54,6 +56,8 @@
                                       -> RenderThread / SurfaceFlinger 完成渲染与合成
                                           -> PMS 管理安装包、组件、权限和签名
                                               -> Resources 选择字符串、图片、主题和配置资源
+                                                  -> ClassLoader / Dalvik / ART 加载和执行代码
+                                                      -> Zygote / 进程模型承载运行空间并参与后台回收
 ```
 
 ## 配套工程

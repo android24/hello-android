@@ -30,13 +30,13 @@
 
 本节是第 19 章综合实践。
 
-后续可以配套工程：
+配套示例工程：
 
 ```text
 examples/19-process-zygote-lab/
 ```
 
-这个工程可以围绕 pid / uid / processName 打印、Application 初始化轨迹、Zygote 冷启动观察、多进程 Service、Binder 通信、后台进程死亡恢复、线程 dump 和进程问题诊断卡做成一个可运行实验。
+这个工程围绕 pid / uid / processName 打印、应用沙箱、Application 初始化轨迹、Zygote 冷启动观察、多进程 Service、isolatedProcess、Binder 通信、后台进程死亡恢复、线程 dump、ANR 场景模拟和进程问题诊断卡做成一个可运行实验。
 
 ## 学习目标
 
@@ -58,16 +58,20 @@ examples/19-process-zygote-lab/
 - `启动轨迹卡`：记录 Application、Activity、Service 的创建时间。
 - `Zygote 冷启动卡`：解释 force-stop、am kill、后台切回的差异。
 - `ActivityThread 链路卡`：展示 `ActivityThread.main -> attach -> bindApplication`。
+- `状态恢复卡`：对比进程内存草稿与持久化草稿，观察后台回收后的恢复路径。
 - `多进程实验卡`：启动 `:remote` Service，对比主进程和 remote 进程状态。
 - `单例隔离卡`：展示主进程和 remote 进程中的单例值不同。
+- `沙箱与 isolatedProcess 卡`：观察 uid、dataDir 和隔离进程边界。
 - `Binder 通信卡`：通过 Messenger / AIDL 模拟主进程和 remote Service 通信。
 - `后台回收实验卡`：模拟进程被杀后的状态恢复。
 - `OOM Adj 观察卡`：指导使用 `/proc/<pid>/oom_score_adj` 和 `dumpsys activity processes` 对比前后台状态。
+- `OOM Adj 样本表`：记录前台、后台返回、remote 后的样本，避免只看一次值就下结论。
 - `Provider 初始化卡`：展示 Provider 可能早于 Application 参与启动路径。
 - `Binder Death 卡`：remote 进程死亡后触发死亡监听，解释远端生命周期。
 - `线程观察卡`：展示 main、Binder、RenderThread、业务线程。
 - `线程 Dump 阅读卡`：标注 main、Binder、RenderThread、worker 的状态和等待关系。
-- `ANR 线索卡`：模拟主线程阻塞、Binder 等待和锁竞争，把 trace 变成诊断题。
+- `ANR 线索卡`：模拟主线程阻塞、Broadcast 阻塞、Service 阻塞和 remote Binder 阻塞，把 trace 变成诊断题。
+- `trace 阅读卡`：提示先看 main，再看 Binder，再找锁和系统超时原因。
 - `进程问题诊断卡`：整理后台死亡、多进程错乱、保活误区和 remote 卡死。
 - `事件轨迹`：记录每次进程、线程、Service 和恢复动作。
 

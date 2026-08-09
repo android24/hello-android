@@ -1,0 +1,6 @@
+<resources>
+    <color name="lab_background">#F7F7F2</color>
+    <color name="lab_primary">#244C66</color>
+    <color name="lab_secondary">#8B5E34</color>
+    <color name="lab_surface">#FFFFFF</color>
+</resources>

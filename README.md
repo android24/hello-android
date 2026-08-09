@@ -238,6 +238,7 @@
   - [19.6 多进程、远程 Service、ContentProvider 与 isolatedProcess](docs/chapter19/chapter19_6.md)
   - [19.7 进程体验问题：后台死亡、状态丢失、多进程错乱与保活误区](docs/chapter19/chapter19_7.md)
   - [19.8 综合实践：进程、Zygote、多进程与内存回收观察实验](docs/chapter19/chapter19_8.md)
+  - [配套示例工程](examples/19-process-zygote-lab/)
 
 ### 项目说明
 
@@ -419,6 +420,7 @@
 - [第16章 PMS、应用安装、包管理与权限机制示例工程](examples/16-package-manager-lab/)
 - [第17章 资源系统、AssetManager、Resources 与主题机制示例工程](examples/17-resource-system-lab/)
 - [第18章 ClassLoader、Dex、Dalvik / ART 与动态加载机制示例工程](examples/18-code-loading-lab/)
+- [第19章 Android 进程模型、Zygote、应用沙箱与内存管理机制示例工程](examples/19-process-zygote-lab/)
 
 ## 贡献者名单
 
