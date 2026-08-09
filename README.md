@@ -228,6 +228,16 @@
   - [18.7 代码加载体验问题：ClassNotFound、NoSuchMethod、VerifyError 与 UnsatisfiedLinkError](docs/chapter18/chapter18_7.md)
   - [18.8 综合实践：代码加载、ClassLoader 与运行时观察实验](docs/chapter18/chapter18_8.md)
   - [配套示例工程](examples/18-code-loading-lab/)
+- 第19章 Android 进程模型、Zygote、应用沙箱与内存管理机制
+  - 通关目标：理解 App 进程如何被 Zygote fork 出来，掌握 pid / uid / processName、应用沙箱、多进程、主线程 / Binder 线程、OOM Adj、LMKD 和后台恢复问题排查思路
+  - [19.1 为什么要学习进程模型、Zygote 与内存管理](docs/chapter19/chapter19_1.md)
+  - [19.2 Linux 进程、UID、应用沙箱与 SELinux](docs/chapter19/chapter19_2.md)
+  - [19.3 Zygote：App 进程如何被 fork 出来](docs/chapter19/chapter19_3.md)
+  - [19.4 App 进程里的线程：主线程、Binder 线程、RenderThread 与业务线程](docs/chapter19/chapter19_4.md)
+  - [19.5 进程优先级、OOM Adj 与 LMKD：为什么后台进程会被杀](docs/chapter19/chapter19_5.md)
+  - [19.6 多进程、远程 Service、ContentProvider 与 isolatedProcess](docs/chapter19/chapter19_6.md)
+  - [19.7 进程体验问题：后台死亡、状态丢失、多进程错乱与保活误区](docs/chapter19/chapter19_7.md)
+  - [19.8 综合实践：进程、Zygote、多进程与内存回收观察实验](docs/chapter19/chapter19_8.md)
 
 ### 项目说明
 
@@ -295,7 +305,7 @@
 - SurfaceFlinger、渲染链路与应用显示原理
 - 阶段项目：从一次点击追踪到 Framework 调用链
 
-当前 Framework 阶段已经展开到第 18 章。它不是突然跳进源码深水区，而是沿着一条非常具体的应用行为往下走：先从一次点击和一次系统服务调用建立入口，再追踪 Activity 如何被启动、窗口如何被添加、内容如何走向屏幕，然后观察触摸事件如何被系统派发并在 View 树中找到处理者，继续追问 UI 状态变化如何变成屏幕上的下一帧，再回到系统识别 App 的入口，理解安装、包解析、组件、权限和签名，接着进入资源系统，解释字符串、图片、主题和多语言资源为什么能被正确读取，最后补齐代码加载主线，理解 Dex、ClassLoader、Dalvik、ART、so、动态加载和热修复如何共同决定 App 代码能否被找到并执行。
+当前 Framework 阶段已经展开到第 19 章。它不是突然跳进源码深水区，而是沿着一条非常具体的应用行为往下走：先从一次点击和一次系统服务调用建立入口，再追踪 Activity 如何被启动、窗口如何被添加、内容如何走向屏幕，然后观察触摸事件如何被系统派发并在 View 树中找到处理者，继续追问 UI 状态变化如何变成屏幕上的下一帧，再回到系统识别 App 的入口，理解安装、包解析、组件、权限和签名，接着进入资源系统，解释字符串、图片、主题和多语言资源为什么能被正确读取，再补齐代码加载主线，理解 Dex、ClassLoader、Dalvik、ART、so、动态加载和热修复如何共同决定 App 代码能否被找到并执行，最后继续追问这些代码运行在哪个进程里，理解 Zygote、应用沙箱、多进程、线程、OOM Adj 和 LMKD 如何共同决定 App 的运行空间与回收命运。
 
 - 第 10 章负责打开入口：建立 Android 系统分层视角，认识 ActivityThread、Context、Handler、Looper、Binder 和 AOSP 源码阅读方法。它像一张进城地图，先告诉你 Framework 这座城市大概有哪些路。
 - 第 11 章负责建立通信主线：从 Binder、AIDL、ServiceManager、SystemServer 到系统服务调用，让你理解 App 为什么不能直接调用系统内部能力，而要通过 Binder 和 system_server 协作。
@@ -306,6 +316,7 @@
 - 第 16 章负责补齐包管理主线：从 APK 安装、Manifest 解析、组件注册、Intent 匹配到签名、权限、包可见性和多用户状态，理解安装失败、组件找不到、权限异常和查询不到 App。学完这一章，你应该能解释“系统为什么知道这个 App、组件和权限存在”。
 - 第 17 章负责补齐资源系统主线：从 `res`、`R` 文件、`resources.arsc` 到 `AssetManager`、`Resources`、`Configuration`、Theme 和资源合并，理解多语言、夜间模式、密度适配、资源找不到、主题错乱和图片模糊。学完这一章，你应该能解释“系统为什么能为当前设备选出正确的字符串、图片和主题值”。
 - 第 18 章负责补齐代码加载主线：从源码、class、Dex、D8 / R8 到 ClassLoader、Dalvik / ART、Profile、JNI、so 和动态加载，理解 `ClassNotFoundException`、`NoSuchMethodError`、`UnsatisfiedLinkError`、插件化和热修复的工程边界。学完这一章，你应该能解释“系统为什么能找到并执行这个 App 的代码”，也能看懂早期 Dalvik 文章和现代 ART 优化之间的差异。
+- 第 19 章负责补齐进程运行空间：从 Linux 进程、uid、应用沙箱到 Zygote fork、ActivityThread、主线程 / Binder 线程、多进程、OOM Adj 和 LMKD，理解后台死亡、状态丢失、多进程错乱和保活误区。学完这一章，你应该能解释“这个 App 进程从哪里来、为什么能隔离运行、又为什么会被系统回收”。
 
 这几章串起来后，会形成一条完整的 Framework 入门链路：
 
@@ -324,6 +335,7 @@
                                           -> PMS 管理安装包、组件、权限和签名
                                               -> Resources 选择字符串、图片、主题和配置资源
                                                   -> ClassLoader / Dalvik / ART 加载和执行代码
+                                                      -> Zygote / 进程模型承载运行空间并在低内存时参与回收
 ```
 
 ### 学习顺序

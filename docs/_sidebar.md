@@ -142,3 +142,12 @@
     - [18.6 动态加载、插件化与热修复：能力边界与工程代价](chapter18/chapter18_6)
     - [18.7 代码加载体验问题：ClassNotFound、NoSuchMethod、VerifyError 与 UnsatisfiedLinkError](chapter18/chapter18_7)
     - [18.8 综合实践：代码加载、ClassLoader 与运行时观察实验](chapter18/chapter18_8)
+- 第19章 Android 进程模型、Zygote、应用沙箱与内存管理机制
+    - [19.1 为什么要学习进程模型、Zygote 与内存管理](chapter19/chapter19_1)
+    - [19.2 Linux 进程、UID、应用沙箱与 SELinux](chapter19/chapter19_2)
+    - [19.3 Zygote：App 进程如何被 fork 出来](chapter19/chapter19_3)
+    - [19.4 App 进程里的线程：主线程、Binder 线程、RenderThread 与业务线程](chapter19/chapter19_4)
+    - [19.5 进程优先级、OOM Adj 与 LMKD：为什么后台进程会被杀](chapter19/chapter19_5)
+    - [19.6 多进程、远程 Service、ContentProvider 与 isolatedProcess](chapter19/chapter19_6)
+    - [19.7 进程体验问题：后台死亡、状态丢失、多进程错乱与保活误区](chapter19/chapter19_7)
+    - [19.8 综合实践：进程、Zygote、多进程与内存回收观察实验](chapter19/chapter19_8)
