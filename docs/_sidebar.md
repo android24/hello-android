@@ -151,3 +151,12 @@
     - [19.6 多进程、远程 Service、ContentProvider 与 isolatedProcess](chapter19/chapter19_6)
     - [19.7 进程体验问题：后台死亡、状态丢失、多进程错乱与保活误区](chapter19/chapter19_7)
     - [19.8 综合实践：进程、Zygote、多进程与内存回收观察实验](chapter19/chapter19_8)
+- 第20章 ANR、Crash、Watchdog 与系统稳定性诊断机制
+    - [20.1 为什么要学习 ANR、Crash、Watchdog 与系统稳定性诊断](chapter20/chapter20_1)
+    - [20.2 ANR：系统如何判断 App 无响应](chapter20/chapter20_2)
+    - [20.3 ANR trace：如何读 main、Binder、锁和系统超时](chapter20/chapter20_3)
+    - [20.4 Java Crash：异常如何杀死进程](chapter20/chapter20_4)
+    - [20.5 Native Crash 与 tombstone：signal、JNI 和 so 崩溃](chapter20/chapter20_5)
+    - [20.6 Watchdog、DropBox 与 bugreport：系统级事故证据](chapter20/chapter20_6)
+    - [20.7 稳定性体验问题：误判、漏报、恢复和降级](chapter20/chapter20_7)
+    - [20.8 综合实践：稳定性诊断实验室](chapter20/chapter20_8)
