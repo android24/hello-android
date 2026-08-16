@@ -1,4 +1,5 @@
 - [课程首页](README)
+- [课程中期地图](midterm_map)
 - 第1章 Kotlin 与 Android 基础
     - [1.1 开发环境与第一个 Android 工程](chapter1/chapter1)
     - [1.2 Kotlin 基础与 Android 工程语法](chapter1/chapter1_2)
