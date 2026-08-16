@@ -353,6 +353,59 @@ main 状态：BLOCKED
 
 这类结论才算把 trace 读成了工程行动。
 
+## 第九部分：一段 ANR trace 样例
+
+下面是一段教学用的简化 trace：
+
+```text
+Reason: Input dispatching timed out
+Process: com.example.course, PID: 24680
+
+"main" prio=5 tid=1 BLOCKED
+  waiting to lock <0x01> (a com.example.CourseCache)
+  at com.example.CourseRepository.getCurrentCourse(CourseRepository.kt:42)
+  at com.example.CourseDetailViewModel.load(CourseDetailViewModel.kt:31)
+  at com.example.CourseDetailScreen.onClickRetry(CourseDetailScreen.kt:88)
+
+"DefaultDispatcher-worker-1" prio=5 tid=31 RUNNABLE
+  locked <0x01> (a com.example.CourseCache)
+  at com.example.RemoteCourseService.fetch(RemoteCourseService.kt:77)
+  at com.example.CourseSyncJob.sync(CourseSyncJob.kt:52)
+
+"Binder:24680_2" prio=5 tid=42 WAITING
+  at android.os.BinderProxy.transactNative(Native Method)
+```
+
+逐行读：
+
+| 线索 | 说明 |
+| --- | --- |
+| `Reason: Input dispatching timed out` | 系统等待输入事件处理完成，但 App 没及时响应。 |
+| `"main" BLOCKED` | 主线程不是在计算，而是在等锁。 |
+| `waiting to lock <0x01>` | main 等的是 `CourseCache` 这把锁。 |
+| `DefaultDispatcher-worker-1 locked <0x01>` | 持锁线程是 worker，不是 main 自己。 |
+| `RemoteCourseService.fetch` | 持锁线程在锁内做远端请求，这是危险点。 |
+| `BinderProxy.transactNative` | 说明进程里存在 Binder 调用等待，需要继续看是否和远端有关。 |
+
+这段 trace 的结论不是：
+
+```text
+点击重试导致 ANR
+```
+
+而是：
+
+```text
+主线程点击后读取 CourseCache，需要进入锁；worker 持有 CourseCache 并在锁内同步请求远端服务，导致 main 无法处理输入事件，最终触发 Input ANR。
+```
+
+修复方向也不应该只是“给点击加防抖”，而是：
+
+- CourseCache 读取改为不可变快照。
+- worker 不在锁内做远端请求。
+- remote 请求增加超时和失败降级。
+- main 线程不等待同步结果，只展示加载态或缓存态。
+
 ## 本节小挑战
 
 ### trace 阅读题

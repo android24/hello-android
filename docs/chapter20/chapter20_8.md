@@ -30,13 +30,13 @@ ANR、Crash、Native Crash 和 Watchdog 分别是什么
 
 本节是第 20 章综合实践。
 
-后续可以配套工程：
+配套示例工程：
 
 ```text
 examples/20-stability-diagnosis-lab/
 ```
 
-这个工程可以围绕 ANR 触发、Java Crash 触发、native crash 占位实验、线程等待链、锁竞争、Binder 阻塞、DropBox / dumpsys 命令面板、稳定性报告模板和体验评分机制做成一个可运行实验室。
+这个工程围绕 ANR 触发、Java Crash 触发、native crash 占位实验、线程等待链、锁竞争、Binder 阻塞、DropBox / dumpsys 命令面板、稳定性报告模板、事故任务板和体验评分机制做成一个可运行实验室。
 
 ## 学习目标
 
@@ -64,6 +64,9 @@ examples/20-stability-diagnosis-lab/
 - `恢复与降级卡`：模拟 remote 进程死亡、接口失败、缓存兜底。
 - `稳定性报告卡`：按模板生成诊断报告。
 - `事件轨迹`：记录每次触发、观察和修复动作。
+- `事故任务板`：把本节拆成“确认现场、制造事故、拆等待链、区分 Crash、完成复盘”五个任务。
+- `事故剧本模式`：提供几个线上事故入口，让学习者先从模糊现象开始判断。
+- `危险实验确认`：ANR / Crash 触发前先确认，避免误触打断观察节奏。
 
 ## 第二部分：稳定性诊断路线
 
@@ -84,6 +87,42 @@ examples/20-stability-diagnosis-lab/
 ```
 
 这四段对应真实工作里的稳定性闭环。
+
+## 第二部分补充：事故剧本怎么玩
+
+稳定性问题最难的地方，往往不是“知道某个名词”，而是事故刚出现时信息很少：
+
+```text
+用户说页面卡住
+  -> 你不知道是卡顿、ANR、死锁还是远端慢
+
+用户说 App 退了
+  -> 你不知道是 Java Crash、Native Crash 还是进程被杀
+
+用户说只有少数机型复现
+  -> 你不知道是 ABI、系统版本、资源、内存还是厂商差异
+```
+
+所以 Demo 增加了事故剧本模式。它先给一个“用户现象”，再给少量第一线索，然后故意藏一个陷阱。
+
+例如：
+
+| 剧本 | 表面现象 | 第一线索 | 隐藏陷阱 |
+| --- | --- | --- | --- |
+| 课程详情页卡死 | 点击后无响应 | Input dispatching timed out | main 不是根因，持锁 worker 才是根因 |
+| 下载完成后闪退 | 偶发回到桌面 | FATAL EXCEPTION: CrashWorker | 后台线程 Crash 也会杀进程 |
+| 图片页少数机型闪退 | 部分 ABI 出问题 | SIGSEGV + libcourse_image.so | Java 栈只能看到 JNI 边界 |
+
+玩剧本时不要急着点危险按钮，先写下自己的第一判断：
+
+```text
+这是哪类事故？
+第一证据是什么？
+下一份证据应该去哪里拿？
+我现在的结论有没有被证据支持？
+```
+
+然后再进入 ANR、Crash、tombstone 或 DropBox 实验区验证自己的判断。
 
 ## 第三部分：事故分类表
 
@@ -234,6 +273,45 @@ tombstone：
 - 后台进程被杀为什么不等于 Crash？
 - 稳定性修复为什么要有回归和监控？
 
+## 第九部分：AOSP 源码阅读入口
+
+第 20 章不要求你一次读完整个稳定性子系统，但建议从下面这些入口建立源码地图：
+
+```text
+frameworks/base/services/core/java/com/android/server/am/AppErrors.java
+frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java
+frameworks/base/services/core/java/com/android/server/wm/ActivityTaskManagerService.java
+frameworks/base/services/core/java/com/android/server/input/InputManagerService.java
+frameworks/native/services/inputflinger/dispatcher/InputDispatcher.cpp
+frameworks/base/core/java/com/android/internal/os/RuntimeInit.java
+frameworks/base/services/core/java/com/android/server/Watchdog.java
+frameworks/base/services/core/java/com/android/server/DropBoxManagerService.java
+system/core/debuggerd/
+system/core/tombstoned/
+```
+
+推荐阅读顺序：
+
+```text
+ANR
+  -> 先看 InputDispatcher 如何形成输入超时线索
+      -> 再看 AMS / AppErrors 如何记录和处理应用错误
+
+Java Crash
+  -> 先看 RuntimeInit 如何安装未捕获异常处理
+      -> 再看系统侧如何收到应用崩溃并更新进程状态
+
+Watchdog
+  -> 先看 Watchdog 的 HandlerChecker / Monitor 模型
+      -> 再看 system_server 关键线程如何被检查
+
+Native Crash
+  -> 先看 tombstone 生成和保存链路
+      -> 再回到具体 so 的符号化和 JNI 调用入口
+```
+
+源码阅读的目标不是背类名，而是把事故证据和系统产生证据的地方对应起来。
+
 ## 本节小挑战
 
 ### 稳定性事故终局题
@@ -264,13 +342,17 @@ ANR trace 显示 main 线程 waiting to lock CourseCache。
 
 ### 基础任务
 
+- 完成事故任务板的前 3 个任务：确认现场、制造一次 ANR、拆开等待链。
+- 至少完成 1 个事故剧本，并写出“现象 -> 第一证据 -> 下一步证据”的判断链。
 - 写一份稳定性诊断报告模板。
 - 收集一次 logcat 和 dumpsys activity anr。
-- 读一份 Java Crash stack。
-- 读一份 ANR trace。
+- 读一份 Java Crash stack，找出异常类型、线程名和第一业务栈。
+- 读一份 ANR trace，写出 main 线程状态和等待链。
 
 ### 进阶任务
 
+- 完成事故任务板的全部任务，并把页面分数提升到 8 分以上。
+- 完成 3 个事故剧本，比较它们的证据入口为什么不同。
 - 为一个已有 App 增加稳定性上下文日志：processName、pid、threadName、前后台状态。
 - 设计一套 ANR、Crash、Native Crash、Low Memory 的分类表。
 - 为核心流程增加失败恢复和降级策略。

@@ -249,6 +249,7 @@
   - [20.6 Watchdog、DropBox 与 bugreport：系统级事故证据](docs/chapter20/chapter20_6.md)
   - [20.7 稳定性体验问题：误判、漏报、恢复和降级](docs/chapter20/chapter20_7.md)
   - [20.8 综合实践：稳定性诊断实验室](docs/chapter20/chapter20_8.md)
+  - [配套示例工程](examples/20-stability-diagnosis-lab/)
 
 ### 项目说明
 
@@ -433,6 +434,7 @@
 - [第17章 资源系统、AssetManager、Resources 与主题机制示例工程](examples/17-resource-system-lab/)
 - [第18章 ClassLoader、Dex、Dalvik / ART 与动态加载机制示例工程](examples/18-code-loading-lab/)
 - [第19章 Android 进程模型、Zygote、应用沙箱与内存管理机制示例工程](examples/19-process-zygote-lab/)
+- [第20章 ANR、Crash、Watchdog 与系统稳定性诊断机制示例工程](examples/20-stability-diagnosis-lab/)
 
 ## 贡献者名单
 

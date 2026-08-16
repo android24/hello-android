@@ -328,6 +328,44 @@ bugreport
 
 证据越能对齐，结论越可靠。
 
+### 一段 DropBox / bugreport 摘要样例
+
+下面是一段教学用的简化摘要：
+
+```text
+DropBox entry: data_app_anr
+Process: com.example.course
+Time: 2026-08-16 21:18:42
+Reason: Input dispatching timed out
+
+dumpsys activity processes:
+  Proc #12: cached com.example.course/u0a123
+  pid=24680 adj=900 state=Cached
+
+logcat:
+  InputDispatcher: Application is not responding: com.example.course
+```
+
+逐行读：
+
+| 线索 | 说明 |
+| --- | --- |
+| `data_app_anr` | 这是普通应用 ANR，不是 system_server Watchdog。 |
+| `Process` | 确认目标进程。 |
+| `Time` | 用来和业务日志、logcat、trace 对齐。 |
+| `Reason` | 输入分发超时，先看 main 线程。 |
+| `adj=900 state=Cached` | 进程状态偏后台，需要确认是否存在后台恢复、冷启动或状态丢失。 |
+| `InputDispatcher` | 输入系统侧已经确认 App 未响应。 |
+
+这类摘要不能直接给出根因，但它能告诉你下一步：
+
+```text
+去找同一时间点的 ANR trace
+  -> 看 main 状态
+      -> 看锁、Binder、worker
+          -> 再结合进程前后台状态判断是否和恢复路径有关
+```
+
 ## 第七部分：什么时候需要 bugreport
 
 不是每个 Crash 都需要 bugreport。

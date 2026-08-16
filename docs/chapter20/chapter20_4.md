@@ -346,6 +346,39 @@ Activity 已销毁
 | ClassCastException | 类型假设错误、反射、混淆、动态加载 | 明确接口模型、减少强转 |
 | ConcurrentModificationException | 遍历时修改集合、多线程共享状态 | 使用不可变快照或线程安全结构 |
 
+## 第八部分：一段 Java Crash 样例
+
+下面是一段教学用的简化 Crash：
+
+```text
+FATAL EXCEPTION: main
+Process: com.example.course, PID: 13579
+java.lang.IllegalStateException: Course detail requires courseId
+    at com.example.CourseDetailViewModel.load(CourseDetailViewModel.kt:46)
+    at com.example.CourseDetailScreenKt.CourseDetailScreen(CourseDetailScreen.kt:72)
+    at androidx.compose.runtime.ComposerImpl.recompose(Composer.kt:...)
+```
+
+逐行读：
+
+| 线索 | 说明 |
+| --- | --- |
+| `FATAL EXCEPTION: main` | 主线程未捕获异常，通常会导致进程退出。 |
+| `Process` / `PID` | 确认崩溃发生在哪个进程，和第 19 章的进程诊断衔接。 |
+| `IllegalStateException` | 不是空指针，而是业务状态非法。 |
+| `requires courseId` | 异常信息已经提示详情页缺少关键参数。 |
+| `CourseDetailViewModel.load` | 第一业务栈，优先看这里。 |
+| `Compose recompose` | Compose 是触发渲染的框架链路，不一定是根因。 |
+
+更好的修复结论是：
+
+```text
+详情页依赖 courseId，但进程重建或通知跳转时没有保证参数存在。
+修复应补齐导航参数校验、savedState 恢复和缺参降级页，而不是只 catch IllegalStateException。
+```
+
+这段样例也提醒你：Crash 栈里的框架调用很多，但真正决定修复方向的是第一业务栈和业务状态语义。
+
 ## 本节小挑战
 
 ### Crash 诊断题

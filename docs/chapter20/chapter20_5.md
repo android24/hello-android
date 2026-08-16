@@ -341,6 +341,46 @@ Native Crash 修复尤其需要关注回归设备。
 
 因为很多问题只在特定 ABI、CPU、系统版本或厂商 ROM 出现。
 
+## 第八部分：一段 tombstone 样例
+
+下面是一段教学用的简化 tombstone：
+
+```text
+pid: 24680, tid: 24731, name: ImageDecoder  >>> com.example.course <<<
+signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x0
+ABI: arm64
+backtrace:
+  #00 pc 00000000000124a0  /data/app/.../libcourse_image.so (ImageDecoder::decodeFrame+64)
+  #01 pc 0000000000011988  /data/app/.../libcourse_image.so (ImagePipeline::decode+120)
+  #02 pc 000000000036bb44  /apex/com.android.art/lib64/libart.so (art_quick_generic_jni_trampoline+148)
+```
+
+逐行读：
+
+| 线索 | 说明 |
+| --- | --- |
+| `pid / tid / name` | 崩溃发生在 `ImageDecoder` 线程，不是 main。 |
+| `signal 11 (SIGSEGV)` | 非法内存访问。 |
+| `fault addr 0x0` | 很像空指针或空地址访问。 |
+| `ABI: arm64` | 需要确认该 ABI 下 so 和符号表是否匹配。 |
+| `libcourse_image.so` | 第一关注对象是业务或第三方图片 so。 |
+| `ImageDecoder::decodeFrame+64` | 已符号化后能看到 native 函数名，定位价值很高。 |
+| `art_quick_generic_jni_trampoline` | 说明 Java / JNI 调用进入了 native 链路。 |
+
+这段 tombstone 的结论可以写成：
+
+```text
+ImageDecoder 线程在 libcourse_image.so 的 decodeFrame 中发生 SIGSEGV，fault addr 为 0x0，疑似 native 空指针访问。需要结合输入图片、JNI 入口、so 版本、arm64 符号表和最近图片解码改动继续定位。
+```
+
+不要写成：
+
+```text
+libart 崩了。
+```
+
+因为 `libart.so` 出现在 JNI 桥接附近，并不代表 ART 是根因。
+
 ## 本节小挑战
 
 ### tombstone 阅读题

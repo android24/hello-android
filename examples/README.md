@@ -35,6 +35,7 @@ examples/
   17-resource-system-lab/
   18-code-loading-lab/
   19-process-zygote-lab/
+  20-stability-diagnosis-lab/
 ```
 
 ## 设计原则
