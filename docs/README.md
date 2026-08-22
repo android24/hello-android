@@ -25,7 +25,7 @@
 - 然后改一个小功能，让代码留下你的痕迹。
 - 最后完成章节练习，用自己的话复盘关键链路。
 
-如果你已经学到第 20 章，建议先读一遍：
+如果你已经完成第 20 章，建议先读一遍：
 
 - [课程中期地图：从会写 App 到读懂系统](midterm_map.md)
 
@@ -33,7 +33,7 @@
 
 ## 当前章节
 
-目前课程已经推进到 Framework 阶段：
+目前课程已经推进到 Framework 与系统工程阶段：
 
 - 第 10 章：Android Framework 入门、系统架构与源码阅读方法。
 - 第 11 章：Binder、SystemServer 与系统服务入门。
@@ -46,6 +46,7 @@
 - 第 18 章：ClassLoader、Dex、Dalvik / ART 与动态加载机制。
 - 第 19 章：Android 进程模型、Zygote、应用沙箱与内存管理机制。
 - 第 20 章：ANR、Crash、Watchdog 与系统稳定性诊断机制。
+- 第 21 章：后台任务、前台服务、Alarm、JobScheduler 与系统后台限制。
 
 这几章会逐步串起一条完整路径：
 
@@ -66,6 +67,7 @@
                                                   -> ClassLoader / Dalvik / ART 加载和执行代码
                                                       -> Zygote / 进程模型承载运行空间并参与后台回收
                                                           -> ANR / Crash / Watchdog / tombstone 记录异常现场并支撑稳定性治理
+                                                              -> 后台调度 / 前台服务 / Alarm / WorkManager 接受系统限制并完成可靠任务
 ```
 
 ## 配套工程

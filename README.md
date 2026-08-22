@@ -24,10 +24,18 @@
 - 第 11 章：进入 Binder 与系统服务，让 App 和 system_server 的协作不再神秘。
 - 第 12 章：拆解 Activity 启动与任务栈，让页面跳转背后的系统调度浮出水面。
 - 第 13 章：继续追踪窗口显示链路，看懂 Window、DecorView、ViewRootImpl 与 WMS 如何把页面送上屏幕。
+- 第 14 章：进入输入事件链路，看懂一次点击如何从触摸屏走到 View 与 Compose。
+- 第 15 章：拆解一帧渲染，看懂 Choreographer、RenderThread 与 SurfaceFlinger 如何协作。
+- 第 16 章：理解安装、包管理与权限，让 Manifest、签名、组件匹配不再只是配置项。
+- 第 17 章：深入资源系统，看懂 R 文件、AAPT、Resources、主题与动态换肤背后的匹配规则。
+- 第 18 章：进入代码加载与 ART，理解 Dex、ClassLoader、插件化和热修复的边界。
+- 第 19 章：回到进程模型，看懂 Zygote、沙箱、OOM Adj、LMKD 和后台回收。
+- 第 20 章：进入稳定性诊断现场，把 ANR、Crash、tombstone、Watchdog 和 bugreport 串成证据链。
+- 第 21 章：继续面对后台任务，理解前台服务、Alarm、WorkManager、Doze 和系统后台限制。
 
 每一章都像一个小关卡：先读文档拿地图，再运行示例看效果，最后改一处代码留下自己的痕迹。学完一章，你都应该能回答三个问题：我做出了什么？它为什么能运行？如果让我重新写一遍，我会从哪里开始？
 
-当你学到第 20 章，可以先停下来读一遍 [课程中期地图：从会写 App 到读懂系统](docs/midterm_map.md)。它会把前 20 章重新串成一条完整路线，并说明后续为什么会继续进入后台调度、存储、安全、观测工具和大型工程治理。
+当你完成第 20 章，可以先停下来读一遍 [课程中期地图：从会写 App 到读懂系统](docs/midterm_map.md)。它会把前 20 章重新串成一条完整路线，并说明后续为什么会继续进入后台调度、存储、安全、观测工具和大型工程治理。
 
 ## 项目受众
 本课程非常适合以下同学：
@@ -252,6 +260,17 @@
   - [20.7 稳定性体验问题：误判、漏报、恢复和降级](docs/chapter20/chapter20_7.md)
   - [20.8 综合实践：稳定性诊断实验室](docs/chapter20/chapter20_8.md)
   - [配套示例工程](examples/20-stability-diagnosis-lab/)
+- [课程中期地图：从会写 App 到读懂系统](docs/midterm_map.md)
+- 第21章 后台任务、前台服务、Alarm、JobScheduler 与系统后台限制
+  - 通关目标：理解 Android 为什么限制后台执行，掌握 Service、Foreground Service、AlarmManager、JobScheduler、WorkManager、Doze、App Standby 和后台任务诊断思路
+  - [21.1 为什么要学习后台任务、前台服务与系统调度限制](docs/chapter21/chapter21_1.md)
+  - [21.2 Android 后台限制：系统为什么不让 App 随便运行](docs/chapter21/chapter21_2.md)
+  - [21.3 Service 与 Foreground Service：后台执行的边界](docs/chapter21/chapter21_3.md)
+  - [21.4 AlarmManager：定时任务为什么不一定准时](docs/chapter21/chapter21_4.md)
+  - [21.5 JobScheduler 与 WorkManager：可靠后台任务如何被系统调度](docs/chapter21/chapter21_5.md)
+  - [21.6 Doze、App Standby、Battery Saver 与厂商限制](docs/chapter21/chapter21_6.md)
+  - [21.7 后台任务体验问题：任务丢失、耗电、保活误区与合规风险](docs/chapter21/chapter21_7.md)
+  - [21.8 综合实践：后台任务与系统调度观察实验](docs/chapter21/chapter21_8.md)
 
 ### 项目说明
 

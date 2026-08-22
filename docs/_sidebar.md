@@ -1,5 +1,4 @@
 - [课程首页](README)
-- [课程中期地图](midterm_map)
 - 第1章 Kotlin 与 Android 基础
     - [1.1 开发环境与第一个 Android 工程](chapter1/chapter1)
     - [1.2 Kotlin 基础与 Android 工程语法](chapter1/chapter1_2)
@@ -161,3 +160,13 @@
     - [20.6 Watchdog、DropBox 与 bugreport：系统级事故证据](chapter20/chapter20_6)
     - [20.7 稳定性体验问题：误判、漏报、恢复和降级](chapter20/chapter20_7)
     - [20.8 综合实践：稳定性诊断实验室](chapter20/chapter20_8)
+- [课程中期地图：从会写 App 到读懂系统](midterm_map)
+- 第21章 后台任务、前台服务、Alarm、JobScheduler 与系统后台限制
+    - [21.1 为什么要学习后台任务、前台服务与系统调度限制](chapter21/chapter21_1)
+    - [21.2 Android 后台限制：系统为什么不让 App 随便运行](chapter21/chapter21_2)
+    - [21.3 Service 与 Foreground Service：后台执行的边界](chapter21/chapter21_3)
+    - [21.4 AlarmManager：定时任务为什么不一定准时](chapter21/chapter21_4)
+    - [21.5 JobScheduler 与 WorkManager：可靠后台任务如何被系统调度](chapter21/chapter21_5)
+    - [21.6 Doze、App Standby、Battery Saver 与厂商限制](chapter21/chapter21_6)
+    - [21.7 后台任务体验问题：任务丢失、耗电、保活误区与合规风险](chapter21/chapter21_7)
+    - [21.8 综合实践：后台任务与系统调度观察实验](chapter21/chapter21_8)
