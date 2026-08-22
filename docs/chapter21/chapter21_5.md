@@ -88,6 +88,44 @@ JobScheduler 的核心价值是：
 而不是让每个 App 自己随意唤醒设备
 ```
 
+## 第二部分补充：JobScheduler 为什么要看配额
+
+JobScheduler 不只是“条件满足就运行”。
+
+系统还要考虑：
+
+```text
+这个 App 最近是否常用？
+它已经消耗了多少后台执行机会？
+设备是否处于省电状态？
+系统当前是否繁忙？
+有没有更高优先级的任务？
+```
+
+这就是配额和待机桶存在的原因。
+
+可以粗略理解为：
+
+```text
+Active App
+  -> 后台机会相对多
+
+Rare / Restricted App
+  -> 后台机会明显减少
+```
+
+同一个 Job 在两台设备上表现不同，不一定是代码不一致，而可能是：
+
+```text
+用户使用频率不同
+设备状态不同
+待机桶不同
+省电策略不同
+厂商调度策略不同
+```
+
+所以 `dumpsys jobscheduler` 不是可选项，它是后台任务排查的主证据之一。
+
 ## 第三部分：WorkManager 的角色
 
 WorkManager 更偏工程层。
@@ -122,6 +160,63 @@ WorkManager 的可靠
 ```
 
 如果你把 WorkManager 当成立刻执行的线程池，就会误判很多现象。
+
+## 第三部分补充：从 WorkRequest 到 Worker 的状态机
+
+WorkManager 的核心不是“开线程”，而是维护一个后台任务状态机。
+
+可以把它理解成：
+
+```text
+WorkRequest
+  -> 生成 WorkSpec
+      -> 写入 WorkManager 数据库
+          -> Scheduler 选择调度方式
+              -> SystemJobScheduler / JobScheduler
+                  -> 约束满足后启动 Worker
+                      -> Worker 返回 Result
+                          -> 更新状态、重试、失败或触发后续任务
+```
+
+其中几个概念要分清：
+
+| 概念 | 含义 |
+| --- | --- |
+| `WorkRequest` | 开发者提交的任务请求 |
+| `WorkSpec` | WorkManager 内部持久化的任务描述 |
+| `Constraints` | 网络、充电、存储、电量等执行条件 |
+| `Scheduler` | 把任务交给合适底层调度器的组件 |
+| `Worker` | 真正执行任务逻辑的地方 |
+| `Result` | 告诉 WorkManager 成功、失败或需要重试 |
+
+这条链路解释了一个常见现象：
+
+```text
+Work 已经 ENQUEUED
+  -> 不代表 Worker 已经 RUNNING
+```
+
+因为中间还隔着：
+
+```text
+约束判断
+系统调度
+配额
+省电状态
+进程状态
+```
+
+所以排查 WorkManager 问题时，要先问：
+
+```text
+它卡在状态机的哪一步？
+```
+
+而不是直接问：
+
+```text
+为什么代码没执行？
+```
 
 ## 第三部分补充：WorkManager 的几种工作语义
 
@@ -366,3 +461,10 @@ WorkManager 的关键不是“后台执行”，而是：
 系统调度不等于失控。
 任务延迟不等于 bug。
 ```
+
+## 自查问题
+
+- 我能不能画出 `WorkRequest -> WorkSpec -> Scheduler -> JobScheduler -> Worker -> Result` 的状态链？
+- 我能不能解释为什么 `ENQUEUED` 不等于 `RUNNING`？
+- 我能不能为一个同步任务设计约束、重试、唯一任务策略和幂等 key？
+- 一个 Work 没执行时，我会不会去看 `dumpsys jobscheduler`、约束条件、待机桶和省电状态？

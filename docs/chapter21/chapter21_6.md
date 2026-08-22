@@ -49,6 +49,42 @@ Doze 可以理解为设备待机省电机制。
 
 这不是为了让 App 难受，而是为了让手机待机更久。
 
+## 第一部分补充：DeviceIdleController 在做什么
+
+从系统侧看，Doze 不是一个简单的“开关”，而是一套设备空闲状态机。
+
+可以粗略理解为：
+
+```text
+设备熄屏、静止、长时间未使用
+  -> DeviceIdleController 逐步进入 idle 相关状态
+      -> 限制网络、WakeLock、Job、普通 Alarm
+          -> 定期开维护窗口
+              -> 允许部分任务集中执行
+                  -> 再次回到更深的省电状态
+```
+
+这解释了一个关键现象：
+
+```text
+后台任务不是永远不执行
+而是被系统挪到更省电的时间窗口执行
+```
+
+所以你看到任务延迟时，应该先问：
+
+```text
+设备是不是处于 idle？
+当前是否在维护窗口？
+这个任务是否被允许 idle 下触发？
+```
+
+而不是只问：
+
+```text
+为什么我的代码没有马上跑？
+```
+
 ## 第二部分：维护窗口
 
 Doze 不代表所有后台任务永远不执行。
@@ -113,6 +149,46 @@ App Standby 会根据用户使用情况，把 App 放进不同待机桶。
 ```
 
 这不是系统“偏心”，而是资源分配。
+
+## 第三部分补充：AppStandbyController 的视角
+
+App Standby 的核心问题是：
+
+```text
+这个 App 最近和用户有多近？
+```
+
+系统会根据用户使用、通知、前台服务、交互、安装状态等信息，调整 App 的待机状态。
+
+可以想象系统在问：
+
+```text
+用户刚刚打开过它吗？
+它有没有用户可见活动？
+它是否通过通知和用户互动？
+它是不是长期没被使用？
+它是否消耗了过多后台资源？
+```
+
+待机桶影响的不是某一个 API，而是一组后台机会：
+
+```text
+Job 执行机会
+Alarm 触发机会
+后台网络机会
+后台执行配额
+```
+
+因此同一段 WorkManager 代码：
+
+```text
+在重度用户设备上很快执行
+在很久没打开 App 的设备上明显延迟
+```
+
+并不矛盾。
+
+系统看到的不是“同一段代码”，而是“不同 App 使用状态下的后台资源请求”。
 
 ## 第四部分：Battery Saver
 
@@ -281,6 +357,32 @@ adb shell dumpsys deviceidle unforce
 | 是否用户可感知 | 通知、前台服务、权限 |
 | 是否可恢复 | 本地状态、重试、幂等 |
 
+## 第八部分：从状态反推系统判断
+
+排查后台问题时，可以按这条路线反推：
+
+```text
+任务没执行
+  -> 是否入队 / 注册成功？
+      -> 约束是否满足？
+          -> App 是否被限制？
+              -> 设备是否 idle / 省电？
+                  -> 是否还有任务配额？
+                      -> 是否被厂商策略拦住？
+```
+
+对应证据：
+
+| 判断点 | 证据入口 |
+| --- | --- |
+| 是否入队 | App 日志、Work state、本地任务表 |
+| 是否被 JobScheduler 接收 | `dumpsys jobscheduler` |
+| 是否被 AlarmManager 接收 | `dumpsys alarm` |
+| 是否 idle | `dumpsys deviceidle` |
+| 电池 / 充电状态 | `dumpsys battery` |
+| 进程状态 | `dumpsys activity processes` |
+| 通知和前台服务 | `dumpsys notification`、`dumpsys activity services` |
+
 ## 本节小结
 
 Doze、App Standby、Battery Saver 和厂商策略共同告诉我们：
@@ -300,3 +402,10 @@ Doze、App Standby、Battery Saver 和厂商策略共同告诉我们：
 失败后是否可恢复？
 用户是否知道这个任务存在？
 ```
+
+## 自查问题
+
+- 我能不能解释 Doze 为什么不是“禁止后台任务”，而是把任务挪到维护窗口？
+- 我能不能说明 App Standby Bucket 为什么会让同一段代码在不同用户设备上表现不同？
+- 一个任务延迟时，我能不能按“入队、约束、idle、省电、配额、厂商策略”逐层排查？
+- 我能不能把 `dumpsys deviceidle`、`dumpsys jobscheduler`、`dumpsys alarm` 和任务时间线对应起来？

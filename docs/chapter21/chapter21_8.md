@@ -33,13 +33,13 @@ AlarmManager 适合时间触发但不等于无限精确
 
 本节是第 21 章综合实践。
 
-后续可以配套示例工程：
+配套示例工程：
 
 ```text
 examples/21-background-scheduling-lab/
 ```
 
-这个工程可以围绕前台服务、WorkManager、Alarm、任务约束、Doze 命令卡、后台限制诊断、任务日志和事故剧本做成一个可运行实验室。
+这个工程围绕前台服务、WorkManager、真实 WorkInfo 状态、Alarm、任务约束、Doze 命令卡、ADB 证据挑战、后台限制诊断、任务日志和事故剧本做成一个可运行实验室。
 
 它不是为了证明“某个 API 一定会立刻执行”，而是为了训练一个更重要的能力：
 
@@ -54,9 +54,9 @@ examples/21-background-scheduling-lab/
 
 - 区分立即任务、可靠任务、定时任务和用户可感知持续任务。
 - 观察前台服务启动、通知和停止流程。
-- 观察 WorkManager 在不同约束下的执行状态。
+- 观察 WorkManager 在不同约束下的执行状态，并用真实 `WorkInfo` 校验页面判断。
 - 观察 Alarm 注册、触发和可能延迟的现象。
-- 使用 dumpsys 初步排查任务为什么没执行。
+- 使用 `dumpsys jobscheduler / alarm / deviceidle` 初步排查任务为什么没执行。
 - 写出一份后台任务诊断报告。
 
 ## 第一部分：实践工程规划
@@ -65,10 +65,10 @@ examples/21-background-scheduling-lab/
 
 - `任务决策卡`：根据业务语义推荐 Service、Foreground Service、WorkManager、AlarmManager。
 - `前台服务实验区`：启动、停止、展示通知、记录服务生命周期。
-- `WorkManager 实验区`：入队一次性任务、唯一任务、重试任务和约束任务。
-- `Alarm 实验区`：注册提醒、取消提醒、观察触发时间和实际时间差。
+- `WorkManager 实验区`：入队一次性任务、唯一任务、约束任务、取消任务，并刷新真实 `WorkInfo`。
+- `Alarm 实验区`：注册提醒，观察期望触发、真实触发和时间窗口。
 - `系统状态面板`：展示前后台、网络、电量、充电、进程、pid。
-- `Doze / 省电命令卡`：列出 deviceidle、jobscheduler、alarm 等观察命令。
+- `Doze / 省电命令卡`：列出 deviceidle、jobscheduler、alarm 等观察命令，并提供 ADB 证据挑战。
 - `任务时间线`：记录入队、开始、成功、失败、取消、重试。
 - `事故剧本模式`：模拟任务没执行、提醒不准时、下载被中断、耗电投诉。
 - `后台任务诊断报告`：输出现象、证据、原因、修复和回归。
@@ -76,7 +76,7 @@ examples/21-background-scheduling-lab/
 
 ## 第一部分补充：体验评分怎么设计
 
-Demo 可以把学习过程拆成 10 个观察点：
+Demo 可以把学习过程拆成 11 个观察点：
 
 | 观察点 | 得分条件 |
 | --- | --- |
@@ -87,7 +87,8 @@ Demo 可以把学习过程拆成 10 个观察点：
 | Work 约束 | 设置网络 / 充电等约束并解释延迟 |
 | Alarm 注册 | 注册一次提醒并记录期望时间 |
 | Alarm 触发 | 对比期望触发和实际触发 |
-| Doze 观察 | 使用命令观察 deviceidle 状态 |
+| 系统命令卡 | 阅读 jobscheduler、alarm、deviceidle 等入口 |
+| ADB 证据挑战 | 至少执行一个 dumpsys 命令，并把输出和页面状态对上 |
 | 事故剧本 | 完成至少一个后台事故判断 |
 | 诊断报告 | 写出证据、原因、修复和回归 |
 
@@ -271,6 +272,48 @@ Alarm 触发时间：
 - 后台任务如何设计幂等和恢复？
 - 一个后台任务没执行，第一证据应该看哪里？
 
+## 第六部分补充：本章最终事故题
+
+请分析下面这个综合事故：
+
+```text
+某课程 App 上线后，用户集中反馈：
+
+1. 离线课程下载到一半，切后台后经常停住。
+2. 每天 8 点学习提醒，有些设备会晚几分钟才出现。
+3. 学习记录同步偶尔延迟半小时，但最终又会成功。
+4. Android 新版本上，某些用户点击“继续下载”后前台服务启动失败。
+5. 一部分低频用户反馈：打开 App 后才看到一堆历史任务开始执行。
+
+日志和系统证据：
+
+- 下载任务最初只放在页面协程里，进度没有完整持久化。
+- 提醒使用普通 Alarm，没有申请精确闹钟能力。
+- 学习记录同步使用 WorkManager，约束要求 Wi-Fi + 充电。
+- `dumpsys deviceidle` 显示部分设备处于 idle。
+- `dumpsys jobscheduler` 显示同步任务处于 pending，约束未满足。
+- logcat 出现 ForegroundServiceStartNotAllowedException。
+- 部分用户很久没有打开 App，可能处于较低 standby bucket。
+```
+
+你需要回答：
+
+- 哪些问题属于设计错误，哪些属于系统调度的正常表现？
+- 离线下载应该如何改造，是否需要前台服务、通知和状态持久化？
+- 8 点提醒是否一定需要精确闹钟？如何判断？
+- 学习记录同步为什么会延迟？约束是否设置过严？
+- 前台服务启动失败可能发生在系统判断链路的哪一步？
+- 低频用户打开 App 后任务集中执行，和 App Standby 有什么关系？
+- 你会用哪些 `dumpsys` 命令继续取证？
+- 修复后如何设计回归用例和监控指标？
+
+这道题没有唯一答案，但有一条底线：
+
+```text
+不能只说“系统限制导致”。
+必须把限制拆成具体证据、系统状态、业务语义和修复方案。
+```
+
 ## 本节实践任务
 
 ### 基础任务
@@ -291,31 +334,34 @@ Alarm 触发时间：
 - 为后台任务设计监控指标：成功率、等待时间、重试次数、失败原因和机型分布。
 - 设计一个“后台任务实验室”的页面草图：任务决策卡、调度状态、系统状态、事件时间线、诊断报告五个区域。
 
-## 第七部分：Demo 开发建议
+## 第七部分：Demo 已具备的玩法
 
-后续实现 `examples/21-background-scheduling-lab/` 时，建议按下面优先级推进：
+`examples/21-background-scheduling-lab/` 已经按下面路径组织：
 
 ```text
-第一优先级：任务决策与时间线
-  -> 先让读者看懂“为什么选这个机制”
+第一步：任务决策与时间线
+  -> 先让读者看懂“为什么选这个机制”，再观察事件发生顺序
 
-第二优先级：WorkManager 实验
-  -> 入队、约束、重试、唯一任务、状态观察
+第二步：WorkManager 实验
+  -> 入队、约束、唯一任务、真实 WorkInfo、取消任务、状态观察
 
-第三优先级：Foreground Service 实验
+第三步：Foreground Service 实验
   -> 通知、启动、停止、生命周期日志
 
-第四优先级：Alarm 实验
-  -> 注册、取消、期望时间、实际时间
+第四步：Alarm 实验
+  -> 注册、期望时间、实际触发、时间窗口
 
-第五优先级：Doze / dumpsys 命令卡
-  -> 不一定自动执行命令，但要教读者怎么观察
+第五步：Doze / dumpsys 命令卡
+  -> 不自动执行命令，而是训练读者知道该去哪里取证
 
-第六优先级：事故剧本和诊断报告
+第六步：ADB 证据挑战
+  -> 至少完成 Work、Alarm、Doze 中的一个系统证据观察
+
+第七步：事故剧本和诊断报告
   -> 把实验结果变成工程判断
 ```
 
-不要一开始就追求模拟所有系统限制。第 21 章 Demo 最重要的是让读者形成判断路径：
+这个 Demo 不追求模拟所有系统限制。第 21 章 Demo 最重要的是让读者形成判断路径：
 
 ```text
 任务语义
@@ -324,6 +370,85 @@ Alarm 触发时间：
           -> 失败原因
               -> 恢复方案
 ```
+
+## 第八部分：Demo 的原理观察点
+
+第 21 章 Demo 不能只做成：
+
+```text
+启动服务按钮
+启动 Work 按钮
+注册 Alarm 按钮
+```
+
+这样会退回 API 示例。
+
+更好的设计是让每个按钮都对应一个系统判断点。
+
+| 实验 | 观察点 | 想证明什么 |
+| --- | --- | --- |
+| 普通 Service 启动 | 前后台状态、Service 生命周期、logcat | Service 是组件，不是后台线程 |
+| 前台服务启动 | 通知、服务类型、启动时机 | 前台服务是用户可感知契约 |
+| 延迟调用 startForeground | 异常或系统拒绝日志 | `startForegroundService` 有时间窗口 |
+| Work 入队 | ENQUEUED / RUNNING / SUCCEEDED | 入队不等于立刻运行 |
+| Work 约束 | 网络、充电、存储状态 | 约束不满足时延迟不是 bug |
+| 唯一 Work | replace 行为、Work id、真实 WorkInfo | 后台任务要有业务唯一性 |
+| Work 取消 | CANCELLED / IDLE / 事件时间线 | 取消也是后台任务状态机的一部分 |
+| Alarm 注册 | 期望时间、实际触发时间 | Alarm 是时间入口，不是执行保证 |
+| Doze 命令卡 | deviceidle 状态、任务延迟 | 系统会把任务挪到维护窗口 |
+| ADB 挑战 | jobscheduler / alarm / deviceidle 输出 | 结论要能被系统证据支撑 |
+| 事故剧本 | 现象、证据、根因、修复 | 后台任务需要证据链 |
+
+每个实验页面都应该显示：
+
+```text
+业务期望
+系统机制
+当前状态
+第一证据
+下一步命令
+复盘结论
+```
+
+这样读者才能从“我点了一个按钮”进入“我理解了系统为什么这么做”。
+
+## 第九部分：AOSP 源码阅读入口
+
+如果想把第 21 章继续往 Framework 深处读，可以从这些入口开始：
+
+```text
+Service / Foreground Service
+  -> ActivityManagerService
+  -> ActiveServices
+
+JobScheduler / WorkManager 底层调度
+  -> JobSchedulerService
+  -> JobServiceContext
+  -> JobStore
+
+Alarm
+  -> AlarmManagerService
+
+Doze / Idle
+  -> DeviceIdleController
+
+App Standby
+  -> AppStandbyController
+
+通知与前台服务可感知
+  -> NotificationManagerService
+```
+
+建议不要先读完整源码，而是带着具体问题进入：
+
+```text
+为什么后台启动前台服务失败？
+为什么 Job 还在 pending？
+为什么 Alarm 被延迟？
+为什么 idle 下只有一小段执行窗口？
+```
+
+源码阅读的目标不是背类名，而是把系统证据和系统判断点对上。
 
 ## 本节小结
 

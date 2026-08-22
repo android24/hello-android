@@ -271,6 +271,7 @@
   - [21.6 Doze、App Standby、Battery Saver 与厂商限制](docs/chapter21/chapter21_6.md)
   - [21.7 后台任务体验问题：任务丢失、耗电、保活误区与合规风险](docs/chapter21/chapter21_7.md)
   - [21.8 综合实践：后台任务与系统调度观察实验](docs/chapter21/chapter21_8.md)
+  - [配套示例工程](examples/21-background-scheduling-lab/)
 
 ### 项目说明
 
@@ -456,6 +457,7 @@
 - [第18章 ClassLoader、Dex、Dalvik / ART 与动态加载机制示例工程](examples/18-code-loading-lab/)
 - [第19章 Android 进程模型、Zygote、应用沙箱与内存管理机制示例工程](examples/19-process-zygote-lab/)
 - [第20章 ANR、Crash、Watchdog 与系统稳定性诊断机制示例工程](examples/20-stability-diagnosis-lab/)
+- [第21章 后台任务、前台服务、Alarm、JobScheduler 与系统后台限制示例工程](examples/21-background-scheduling-lab/)
 
 ## 贡献者名单
 

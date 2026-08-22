@@ -94,6 +94,83 @@ Started Service 通常通过 `startService` 或相关方式启动。
 - 页面生命周期内任务。
 - Push 或服务端方案。
 
+## 第二部分补充：从 AMS / ActiveServices 看 Service 启动
+
+从 App 侧看，启动 Service 只是一行调用。
+
+```text
+context.startService(intent)
+```
+
+但从系统侧看，它大致会变成一条判断链：
+
+```text
+App 调用 startService
+  -> 通过 Binder 进入 ActivityManagerService
+      -> ActiveServices 解析目标 Service
+          -> 检查调用方 uid / package / userId
+              -> 检查 App 当前前后台状态
+                  -> 检查是否允许后台启动
+                      -> 找到或创建目标进程
+                          -> 调度 ActivityThread 创建 Service
+                              -> 回调 onCreate / onStartCommand
+```
+
+这里的关键点是：
+
+```text
+Service 能不能启动
+  -> 不是只由 Intent 是否正确决定
+      -> 还取决于调用方当时的进程状态、后台限制和系统策略
+```
+
+所以你在日志里看到：
+
+```text
+Background start not allowed
+ForegroundServiceStartNotAllowedException
+```
+
+不要只去改 Service 里的业务代码。真正的问题可能发生在 Service 还没进入 `onCreate` 之前。
+
+## 第二部分补充：startForegroundService 的时间窗口
+
+`startForegroundService` 的设计语义是：
+
+```text
+我需要启动一个即将变成前台服务的任务。
+```
+
+系统允许你先启动服务，但它期待你很快调用 `startForeground` 展示通知。
+
+如果你启动后迟迟没有调用 `startForeground`，系统会认为：
+
+```text
+你声称这是用户可感知任务
+  -> 但没有及时让用户感知
+      -> 这个契约不成立
+```
+
+于是可能触发异常或停止服务。
+
+这就是为什么前台服务启动流程要非常干净：
+
+```text
+创建通知渠道
+  -> 启动前台服务
+      -> 尽快调用 startForeground
+          -> 再开始真正耗时任务
+```
+
+不要反过来：
+
+```text
+先下载 / 初始化 / 等网络
+  -> 很久之后才 startForeground
+```
+
+这种写法在新系统上非常容易出问题。
+
 ## 第三部分：Bound Service
 
 Bound Service 通过 `bindService` 建立连接。
@@ -113,6 +190,28 @@ Bound Service 通过 `bindService` 建立连接。
 Bound Service 的重点不是“后台执行”，而是“组件通信”和“能力暴露”。
 
 如果 bound service 位于远程进程，就会涉及第 11 章的 Binder、第 19 章的多进程、第 20 章的 Binder 阻塞风险。
+
+Bound Service 还有一个常见误区：
+
+```text
+绑定成功
+  -> 以为远端服务一定可靠存在
+```
+
+实际上远端进程仍然可能：
+
+- 被系统回收。
+- 因异常崩溃。
+- Binder 调用超时。
+- 处于不同优先级。
+- 因权限或导出配置导致绑定失败。
+
+所以跨进程 Bound Service 要和第 20 章稳定性诊断一起看：
+
+```text
+bind 成功不是终点
+Binder 调用、远端进程状态、超时、重连和降级才是工程重点
+```
 
 ## 第四部分：Foreground Service
 
@@ -351,3 +450,10 @@ Foreground Service 是用户可感知的持续任务契约
 这个任务是否真的需要用户感知地持续运行？
 如果不需要，它是不是应该交给 WorkManager、JobScheduler 或业务恢复机制？
 ```
+
+## 自查问题
+
+- 我能不能解释为什么 Service 不是后台线程？
+- 我能不能画出 `startService -> AMS -> ActiveServices -> ActivityThread -> Service` 的大致链路？
+- 我能不能说明 `startForegroundService` 为什么必须尽快调用 `startForeground`？
+- 一个前台服务启动失败时，我会先看业务代码，还是先看启动时机、服务类型、权限和通知？

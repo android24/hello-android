@@ -183,7 +183,130 @@ AlarmManager 负责时间触发。
 但要说明为什么做、什么时候做、用户是否知道、系统能否调度
 ```
 
-## 第五部分：任务延迟不一定是 bug
+## 第五部分：系统侧到底在判断什么
+
+从 Framework 视角看，后台限制不是一个单独开关，而是一串连续判断。
+
+可以先记住这条链路：
+
+```text
+App 请求后台执行
+  -> Framework 识别调用方 uid / package / userId
+      -> 查询进程状态和前后台状态
+          -> 判断任务是否用户可感知
+              -> 判断权限、服务类型、通知能力
+                  -> 判断 Doze、App Standby、省电模式和配额
+                      -> 决定允许、延迟、合并、拒绝、停止或抛异常
+```
+
+这里每一步都可能改变结果。
+
+例如同样是“启动一个任务”：
+
+| 系统看到的上下文 | 可能结果 |
+| --- | --- |
+| App 在前台，用户点击下载 | 允许启动用户可感知任务 |
+| App 在后台，偷偷启动普通 Service | 可能直接拒绝 |
+| App 后台入队 Work，要求 Wi-Fi + 充电 | 入队成功，但等待条件满足 |
+| 设备进入 Doze，普通 Alarm 到点 | 可能延迟到维护窗口 |
+| App 处于 Restricted 待机状态 | Job / Alarm 机会减少 |
+| 前台服务类型和权限不匹配 | 可能抛异常或启动失败 |
+
+这也是为什么后台问题不能只看一行业务代码。
+
+业务代码只告诉你：
+
+```text
+我请求了什么。
+```
+
+系统证据才告诉你：
+
+```text
+系统在什么状态下如何处理这个请求。
+```
+
+## 第五部分补充：后台任务系统判断总图
+
+把 Service、Alarm、WorkManager、Doze 和前台服务放在一起，可以得到一张总图：
+
+```text
+业务请求
+  -> 是用户正在感知的持续任务吗？
+      -> 是：考虑 Foreground Service / 用户主动数据传输
+          -> 检查通知、服务类型、权限、启动时机
+      -> 否：
+          -> 是可靠但可延迟任务吗？
+              -> 是：考虑 WorkManager / JobScheduler
+                  -> 检查约束、重试、唯一任务、配额、待机桶
+              -> 否：
+                  -> 是时间触发任务吗？
+                      -> 是：考虑 AlarmManager
+                          -> 检查是否精确、是否 Doze、是否有通知权限
+                      -> 否：
+                          -> 重新审视业务设计，避免后台轮询和保活误区
+
+系统状态
+  -> 前后台 / uid state / 进程优先级
+  -> Doze / App Standby / Battery Saver
+  -> 网络 / 充电 / 空闲 / 存储
+  -> 权限 / 通知 / 前台服务类型
+  -> Job / Alarm / FGS 配额和限制
+
+最终结果
+  -> 允许
+  -> 延迟
+  -> 合并
+  -> 等待条件
+  -> 拒绝启动
+  -> 抛异常
+  -> 运行后被停止
+```
+
+这张图是第 21 章的主线。后面每一个 API，都可以放回这张图里看。
+
+## 第六部分：Framework 源码阅读入口
+
+第 21 章不要求你一次读完整个后台调度子系统，但建议先记住几个入口。
+
+```text
+frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java
+frameworks/base/services/core/java/com/android/server/am/ActiveServices.java
+frameworks/base/services/core/java/com/android/server/job/JobSchedulerService.java
+frameworks/base/services/core/java/com/android/server/alarm/AlarmManagerService.java
+frameworks/base/services/core/java/com/android/server/DeviceIdleController.java
+frameworks/base/services/core/java/com/android/server/usage/AppStandbyController.java
+frameworks/base/services/core/java/com/android/server/notification/NotificationManagerService.java
+```
+
+这些类大致对应：
+
+| 入口 | 负责观察什么 |
+| --- | --- |
+| `ActivityManagerService` | 进程状态、组件启动、uid 活跃状态 |
+| `ActiveServices` | Service 启动、绑定、前台服务状态 |
+| `JobSchedulerService` | Job 入队、约束、配额、执行窗口 |
+| `AlarmManagerService` | Alarm 批处理、触发、idle 下行为 |
+| `DeviceIdleController` | Doze 状态、维护窗口、临时白名单 |
+| `AppStandbyController` | App 待机桶、后台执行机会 |
+| `NotificationManagerService` | 通知渠道、前台服务通知和用户可感知入口 |
+
+源码阅读时不要试图从入口一路读到底。
+
+更好的方式是带着问题读：
+
+```text
+为什么这个 Service 被拒绝？
+  -> 看 ActiveServices 的启动判断
+
+为什么这个 Job 一直等待？
+  -> 看 JobSchedulerService 的约束和配额
+
+为什么这个 Alarm 没有准时？
+  -> 看 AlarmManagerService 和 DeviceIdleController 的 idle 逻辑
+```
+
+## 第七部分：任务延迟不一定是 bug
 
 很多开发者第一次遇到 WorkManager 或 JobScheduler 延迟时，会觉得：
 
@@ -215,7 +338,7 @@ AlarmManager 负责时间触发。
 
 所以后台任务排查不能只看业务日志，还要看系统状态。
 
-## 第六部分：和稳定性治理的关系
+## 第八部分：和稳定性治理的关系
 
 后台任务失败常常会被误判。
 
@@ -274,3 +397,9 @@ Android 后台限制不是偶然的 API 变化，而是一套系统治理逻辑�
 后台任务不是越自由越好，而是越符合业务语义和系统调度越可靠。
 ```
 
+## 自查问题
+
+- 我能不能解释系统为什么不允许所有 App 长期后台运行？
+- 我能不能区分后台进程、后台线程、Service、Foreground Service 和系统调度任务？
+- 一个后台任务没执行时，我会先看业务日志，还是先判断它卡在系统判断链路的哪一步？
+- 我能不能把“系统限制”拆成具体证据，而不是当成一句万能解释？

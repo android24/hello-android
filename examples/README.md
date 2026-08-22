@@ -36,6 +36,7 @@ examples/
   18-code-loading-lab/
   19-process-zygote-lab/
   20-stability-diagnosis-lab/
+  21-background-scheduling-lab/
 ```
 
 ## 设计原则
