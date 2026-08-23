@@ -47,6 +47,7 @@
 - 第 19 章：Android 进程模型、Zygote、应用沙箱与内存管理机制。
 - 第 20 章：ANR、Crash、Watchdog 与系统稳定性诊断机制。
 - 第 21 章：后台任务、前台服务、Alarm、JobScheduler 与系统后台限制。
+- 第 22 章：存储系统、Scoped Storage、MediaStore 与数据访问机制。
 
 这几章会逐步串起一条完整路径：
 
@@ -66,8 +67,9 @@
                                               -> Resources 选择字符串、图片、主题和配置资源
                                                   -> ClassLoader / Dalvik / ART 加载和执行代码
                                                       -> Zygote / 进程模型承载运行空间并参与后台回收
-                                                          -> ANR / Crash / Watchdog / tombstone 记录异常现场并支撑稳定性治理
-                                                              -> 后台调度 / 前台服务 / Alarm / WorkManager 接受系统限制并完成可靠任务
+                                                              -> ANR / Crash / Watchdog / tombstone 记录异常现场并支撑稳定性治理
+                                                                  -> 后台调度 / 前台服务 / Alarm / WorkManager 接受系统限制并完成可靠任务
+                                                                      -> 存储系统 / MediaStore / SAF / URI 权限管理用户数据边界
 ```
 
 ## 配套工程

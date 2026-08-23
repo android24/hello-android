@@ -170,3 +170,12 @@
     - [21.6 Doze、App Standby、Battery Saver 与厂商限制](chapter21/chapter21_6)
     - [21.7 后台任务体验问题：任务丢失、耗电、保活误区与合规风险](chapter21/chapter21_7)
     - [21.8 综合实践：后台任务与系统调度观察实验](chapter21/chapter21_8)
+- 第22章 存储系统、Scoped Storage、MediaStore 与数据访问机制
+    - [22.1 为什么要学习存储系统、Scoped Storage 与数据访问机制](chapter22/chapter22_1)
+    - [22.2 Android 存储分区与 Scoped Storage：系统为什么不让 App 随便翻柜子](chapter22/chapter22_2)
+    - [22.3 App 私有存储、缓存、Room、DataStore 与备份恢复](chapter22/chapter22_3)
+    - [22.4 MediaStore：图片、视频、音频为什么要交给系统索引](chapter22/chapter22_4)
+    - [22.5 SAF、DocumentsProvider 与 URI 权限：让用户亲自打开文件柜](chapter22/chapter22_5)
+    - [22.6 存储权限演进：从大权限到照片选择器与部分授权](chapter22/chapter22_6)
+    - [22.7 存储体验问题：文件丢失、媒体不可见、URI 失效与数据迁移](chapter22/chapter22_7)
+    - [22.8 综合实践：存储访问观察实验室](chapter22/chapter22_8)

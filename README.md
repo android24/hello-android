@@ -272,6 +272,16 @@
   - [21.7 后台任务体验问题：任务丢失、耗电、保活误区与合规风险](docs/chapter21/chapter21_7.md)
   - [21.8 综合实践：后台任务与系统调度观察实验](docs/chapter21/chapter21_8.md)
   - [配套示例工程](examples/21-background-scheduling-lab/)
+- 第22章 存储系统、Scoped Storage、MediaStore 与数据访问机制
+  - 通关目标：理解 Android 存储为什么从路径访问走向范围访问，掌握 App 私有存储、MediaStore、Photo Picker、SAF、URI 权限、存储权限演进和数据迁移排查思路
+  - [22.1 为什么要学习存储系统、Scoped Storage 与数据访问机制](docs/chapter22/chapter22_1.md)
+  - [22.2 Android 存储分区与 Scoped Storage：系统为什么不让 App 随便翻柜子](docs/chapter22/chapter22_2.md)
+  - [22.3 App 私有存储、缓存、Room、DataStore 与备份恢复](docs/chapter22/chapter22_3.md)
+  - [22.4 MediaStore：图片、视频、音频为什么要交给系统索引](docs/chapter22/chapter22_4.md)
+  - [22.5 SAF、DocumentsProvider 与 URI 权限：让用户亲自打开文件柜](docs/chapter22/chapter22_5.md)
+  - [22.6 存储权限演进：从大权限到照片选择器与部分授权](docs/chapter22/chapter22_6.md)
+  - [22.7 存储体验问题：文件丢失、媒体不可见、URI 失效与数据迁移](docs/chapter22/chapter22_7.md)
+  - [22.8 综合实践：存储访问观察实验室](docs/chapter22/chapter22_8.md)
 
 ### 项目说明
 
