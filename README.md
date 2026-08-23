@@ -282,6 +282,7 @@
   - [22.6 存储权限演进：从大权限到照片选择器与部分授权](docs/chapter22/chapter22_6.md)
   - [22.7 存储体验问题：文件丢失、媒体不可见、URI 失效与数据迁移](docs/chapter22/chapter22_7.md)
   - [22.8 综合实践：存储访问观察实验室](docs/chapter22/chapter22_8.md)
+  - [配套示例工程](examples/22-storage-access-lab/)
 
 ### 项目说明
 
@@ -445,6 +446,8 @@
 
 课程配套示例工程统一放在 [examples](examples/) 目录下。每个大章节对应一个独立示例工程，建议按照“阅读章节文档 -> 运行示例工程 -> 完成练习任务 -> 自己做一次改造”的方式学习。
 
+[examples/README.md](examples/README.md) 现在也整理成了一张课程闯关地图：你可以按“入门与 UI -> 数据与架构 -> 质量与性能 -> Framework 主线 -> 系统工程实验室”的顺序推进，并用每个实验室里的任务板、事故剧本和诊断报告确认自己是否真正通关。
+
 当前已创建：
 
 - [第1章 Kotlin 与 Android 基础示例工程](examples/01-kotlin-and-android-basics/)
@@ -468,6 +471,7 @@
 - [第19章 Android 进程模型、Zygote、应用沙箱与内存管理机制示例工程](examples/19-process-zygote-lab/)
 - [第20章 ANR、Crash、Watchdog 与系统稳定性诊断机制示例工程](examples/20-stability-diagnosis-lab/)
 - [第21章 后台任务、前台服务、Alarm、JobScheduler 与系统后台限制示例工程](examples/21-background-scheduling-lab/)
+- [第22章 存储系统、Scoped Storage、MediaStore 与数据访问机制示例工程](examples/22-storage-access-lab/)
 
 ## 贡献者名单
 

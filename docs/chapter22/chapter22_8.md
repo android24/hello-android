@@ -35,13 +35,13 @@ URI 权限不是文件路径
 
 本节是第 22 章综合实践。
 
-后续可以配套示例工程：
+配套示例工程：
 
 ```text
 examples/22-storage-access-lab/
 ```
 
-这个工程可以围绕 App 私有文件、缓存清理、MediaStore 写入、Photo Picker 选择、SAF 导入导出、URI 授权观察、存储迁移剧本和诊断报告做成一个可运行实验室。
+这个工程围绕 App 私有文件、缓存清理、MediaStore 写入、Photo Picker 选择、SAF 导出、持久 URI 授权观察、FileProvider 分享、反例实验、存储事故剧本和诊断报告做成一个可运行实验室。
 
 它不是为了证明“某个路径一定能写”，而是为了训练一个更重要的能力：
 
@@ -63,22 +63,24 @@ examples/22-storage-access-lab/
 
 ## 第一部分：实践工程规划
 
-第 22 章 Demo 可以拆成这些可观察区域：
+第 22 章 Demo 已经拆成这些可观察区域：
 
-- `数据归属决策卡`：根据业务语义推荐 App 私有目录、缓存、MediaStore、Photo Picker、SAF 或 ContentProvider。
-- `App 私有存储实验区`：写入草稿、读取草稿、删除草稿、观察 filesDir。
+- `数据归属决策卡`：根据业务语义推荐 App 私有目录、缓存、MediaStore、Photo Picker、SAF 或 FileProvider。
+- `App 私有存储实验区`：写入草稿、读取草稿、观察 filesDir。
 - `缓存清理实验区`：写入缩略图缓存、估算大小、清理缓存、确认核心数据不受影响。
 - `MediaStore 实验区`：保存一张课程海报，展示 Uri、MIME_TYPE、RELATIVE_PATH、IS_PENDING。
 - `Photo Picker 实验区`：选择头像或封面，观察返回 Uri 和读取方式。
-- `SAF 导入导出实验区`：导入课程包，导出学习报告，观察 Uri 授权。
-- `URI 权限面板`：展示临时授权、持久授权、已保存 Uri、权限失效提示。
-- `迁移剧本模式`：模拟旧路径迁移、半成品文件、索引缺失、清缓存误删。
+- `SAF 导出实验区`：导出学习报告，观察用户选择的目标 Uri。
+- `持久 URI 授权观察区`：选择用户文档，尝试持久化读取授权，并观察 persistedUriPermissions。
+- `FileProvider 分享实验区`：把 App 私有报告映射成 content Uri，并通过系统分享面板临时授权。
+- `反例实验区`：安全模拟私有导出、MediaStore 半成品、file:// 分享和缓存草稿误放。
+- `存储事故剧本`：模拟私有导出找不到、相册不可见、Uri 失效、清缓存误删和分享失败。
 - `存储事故诊断报告`：输出现象、数据归属、存储入口、权限、索引、根因和回归。
 - `体验评分机制`：提醒学习者是否完成了“判断、写入、读取、授权、索引、诊断、恢复”。
 
 ## 第一部分补充：体验评分怎么设计
 
-Demo 可以把学习过程拆成 11 个观察点：
+Demo 把学习过程拆成 13 个观察点：
 
 | 观察点 | 得分条件 |
 | --- | --- |
@@ -90,7 +92,9 @@ Demo 可以把学习过程拆成 11 个观察点：
 | 媒体索引 | 能解释 MIME_TYPE、RELATIVE_PATH、IS_PENDING |
 | Photo Picker | 选择一张用户图片并通过 Uri 读取 |
 | SAF 导出 | 创建一份用户可见报告 |
-| URI 授权 | 说明临时授权和持久授权差异 |
+| 持久 URI | 选择一个文档并观察持久授权列表 |
+| FileProvider 分享 | 把私有报告通过 content Uri 临时分享 |
+| 反例实验 | 完成至少一个错误设计观察 |
 | 事故剧本 | 完成至少一个存储事故判断 |
 | 诊断报告 | 写出证据、原因、修复和回归 |
 
@@ -139,22 +143,21 @@ IS_PENDING：0
 下一步证据：content query / 系统相册
 ```
 
-导入课程包时，页面不要只显示：
+导出报告或分享报告时，页面不要只显示：
 
 ```text
-导入成功
+操作成功
 ```
 
 而应该显示：
 
 ```text
-来源 Uri
-是否持久授权
-是否复制到 App 私有目录
-文件大小
-校验结果
-Room 索引状态
-失败时半成品是否清理
+目标 Uri 或 FileProvider Uri
+数据归属
+MIME_TYPE
+是否临时授权
+是否暴露真实路径
+失败时下一步证据
 ```
 
 这样读者会自然形成一个习惯：
@@ -183,7 +186,7 @@ Room 索引状态
 
 存储问题最像一场资料室悬案。
 
-Demo 可以提供几个事故剧本：
+Demo 提供几个事故剧本：
 
 | 剧本 | 表面现象 | 第一线索 | 隐藏陷阱 |
 | --- | --- | --- | --- |
@@ -191,7 +194,7 @@ Demo 可以提供几个事故剧本：
 | 海报相册不显示 | 文件存在但相册没有 | 未清 `IS_PENDING` | 媒体写入没有完成索引语义 |
 | 头像下次打不开 | 保存了 Uri 字符串 | 没有长期授权或复制 | Uri 不是永久路径 |
 | 清缓存丢草稿 | 清理后草稿没了 | 草稿附件在 cacheDir | 数据分级错误 |
-| 升级后旧资料丢失 | targetSdk 升级后旧路径不可访问 | 旧版使用裸路径 | 迁移方案缺失 |
+| 分享报告失败 | 外部 App 打不开私有报告 | 使用 file:// 或缺少授权 | 私有文件跨应用分享要用 FileProvider |
 
 玩剧本时先不要看答案，先写下自己的第一判断：
 
@@ -373,7 +376,7 @@ IS_PENDING：
 
 ## 第七部分：Demo 开发建议
 
-后续实现 `examples/22-storage-access-lab/` 时，建议按下面优先级推进：
+`examples/22-storage-access-lab/` 已按下面优先级组织：
 
 ```text
 第一优先级：数据归属决策卡
@@ -410,7 +413,7 @@ IS_PENDING：
 
 ## 第七部分补充：第一版 Demo MVP 范围
 
-为了让第 22 章 Demo 可以尽快落地，第一版建议先收敛到一个清晰 MVP。
+为了让第 22 章 Demo 尽快具备可运行闭环，第一版先收敛到一个清晰 MVP。
 
 第一版必须具备：
 
@@ -433,8 +436,14 @@ SAF 导出报告实验
 FileProvider 分享实验
   -> 把 App 私有报告映射成 content Uri，并通过系统分享面板发出
 
+持久 URI 授权观察
+  -> 选择一个用户文档，调用 takePersistableUriPermission，并刷新 persistedUriPermissions
+
 事故剧本
   -> 私有导出找不到、相册不可见、Uri 失效、清缓存误删、file:// 分享失败
+
+反例实验
+  -> 私有导出、MediaStore 半成品、file:// 分享、缓存草稿误放
 
 诊断报告和评分机制
   -> 把每次实验变成证据链
@@ -454,7 +463,7 @@ FileProvider 分享实验
 这样取舍的理由是：
 
 ```text
-先让读者玩懂数据归属、Uri、MediaStore、SAF、FileProvider 和清理边界
+先让读者玩懂数据归属、Uri、MediaStore、SAF、FileProvider、持久授权和清理边界
 再逐步增加版本适配、迁移和大文件复杂度
 ```
 
@@ -489,11 +498,10 @@ FileProvider 分享实验
 | 清理缓存 | cacheDir、草稿仍存在 | 缓存必须可再生 |
 | 保存海报 | MediaStore Uri、MIME_TYPE、RELATIVE_PATH、IS_PENDING | 共享媒体要进入系统索引 |
 | 选择头像 | Photo Picker Uri、ContentResolver 读取 | 选择媒体不一定需要全相册权限 |
-| 导入课程包 | SAF Uri、复制进度、校验结果 | 用户文档通过授权访问 |
 | 导出报告 | ACTION_CREATE_DOCUMENT、输出流结果 | 用户文件应由用户选择保存位置 |
+| 持久授权 | persistedUriPermissions、takePersistableUriPermission、读取结果 | 保存 Uri 字符串不等于拥有文件 |
 | 分享报告 | FileProvider Uri、grant flag、MIME_TYPE | 私有文件跨应用分享要临时授权 |
-| 持久授权 | takePersistableUriPermission、授权列表 | Uri 权限需要明确管理 |
-| 迁移剧本 | 旧路径、新位置、迁移状态 | 存储升级要能中断恢复 |
+| 反例实验 | 私有导出、半成品媒体、file://、缓存草稿 | 错误设计也要能被证据解释 |
 | 事故报告 | 现象、证据、根因、修复 | 存储问题需要证据链 |
 
 每个实验页面都应该显示：
