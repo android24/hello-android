@@ -48,6 +48,7 @@
 - 第 20 章：ANR、Crash、Watchdog 与系统稳定性诊断机制。
 - 第 21 章：后台任务、前台服务、Alarm、JobScheduler 与系统后台限制。
 - 第 22 章：存储系统、Scoped Storage、MediaStore 与数据访问机制。
+- 第 23 章：Android 安全模型、权限、签名、AppOps 与数据保护。
 
 这几章会逐步串起一条完整路径：
 
@@ -70,6 +71,7 @@
                                                               -> ANR / Crash / Watchdog / tombstone 记录异常现场并支撑稳定性治理
                                                                   -> 后台调度 / 前台服务 / Alarm / WorkManager 接受系统限制并完成可靠任务
                                                                       -> 存储系统 / MediaStore / SAF / URI 权限管理用户数据边界
+                                                                          -> 安全模型 / 权限 / 签名 / AppOps / Keystore 保护敏感能力和数据
 ```
 
 ## 配套工程

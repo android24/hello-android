@@ -32,6 +32,8 @@
 - 第 19 章：回到进程模型，看懂 Zygote、沙箱、OOM Adj、LMKD 和后台回收。
 - 第 20 章：进入稳定性诊断现场，把 ANR、Crash、tombstone、Watchdog 和 bugreport 串成证据链。
 - 第 21 章：继续面对后台任务，理解前台服务、Alarm、WorkManager、Doze 和系统后台限制。
+- 第 22 章：走进存储系统，理解 Scoped Storage、MediaStore、SAF 和 URI 权限如何守住用户数据边界。
+- 第 23 章：进入安全模型，理解 UID、权限、签名、AppOps、Keystore 与数据保护如何共同形成系统门禁。
 
 每一章都像一个小关卡：先读文档拿地图，再运行示例看效果，最后改一处代码留下自己的痕迹。学完一章，你都应该能回答三个问题：我做出了什么？它为什么能运行？如果让我重新写一遍，我会从哪里开始？
 
@@ -283,6 +285,16 @@
   - [22.7 存储体验问题：文件丢失、媒体不可见、URI 失效与数据迁移](docs/chapter22/chapter22_7.md)
   - [22.8 综合实践：存储访问观察实验室](docs/chapter22/chapter22_8.md)
   - [配套示例工程](examples/22-storage-access-lab/)
+- 第23章 Android 安全模型、权限、签名、AppOps 与数据保护
+  - 通关目标：理解 Android 如何通过 UID、沙箱、权限、AppOps、签名、Keystore 和组件边界保护系统能力与用户数据，掌握权限拒绝、签名不一致、组件暴露、日志泄露和敏感数据保护问题的排查思路
+  - [23.1 为什么要学习 Android 安全模型、权限、签名、AppOps 与数据保护](docs/chapter23/chapter23_1.md)
+  - [23.2 应用沙箱、UID、SELinux 与进程边界](docs/chapter23/chapter23_2.md)
+  - [23.3 权限系统：Manifest、runtime permission、权限组与用户授权](docs/chapter23/chapter23_3.md)
+  - [23.4 AppOps：为什么授权了也可能被系统继续拦](docs/chapter23/chapter23_4.md)
+  - [23.5 签名、证书、安装升级、签名权限与供应链风险](docs/chapter23/chapter23_5.md)
+  - [23.6 Keystore、加密存储、备份恢复与敏感数据保护](docs/chapter23/chapter23_6.md)
+  - [23.7 安全体验问题：权限拒绝、组件暴露、日志泄露与合规风险](docs/chapter23/chapter23_7.md)
+  - [23.8 综合实践：安全模型观察实验室](docs/chapter23/chapter23_8.md)
 
 ### 项目说明
 
@@ -350,7 +362,7 @@
 - SurfaceFlinger、渲染链路与应用显示原理
 - 阶段项目：从一次点击追踪到 Framework 调用链
 
-当前 Framework 阶段已经展开到第 20 章。它不是突然跳进源码深水区，而是沿着一条非常具体的应用行为往下走：先从一次点击和一次系统服务调用建立入口，再追踪 Activity 如何被启动、窗口如何被添加、内容如何走向屏幕，然后观察触摸事件如何被系统派发并在 View 树中找到处理者，继续追问 UI 状态变化如何变成屏幕上的下一帧，再回到系统识别 App 的入口，理解安装、包解析、组件、权限和签名，接着进入资源系统，解释字符串、图片、主题和多语言资源为什么能被正确读取，再补齐代码加载主线，理解 Dex、ClassLoader、Dalvik、ART、so、动态加载和热修复如何共同决定 App 代码能否被找到并执行，然后继续追问这些代码运行在哪个进程里，理解 Zygote、应用沙箱、多进程、线程、OOM Adj 和 LMKD 如何共同决定 App 的运行空间与回收命运，最后进入稳定性事故调查室，理解 ANR、Crash、tombstone、Watchdog、DropBox 和 bugreport 如何把异常现场变成可诊断证据。
+当前 Framework 阶段已经展开到第 23 章。它不是突然跳进源码深水区，而是沿着一条非常具体的应用行为往下走：先从一次点击和一次系统服务调用建立入口，再追踪 Activity 如何被启动、窗口如何被添加、内容如何走向屏幕，然后观察触摸事件如何被系统派发并在 View 树中找到处理者，继续追问 UI 状态变化如何变成屏幕上的下一帧，再回到系统识别 App 的入口，理解安装、包解析、组件、权限和签名，接着进入资源系统，解释字符串、图片、主题和多语言资源为什么能被正确读取，再补齐代码加载主线，理解 Dex、ClassLoader、Dalvik、ART、so、动态加载和热修复如何共同决定 App 代码能否被找到并执行，然后继续追问这些代码运行在哪个进程里，理解 Zygote、应用沙箱、多进程、线程、OOM Adj 和 LMKD 如何共同决定 App 的运行空间与回收命运，再进入稳定性事故调查室，理解 ANR、Crash、tombstone、Watchdog、DropBox 和 bugreport 如何把异常现场变成可诊断证据，最后把后台调度、存储访问和安全模型接起来，理解系统为什么既要让 App 完成任务，又要守住电量、数据、权限和隐私边界。
 
 - 第 10 章负责打开入口：建立 Android 系统分层视角，认识 ActivityThread、Context、Handler、Looper、Binder 和 AOSP 源码阅读方法。它像一张进城地图，先告诉你 Framework 这座城市大概有哪些路。
 - 第 11 章负责建立通信主线：从 Binder、AIDL、ServiceManager、SystemServer 到系统服务调用，让你理解 App 为什么不能直接调用系统内部能力，而要通过 Binder 和 system_server 协作。
@@ -363,6 +375,9 @@
 - 第 18 章负责补齐代码加载主线：从源码、class、Dex、D8 / R8 到 ClassLoader、Dalvik / ART、Profile、JNI、so 和动态加载，理解 `ClassNotFoundException`、`NoSuchMethodError`、`UnsatisfiedLinkError`、插件化和热修复的工程边界。学完这一章，你应该能解释“系统为什么能找到并执行这个 App 的代码”，也能看懂早期 Dalvik 文章和现代 ART 优化之间的差异。
 - 第 19 章负责补齐进程运行空间：从 Linux 进程、uid、应用沙箱到 Zygote fork、ActivityThread、主线程 / Binder 线程、多进程、OOM Adj 和 LMKD，理解后台死亡、状态丢失、多进程错乱和保活误区。学完这一章，你应该能解释“这个 App 进程从哪里来、为什么能隔离运行、又为什么会被系统回收”。
 - 第 20 章负责补齐稳定性诊断主线：从 ANR、Java Crash、Native Crash、tombstone 到 Watchdog、DropBox、bugreport 和 dumpsys，理解系统如何发现无响应、记录崩溃、保存事故证据，并把事故转成可修复、可回归、可监控的工程闭环。学完这一章，你应该能解释“App 或系统出问题后，证据在哪里、如何读、如何证明修复有效”。
+- 第 21 章负责补齐后台调度主线：从 Service、Foreground Service、Alarm、JobScheduler 到 WorkManager、Doze 和 App Standby，理解后台任务为什么会延迟、丢失、被限制，以及如何在系统规则内设计可靠任务。
+- 第 22 章负责补齐数据访问主线：从 App 私有存储、缓存、MediaStore、Photo Picker 到 SAF 和 URI 权限，理解 Android 为什么从路径访问走向范围访问，以及如何让用户数据既可用又不越界。
+- 第 23 章负责补齐安全边界主线：从 UID、沙箱、runtime permission、AppOps、签名、Keystore 到组件暴露和日志脱敏，理解系统如何判断“谁在访问、能不能访问、访问之后留下什么证据”。
 
 这几章串起来后，会形成一条完整的 Framework 入门链路：
 
@@ -383,6 +398,9 @@
                                                   -> ClassLoader / Dalvik / ART 加载和执行代码
                                                       -> Zygote / 进程模型承载运行空间并在低内存时参与回收
                                                           -> ANR / Crash / Watchdog / tombstone 记录异常现场并支持稳定性治理
+                                                              -> 后台任务 / 前台服务 / Alarm / WorkManager 在系统限制下完成可靠调度
+                                                                  -> 存储系统 / MediaStore / SAF / URI 权限管理用户数据访问边界
+                                                                      -> 安全模型 / 权限 / 签名 / AppOps / Keystore 守住敏感能力和隐私数据
 ```
 
 ### 学习顺序

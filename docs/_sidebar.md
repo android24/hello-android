@@ -179,3 +179,12 @@
     - [22.6 存储权限演进：从大权限到照片选择器与部分授权](chapter22/chapter22_6)
     - [22.7 存储体验问题：文件丢失、媒体不可见、URI 失效与数据迁移](chapter22/chapter22_7)
     - [22.8 综合实践：存储访问观察实验室](chapter22/chapter22_8)
+- 第23章 Android 安全模型、权限、签名、AppOps 与数据保护
+    - [23.1 为什么要学习 Android 安全模型、权限、签名、AppOps 与数据保护](chapter23/chapter23_1)
+    - [23.2 应用沙箱、UID、SELinux 与进程边界](chapter23/chapter23_2)
+    - [23.3 权限系统：Manifest、runtime permission、权限组与用户授权](chapter23/chapter23_3)
+    - [23.4 AppOps：为什么授权了也可能被系统继续拦](chapter23/chapter23_4)
+    - [23.5 签名、证书、安装升级、签名权限与供应链风险](chapter23/chapter23_5)
+    - [23.6 Keystore、加密存储、备份恢复与敏感数据保护](chapter23/chapter23_6)
+    - [23.7 安全体验问题：权限拒绝、组件暴露、日志泄露与合规风险](chapter23/chapter23_7)
+    - [23.8 综合实践：安全模型观察实验室](chapter23/chapter23_8)
