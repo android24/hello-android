@@ -314,6 +314,6 @@ ActivityManagerService / WindowManagerService / JobSchedulerService
 
 如果你已经能完成这一节的证据链报告，可以继续阅读：
 
-- [24 附录：从 Perfetto 到 CausalPerf / Smart Perfetto](appendix_smart_perfetto.md)
+- [24 附录：从 Perfetto 到 CausalPerf / SmartPerfetto](appendix_smart_perfetto.md)
 
 那里会继续讨论一个更进阶的问题：当 trace 和系统证据越来越多，如何把人工分析流程进一步工具化、智能化和团队化。

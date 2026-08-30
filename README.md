@@ -307,7 +307,9 @@
   - [24.6 gfxinfo、meminfo、procstats 与 simpleperf：性能现场证据](docs/chapter24/chapter24_6.md)
   - [24.7 观测体验问题：误读、隐私、复现与团队协作](docs/chapter24/chapter24_7.md)
   - [24.8 综合实践：系统证据链分析实验室](docs/chapter24/chapter24_8.md)
-  - [24 附录：从 Perfetto 到 CausalPerf / Smart Perfetto](docs/chapter24/appendix_smart_perfetto.md)
+  - [24 附录：从 Perfetto 到 CausalPerf / SmartPerfetto](docs/chapter24/appendix_smart_perfetto.md)
+  - 延伸项目：SmartPerfetto：[https://github.com/Gracker/SmartPerfetto](https://github.com/Gracker/SmartPerfetto)，CausalPerf：[https://github.com/android24/CausalPerf](https://github.com/android24/CausalPerf)
+  - CausalPerf 目前正处于开发中，欢迎对 Android 性能诊断、Perfetto trace 分析和因果链建模感兴趣的同学参与共建。
 
 ### 项目说明
 

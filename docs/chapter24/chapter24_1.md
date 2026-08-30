@@ -194,7 +194,7 @@ simpleperf 看 CPU 时间花在哪些函数上
 24.6 gfxinfo、meminfo、procstats 与 simpleperf
 24.7 观测体验问题：误读、隐私、复现和团队协作
 24.8 综合实践：系统证据链分析实验室
-24 附录 从 Perfetto 到 CausalPerf / Smart Perfetto
+24 附录 从 Perfetto 到 CausalPerf / SmartPerfetto
 ```
 
 附录不是为了替代前面的系统工具。

@@ -197,4 +197,4 @@
     - [24.6 gfxinfo、meminfo、procstats 与 simpleperf：性能现场证据](chapter24/chapter24_6)
     - [24.7 观测体验问题：误读、隐私、复现与团队协作](chapter24/chapter24_7)
     - [24.8 综合实践：系统证据链分析实验室](chapter24/chapter24_8)
-    - [24 附录：从 Perfetto 到 CausalPerf / Smart Perfetto](chapter24/appendix_smart_perfetto)
+    - [24 附录：从 Perfetto 到 CausalPerf / SmartPerfetto](chapter24/appendix_smart_perfetto)

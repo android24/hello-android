@@ -1,4 +1,4 @@
-# 24 附录：从 Perfetto 到 CausalPerf / Smart Perfetto
+# 24 附录：从 Perfetto 到 CausalPerf / SmartPerfetto
 
 第 24 章前面讲的是系统原生观测工具。
 
@@ -9,11 +9,11 @@
 工程师如何更快地从海量证据里找到因果链？
 ```
 
-这正好可以引出你自己的工具：
+这正好可以引出两个延伸项目：
 
 ```text
 CausalPerf
-Smart Perfetto
+SmartPerfetto
 ```
 
 在课程里，它们不应该被写成普通产品介绍。
@@ -23,8 +23,37 @@ Smart Perfetto
 ```text
 原生工具给证据。
 工程师建立判断。
-CausalPerf / Smart Perfetto 帮助工程师组织、解释和复盘证据。
+CausalPerf / SmartPerfetto 帮助工程师组织、解释和复盘证据。
 ```
+
+## 项目地址与参与方式
+
+- SmartPerfetto：[https://github.com/Gracker/SmartPerfetto](https://github.com/Gracker/SmartPerfetto)
+- CausalPerf：[https://github.com/android24/CausalPerf](https://github.com/android24/CausalPerf)
+
+其中，`CausalPerf` 目前仍处于开发中。
+
+如果你对 Android 性能分析、Perfetto trace 解析、因果链建模、自动诊断报告或工程化工具建设感兴趣，非常欢迎参与进来：
+
+```text
+可以从阅读设计文档开始。
+可以从补充性能案例开始。
+可以从完善 trace 解析规则开始。
+也可以从提交 issue、讨论场景和复现实验开始。
+```
+
+这类工具最需要的不是一个人把所有答案写完，而是一群人在真实性能问题里不断校准证据、规则和判断。
+
+更具体地说，可以从这些方向切入：
+
+| 参与方向 | 适合做什么 |
+| --- | --- |
+| 性能案例 | 补充真实或可复现的卡顿、ANR、启动、内存、Binder 等案例 |
+| Trace 解析 | 完善 Perfetto trace 中线程、slice、FrameTimeline、Binder 事件的解析规则 |
+| 因果链建模 | 设计现象、证据、候选根因、置信度和回归结果之间的关系 |
+| 报告生成 | 把分析结果整理成更适合团队复盘的 Markdown / HTML 报告 |
+| Demo 实验 | 为课程和工具准备可重复触发、可观测、可对比的 Android 实验场景 |
+| 文档建设 | 补充使用说明、案例教程、术语解释和贡献指南 |
 
 ## 本附录先记住三句话
 
@@ -120,9 +149,9 @@ CPU 降频
 
 因为性能分析很少只靠一份 trace 就能宣判。更稳的做法是让工具给出线索排序，工程师再结合代码、业务和多次复现做判断。
 
-## 三、Smart Perfetto：让 trace 更容易被读懂
+## 三、SmartPerfetto：让 trace 更容易被读懂
 
-`Smart Perfetto` 更适合放在“Perfetto 分析增强”这一层讲。
+`SmartPerfetto` 更适合放在“Perfetto 分析增强”这一层讲。
 
 Perfetto 原始时间线很强，但对学习者和团队新人并不友好：
 
@@ -134,7 +163,7 @@ Perfetto 原始时间线很强，但对学习者和团队新人并不友好：
 不知道报告应该怎么写
 ```
 
-`Smart Perfetto` 可以被课程化地理解为：
+`SmartPerfetto` 可以被课程化地理解为：
 
 ```text
 Perfetto trace
@@ -167,7 +196,7 @@ Perfetto trace
 Perfetto
   -> 提供系统时间线和底层证据
 
-Smart Perfetto
+SmartPerfetto
   -> 帮你更快读懂 trace
 
 CausalPerf
@@ -178,7 +207,7 @@ CausalPerf
 
 ```text
 Perfetto 是监控录像。
-Smart Perfetto 是录像里的自动标注和重点片段。
+SmartPerfetto 是录像里的自动标注和重点片段。
 CausalPerf 是把片段、证词和现场状态串成案情时间线。
 ```
 
@@ -221,7 +250,7 @@ bugreport：没有系统级 crash，后台状态正常
 
 ## 六、放进团队流程
 
-如果后续要把 `CausalPerf` 和 `Smart Perfetto` 做成课程亮点，可以把它们放进这样的工程流程：
+如果后续要把 `CausalPerf` 和 `SmartPerfetto` 做成课程亮点，可以把它们放进这样的工程流程：
 
 ```text
 本地复现
@@ -258,7 +287,7 @@ Binder wait
 
 ## 七、写作边界
 
-因为 `CausalPerf` 和 `Smart Perfetto` 是你的工具，课程里介绍时建议保持三个边界：
+作为课程延伸项目，介绍 `CausalPerf` 和 `SmartPerfetto` 时建议保持三个边界：
 
 ```text
 不要把它写成广告。
@@ -279,7 +308,7 @@ Binder wait
 
 - 为什么 Perfetto 很强，但仍然需要智能化分析工具？
 - CausalPerf 更适合解决“证据不足”还是“因果关系难判断”？
-- Smart Perfetto 应该优先降低哪几类 trace 阅读成本？
+- SmartPerfetto 应该优先降低哪几类 trace 阅读成本？
 - 为什么自动诊断工具最好输出候选根因，而不是唯一结论？
 
 ## 本附录总结
@@ -294,7 +323,7 @@ Binder wait
 再把因果链沉淀成团队可以复用的诊断流程。
 ```
 
-`CausalPerf` 和 `Smart Perfetto` 可以成为这门课程非常有辨识度的亮点。
+`CausalPerf` 和 `SmartPerfetto` 可以成为这门课程非常有辨识度的亮点。
 
 它们让第 24 章不只停留在“会用工具”，而是继续走向：
 
