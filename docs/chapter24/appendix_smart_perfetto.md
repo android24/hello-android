@@ -26,34 +26,22 @@ SmartPerfetto
 CausalPerf / SmartPerfetto 帮助工程师组织、解释和复盘证据。
 ```
 
-## 项目地址与参与方式
+## 项目地址
 
 - SmartPerfetto：[https://github.com/Gracker/SmartPerfetto](https://github.com/Gracker/SmartPerfetto)
 - CausalPerf：[https://github.com/android24/CausalPerf](https://github.com/android24/CausalPerf)
 
-其中，`CausalPerf` 目前仍处于开发中。
-
-如果你对 Android 性能分析、Perfetto trace 解析、因果链建模、自动诊断报告或工程化工具建设感兴趣，非常欢迎参与进来：
+两个项目都应该放在第 24 章的知识体系里理解：
 
 ```text
-可以从阅读设计文档开始。
-可以从补充性能案例开始。
-可以从完善 trace 解析规则开始。
-也可以从提交 issue、讨论场景和复现实验开始。
+SmartPerfetto
+  -> 帮你更容易读懂 Perfetto trace
+
+CausalPerf
+  -> 帮你把 trace、日志、系统状态组织成因果链
 ```
 
-这类工具最需要的不是一个人把所有答案写完，而是一群人在真实性能问题里不断校准证据、规则和判断。
-
-更具体地说，可以从这些方向切入：
-
-| 参与方向 | 适合做什么 |
-| --- | --- |
-| 性能案例 | 补充真实或可复现的卡顿、ANR、启动、内存、Binder 等案例 |
-| Trace 解析 | 完善 Perfetto trace 中线程、slice、FrameTimeline、Binder 事件的解析规则 |
-| 因果链建模 | 设计现象、证据、候选根因、置信度和回归结果之间的关系 |
-| 报告生成 | 把分析结果整理成更适合团队复盘的 Markdown / HTML 报告 |
-| Demo 实验 | 为课程和工具准备可重复触发、可观测、可对比的 Android 实验场景 |
-| 文档建设 | 补充使用说明、案例教程、术语解释和贡献指南 |
+换句话说，`SmartPerfetto` 更偏向“看懂现场”，`CausalPerf` 更偏向“解释现场”。
 
 ## 本附录先记住三句话
 
@@ -100,6 +88,24 @@ trace 文件拿到了。
 ## 二、CausalPerf：从现象走向因果链
 
 `CausalPerf` 适合放在“因果链分析”这一层讲。
+
+它要解决的不是“怎么打开 trace”，而是更靠后的问题：
+
+```text
+我已经有了 trace、日志、dumpsys 和性能指标，
+但这些证据之间到底是什么关系？
+```
+
+很多性能事故并不缺证据。
+
+真正难的是：
+
+```text
+证据太多。
+关系太散。
+同一时间发生的事情太多。
+不知道哪个是原因，哪个只是结果。
+```
 
 课程里可以这样介绍它的目标：
 
@@ -149,6 +155,103 @@ CPU 降频
 
 因为性能分析很少只靠一份 trace 就能宣判。更稳的做法是让工具给出线索排序，工程师再结合代码、业务和多次复现做判断。
 
+### CausalPerf 适合处理什么问题
+
+`CausalPerf` 更适合处理“有多个候选原因”的性能问题：
+
+| 问题 | CausalPerf 可以帮助整理什么 |
+| --- | --- |
+| 页面首帧慢 | 首帧前的主线程任务、Binder 等待、I/O、数据准备和绘制节点 |
+| 列表滑动掉帧 | 慢帧附近的重组、布局、图片解码、GC、CPU 调度和 RenderThread 线索 |
+| 偶发 ANR | ANR 前后的主线程状态、锁等待、Binder 链路和 system_server 状态 |
+| 启动耗时 | Application、ContentProvider、类加载、资源加载、首帧绘制之间的先后关系 |
+| 后台任务异常 | WorkManager / JobScheduler 状态、系统限制、进程状态和日志事件之间的关系 |
+
+它的核心价值是把“零散证据”变成“候选因果链”：
+
+```text
+Frame missed deadline
+  -> main thread blocked
+      -> waiting Binder reply
+          -> system_server thread waiting lock
+              -> input / frame processing delayed
+```
+
+或者：
+
+```text
+First frame delayed
+  -> Activity already RESUMED
+      -> main thread runs JSON parse before first draw
+          -> Choreographer#doFrame delayed
+              -> user sees white screen
+```
+
+### CausalPerf 的输入和输出
+
+一个合理的 `CausalPerf` 工作流可以这样设计：
+
+```text
+输入：
+  -> Perfetto trace
+  -> logcat 时间点
+  -> dumpsys 状态快照
+  -> gfxinfo / meminfo / simpleperf 指标
+  -> 复现步骤和设备环境
+
+输出：
+  -> 关键时间窗口
+  -> 异常事件列表
+  -> 候选因果链
+  -> 证据强弱说明
+  -> 建议验证动作
+  -> 回归对比报告
+```
+
+这会让性能分析从“个人经验驱动”逐渐走向“证据模型驱动”。
+
+### CausalPerf 当前状态
+
+`CausalPerf` 目前仍处于开发中。
+
+这句话很重要，因为它意味着课程里介绍它时不应该把它写成一个已经能解决所有问题的万能工具。
+
+更准确的描述是：
+
+```text
+CausalPerf 是一个正在探索中的 Android 性能因果链分析项目。
+它希望把 Perfetto、日志、系统状态和性能指标组织成更容易复盘的诊断链路。
+```
+
+也正因为它还在开发中，才适合作为课程读者的共建入口。
+
+对学习者来说，参与它不一定一开始就要写复杂算法。很多贡献都很有价值：
+
+```text
+提供一个可复现的卡顿案例。
+整理一份 trace 阅读笔记。
+补一个 FrameTimeline 解析规则。
+写一个 ANR 因果链模板。
+把某次优化前后的证据整理成报告。
+```
+
+### CausalPerf 参与方式
+
+如果你对 Android 性能分析、Perfetto trace 解析、因果链建模、自动诊断报告或工程化工具建设感兴趣，非常欢迎参与其中。
+
+这类工具最需要的不是一个人把所有答案写完，而是一群人在真实性能问题里不断校准证据、规则和判断。
+
+更具体地说，可以从这些方向切入：
+
+| 参与方向 | 适合做什么 |
+| --- | --- |
+| 性能案例 | 补充真实或可复现的卡顿、ANR、启动、内存、Binder 等案例 |
+| Trace 解析 | 完善 Perfetto trace 中线程、slice、FrameTimeline、Binder 事件的解析规则 |
+| 因果链建模 | 设计现象、证据、候选根因、置信度和回归结果之间的关系 |
+| 报告生成 | 把分析结果整理成更适合团队复盘的 Markdown / HTML 报告 |
+| Demo 实验 | 为课程和工具准备可重复触发、可观测、可对比的 Android 实验场景 |
+| 文档建设 | 补充使用说明、案例教程、术语解释和贡献指南 |
+
 ## 三、SmartPerfetto：让 trace 更容易被读懂
 
 `SmartPerfetto` 更适合放在“Perfetto 分析增强”这一层讲。
@@ -185,6 +288,73 @@ Perfetto trace
 | slice 太碎 | 聚合长任务、等待、帧超时和异常片段 |
 | 初学者不会读 | 给出“先看这里”的阅读路径 |
 | 团队报告不统一 | 自动生成统一证据链模板 |
+
+### SmartPerfetto 适合处理什么问题
+
+`SmartPerfetto` 的重点是降低 Perfetto 的阅读门槛。
+
+Perfetto 本身非常强，但它也有几个真实门槛：
+
+```text
+时间线很长。
+进程和线程很多。
+同名线程容易混淆。
+slice 粒度不统一。
+初学者不知道什么是异常。
+团队成员的 trace 阅读习惯不一致。
+```
+
+所以 `SmartPerfetto` 可以被理解成 Perfetto 之上的“阅读辅助层”。
+
+它不改变底层 trace 数据，而是帮助你更快找到值得看的地方：
+
+```text
+自动定位用户操作窗口
+识别主线程和 RenderThread
+标记慢帧和长任务
+聚合 Binder wait
+突出 system_server 相关线程
+把关键片段整理成报告草稿
+```
+
+### SmartPerfetto 的典型使用方式
+
+一个学习者可以这样使用 `SmartPerfetto`：
+
+```text
+第一步：用 Perfetto 采集 trace
+第二步：用 SmartPerfetto 打开或分析 trace
+第三步：根据标注找到关键时间窗口
+第四步：回到 Perfetto 原始时间线核对细节
+第五步：把关键证据写入诊断报告
+```
+
+注意最后一步很重要。
+
+`SmartPerfetto` 的目标不是让你不再理解 Perfetto，而是让你更快进入 Perfetto 的关键区域。
+
+```text
+它像阅读导航。
+不是替你读完整本书的人。
+```
+
+### SmartPerfetto 和学习曲线
+
+对于课程读者来说，`SmartPerfetto` 可以帮助他们跨过三个坎：
+
+| 学习阶段 | 常见困难 | SmartPerfetto 的价值 |
+| --- | --- | --- |
+| 初学 Perfetto | 不知道看哪里 | 标出主线程、帧、Binder、关键窗口 |
+| 开始排查性能 | 不知道哪些事件重要 | 聚合慢帧、长任务、等待和异常片段 |
+| 团队协作 | 报告风格不统一 | 输出结构化证据摘要和报告草稿 |
+
+但课程仍然要坚持一个原则：
+
+```text
+先理解原生工具，再使用增强工具。
+```
+
+因为只有理解原生证据，读者才不会盲目相信自动分析结果。
 
 ## 四、二者和 Perfetto 的关系
 

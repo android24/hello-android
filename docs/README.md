@@ -51,8 +51,6 @@
 - 第 23 章：Android 安全模型、权限、签名、AppOps 与数据保护。
 - 第 24 章：系统观测工具：Perfetto、dumpsys、bugreport 与证据链分析。
 
-第 24 章还加入了智能化诊断附录，介绍 SmartPerfetto 与 CausalPerf 这两个延伸项目。其中 CausalPerf 目前仍在开发中，欢迎对 Android 性能诊断、Perfetto trace 分析和因果链建模感兴趣的同学参与共建。
-
 这几章会逐步串起一条完整路径：
 
 ```text
