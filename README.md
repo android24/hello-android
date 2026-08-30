@@ -309,6 +309,7 @@
   - [24.7 观测体验问题：误读、隐私、复现与团队协作](docs/chapter24/chapter24_7.md)
   - [24.8 综合实践：系统证据链分析实验室](docs/chapter24/chapter24_8.md)
   - [24 附录：从 Perfetto 到 CausalPerf / SmartPerfetto](docs/chapter24/appendix_smart_perfetto.md)
+  - [配套示例工程](examples/24-observability-evidence-lab/)
 - 第25章 大型 Android 工程治理：模块边界、构建效率、发布、监控与团队协作
   - 通关目标：理解大型 Android 工程如何保持可维护、可构建、可发布、可观测和可协作，掌握模块边界、构建效率、依赖资源配置、发布灰度、监控告警、事故复盘和团队治理方法
   - [25.1 为什么要学习大型 Android 工程治理](docs/chapter25/chapter25_1.md)
@@ -319,6 +320,7 @@
   - [25.6 监控、告警、性能基线与事故复盘](docs/chapter25/chapter25_6.md)
   - [25.7 团队协作、代码评审、技术债与治理节奏](docs/chapter25/chapter25_7.md)
   - [25.8 综合实践：大型工程治理工作台](docs/chapter25/chapter25_8.md)
+  - [配套示例工程](examples/25-engineering-governance-lab/)
 
 ### 项目说明
 
@@ -519,6 +521,8 @@
 - [第21章 后台任务、前台服务、Alarm、JobScheduler 与系统后台限制示例工程](examples/21-background-scheduling-lab/)
 - [第22章 存储系统、Scoped Storage、MediaStore 与数据访问机制示例工程](examples/22-storage-access-lab/)
 - [第23章 Android 安全模型、权限、签名、AppOps 与数据保护示例工程](examples/23-security-permission-lab/)
+- [第24章 系统观测工具：Perfetto、dumpsys、bugreport 与证据链分析示例工程](examples/24-observability-evidence-lab/)
+- [第25章 大型 Android 工程治理：模块边界、构建效率、发布、监控与团队协作示例工程](examples/25-engineering-governance-lab/)
 
 ## 贡献者名单
 

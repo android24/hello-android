@@ -1,0 +1,38 @@
+{
+  "description": "第25章工程治理工作台的示例规则。真实项目可以把这些规则沉淀到 Gradle convention plugin、CI 门禁、发布平台或监控平台中。",
+  "policies": [
+    {
+      "id": "safe",
+      "name": "保守门禁",
+      "p1Decision": "先修复再灰度",
+      "minHealthToGray": 86
+    },
+    {
+      "id": "balanced",
+      "name": "平衡灰度",
+      "p1Decision": "仅允许小流量灰度",
+      "minHealthToGray": 75
+    },
+    {
+      "id": "fast",
+      "name": "快速实验",
+      "p1Decision": "可以 1% 实验灰度",
+      "minHealthToGray": 68
+    }
+  ],
+  "blockingRules": [
+    "release mapping 或 native symbols 未归档",
+    "release 签名证书指纹与构建档案不一致",
+    "release 环境配置指向 staging 或 debug",
+    "core / domain 反向依赖 feature",
+    "插件协议、资源隔离或签名校验失败",
+    "核心链路 crash-free 或业务成功率低于发布阈值"
+  ],
+  "watchRules": [
+    "新增权限必须有申请时机、拒绝路径、商店审核说明和监控指标",
+    "新增 exported 组件必须说明调用方、权限保护和攻击面",
+    "新增资源必须符合组件前缀，并解释包体积变化",
+    "构建耗时回退必须记录最慢 task、缓存命中率和责任人",
+    "P2 / P3 技术债必须记录影响范围、负责人、截止时间和触发条件"
+  ]
+}

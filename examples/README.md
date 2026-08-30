@@ -39,6 +39,8 @@ examples/
   21-background-scheduling-lab/
   22-storage-access-lab/
   23-security-permission-lab/
+  24-observability-evidence-lab/
+  25-engineering-governance-lab/
 ```
 
 ## 课程闯关地图
@@ -51,7 +53,7 @@ examples/
 | 数据与架构 | `04` - `08` | 网络、本地数据、协程、架构、依赖注入、测试 |
 | 质量与性能 | `09` - `10` | 性能、稳定性、源码阅读入口 |
 | Framework 主线 | `11` - `18` | Binder、AMS、WMS、Input、渲染、PMS、资源、ClassLoader |
-| 系统工程实验室 | `19` - `23` | 进程、稳定性、后台调度、存储访问、安全模型和事故诊断 |
+| 系统工程实验室 | `19` - `25` | 进程、稳定性、后台调度、存储访问、安全模型、系统观测、工程治理和事故诊断 |
 
 ## 推荐玩法
 
@@ -84,7 +86,8 @@ examples/
 | `04` - `08` | 工程搭建者 | 能把数据、异步、架构和测试串起来 |
 | `09` - `10` | 质量守门员 | 能用证据解释性能或稳定性问题 |
 | `11` - `18` | Framework 调查员 | 能从一次交互追到系统服务和源码入口 |
-| `19` - `23` | 系统诊断工程师 | 能写出进程、稳定性、后台、存储和安全事故诊断报告 |
+| `19` - `24` | 系统诊断工程师 | 能写出进程、稳定性、后台、存储、安全和系统观测证据链报告 |
+| `25` | 工程治理负责人 | 能完成一次发版前治理体检，并写出发布决策报告 |
 
 ## 当前重点实验室
 
@@ -94,15 +97,17 @@ examples/
 - `21-background-scheduling-lab/`：学习 Foreground Service、WorkManager、Alarm 和后台限制。
 - `22-storage-access-lab/`：学习 filesDir、cacheDir、MediaStore、Photo Picker、SAF、FileProvider 和存储事故排查。
 - `23-security-permission-lab/`：学习 UID、权限、AppOps、签名、Keystore、组件边界、日志脱敏和安全事故诊断。
+- `24-observability-evidence-lab/`：学习 logcat、dumpsys、Perfetto、bugreport、gfxinfo、meminfo、procstats、simpleperf 和证据链报告。
+- `25-engineering-governance-lab/`：学习模块边界、组件契约、插件风险、构建效率、依赖冲突、发布决策、监控告警和治理报告。
 
 这几章组合起来，会形成一个很接近真实工作的闭环：
 
 ```text
 App 出问题
-  -> 先判断是稳定性、后台调度、存储边界，还是安全边界
+  -> 先判断是稳定性、后台调度、存储边界、安全边界、系统观测，还是工程治理失控
       -> 找系统证据
-          -> 写诊断报告
-              -> 做修复和回归
+          -> 写诊断报告或治理报告
+              -> 做修复、回归、灰度和复盘
 ```
 
 ## 设计原则

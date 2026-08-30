@@ -1,0 +1,38 @@
+buffers {
+  size_kb: 8192
+  fill_policy: RING_BUFFER
+}
+
+duration_ms: 10000
+
+data_sources {
+  config {
+    name: "linux.ftrace"
+    ftrace_config {
+      ftrace_events: "sched/sched_switch"
+      ftrace_events: "sched/sched_wakeup"
+      ftrace_events: "power/cpu_frequency"
+      ftrace_events: "binder/binder_transaction"
+      ftrace_events: "binder/binder_transaction_received"
+      atrace_categories: "am"
+      atrace_categories: "wm"
+      atrace_categories: "view"
+      atrace_categories: "gfx"
+      atrace_categories: "input"
+      atrace_categories: "binder_driver"
+      atrace_apps: "com.helloandroid.observability"
+    }
+  }
+}
+
+data_sources {
+  config {
+    name: "android.surfaceflinger.frametimeline"
+  }
+}
+
+data_sources {
+  config {
+    name: "linux.process_stats"
+  }
+}

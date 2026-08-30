@@ -61,13 +61,13 @@ logcat 给时间点，Perfetto 给执行过程，dumpsys / bugreport 给系统�
 
 本节是第 24 章综合实践。
 
-配套示例工程建议命名为：
+配套示例工程位于：
 
 ```text
 examples/24-observability-evidence-lab/
 ```
 
-这个工程可以做成一个“系统证据链分析实验室”：页面里制造轻量卡顿、后台任务、日志事件、内存变化和报告模板，读者再通过 adb、Perfetto、dumpsys、bugreport 把证据采回来。
+这个工程是一个“系统证据链分析实验室”：页面里提供事故剧本、带 `traceId` 的轻量主线程忙碌、内存增长、证据卡片、命令取证区、Perfetto 阅读路线、性能证据面板、脱敏检查、证据链答题区和可复制分享的证据链报告，读者可以通过 adb、Perfetto、dumpsys、bugreport 把证据采回来。
 
 ## 学习目标
 
@@ -158,6 +158,15 @@ Demo 可以设计几个事故剧本：
 还缺哪份证据？
 ```
 
+Demo 中的触发按钮会同时写 logcat 和 trace section。推荐读者这样练：
+
+```text
+先点击触发器
+  -> 在 logcat 搜 traceId
+      -> 在 Perfetto 搜 ch24_main_thread_work 或 ch24_memory_growth
+          -> 把日志时间点、trace section 和性能指标写进报告
+```
+
 ## 第四部分：推荐命令清单
 
 logcat：
@@ -171,12 +180,12 @@ adb logcat -d -v threadtime > logcat.txt
 dumpsys：
 
 ```bash
-adb shell dumpsys package com.helloandroid
+adb shell dumpsys package com.helloandroid.observability
 adb shell dumpsys activity activities
 adb shell dumpsys jobscheduler
 adb shell dumpsys alarm
-adb shell dumpsys gfxinfo com.helloandroid framestats
-adb shell dumpsys meminfo com.helloandroid
+adb shell dumpsys gfxinfo com.helloandroid.observability framestats
+adb shell dumpsys meminfo com.helloandroid.observability
 ```
 
 Perfetto：
@@ -208,6 +217,7 @@ adb shell dumpsys dropbox
 复现路径：
 设备 / Android 版本 / App 版本：
 发生时间点：
+traceId：
 
 第一证据：
   -> logcat 里哪一行证明事故开始
@@ -220,6 +230,9 @@ adb shell dumpsys dropbox
 
 性能或稳定性辅助证据：
   -> gfxinfo / meminfo / simpleperf / tombstone
+
+答题结果：
+  -> 第一证据、状态证据、时间线证据和脱敏判断是否正确
 
 根因判断：
   -> 不是猜测，而是证据如何指向这个结论
