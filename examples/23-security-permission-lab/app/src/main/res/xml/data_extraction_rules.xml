@@ -1,0 +1,12 @@
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude
+            domain="file"
+            path="share/" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude
+            domain="file"
+            path="share/" />
+    </device-transfer>
+</data-extraction-rules>

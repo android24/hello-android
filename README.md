@@ -295,6 +295,7 @@
   - [23.6 Keystore、加密存储、备份恢复与敏感数据保护](docs/chapter23/chapter23_6.md)
   - [23.7 安全体验问题：权限拒绝、组件暴露、日志泄露与合规风险](docs/chapter23/chapter23_7.md)
   - [23.8 综合实践：安全模型观察实验室](docs/chapter23/chapter23_8.md)
+  - [配套示例工程](examples/23-security-permission-lab/)
 
 ### 项目说明
 
@@ -490,6 +491,7 @@
 - [第20章 ANR、Crash、Watchdog 与系统稳定性诊断机制示例工程](examples/20-stability-diagnosis-lab/)
 - [第21章 后台任务、前台服务、Alarm、JobScheduler 与系统后台限制示例工程](examples/21-background-scheduling-lab/)
 - [第22章 存储系统、Scoped Storage、MediaStore 与数据访问机制示例工程](examples/22-storage-access-lab/)
+- [第23章 Android 安全模型、权限、签名、AppOps 与数据保护示例工程](examples/23-security-permission-lab/)
 
 ## 贡献者名单
 

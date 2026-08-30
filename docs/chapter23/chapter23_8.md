@@ -80,13 +80,13 @@ Keystore 保护的是密钥
 
 本节是第 23 章综合实践。
 
-后续可以配套示例工程：
+配套示例工程：
 
 ```text
 examples/23-security-permission-lab/
 ```
 
-这个工程可以围绕权限状态、AppOps 命令卡、组件 exported 观察、FileProvider 分享边界、Keystore 加密演示、签名信息观察、安全事故剧本和诊断报告做成一个可运行实验室。
+这个工程围绕权限状态、AppOps 裁决、Photo Picker、签名升级身份、PendingIntent 授权令牌、组件 exported 观察、FileProvider 分享边界、Keystore 加密演示、安全事故剧本和诊断报告，组成一个可运行实验室。
 
 它不是为了证明“权限弹窗能弹出来”，而是为了训练一个更重要的能力：
 
@@ -112,18 +112,21 @@ examples/23-security-permission-lab/
 
 - `身份观察卡`：展示 packageName、uid、processName、targetSdk、dataDir。
 - `权限状态卡`：展示相机、通知、照片、定位等权限声明和授权状态。
-- `AppOps 命令卡`：引导执行 `cmd appops get`，观察实际操作开关。
-- `签名观察卡`：展示 debug / release 概念、证书指纹观察命令和安装失败剧本。
+- `AppOps 裁决实验`：选择 op 和 mode，也可以粘贴命令输出解析 `allow / ignore / foreground / deny / default`。
+- `相册访问与 Photo Picker 实验`：观察单个 `content://` Uri、整库媒体权限和部分照片授权的差异。
+- `签名升级身份实验`：展示 debug / release 概念、证书指纹观察命令、signing lineage、安装失败剧本，并支持粘贴双 APK 证书输出做对比。
+- `PendingIntent 授权令牌实验`：对比显式 immutable、mutable 和隐式入口。
 - `Keystore 实验区`：生成密钥，写入加密文本，模拟恢复失败和重新初始化。
 - `组件边界实验区`：展示 exported、intent-filter、Provider authority、FileProvider paths。
 - `日志脱敏实验区`：输入一段含 token 的日志，输出脱敏结果。
-- `安全事故剧本`：权限通过但不可用、组件误暴露、日志泄露、签名不一致、FileProvider 暴露过宽。
-- `安全诊断报告`：输出现象、身份、权限、AppOps、签名、组件、数据保护和回归。
+- `安全事故剧本`：权限通过但不可用、前台定位可用后台失败、组件误暴露、日志泄露、签名不一致、FileProvider 暴露过宽。
+- `安全诊断答题区`：选择问题类型、第一证据和修复动作，并填写自由文本报告获得评分反馈。
+- `安全诊断报告`：输出现象、身份、权限、AppOps、签名、组件、数据保护和回归，并支持 SAF 导出。
 - `体验评分机制`：提醒学习者是否完成“身份、授权、实际放行、边界、保护、复盘”。
 
 ## 第一部分补充：体验评分怎么设计
 
-Demo 可以把学习过程拆成 12 个观察点：
+Demo 可以把学习过程拆成 16 个观察点：
 
 | 观察点 | 得分条件 |
 | --- | --- |
@@ -131,13 +134,17 @@ Demo 可以把学习过程拆成 12 个观察点：
 | 沙箱路径 | 观察 dataDir、filesDir 和默认隔离 |
 | 权限声明 | 读取 Manifest 请求权限 |
 | runtime 权限 | 检查至少一个危险权限授权状态 |
-| AppOps | 阅读并执行 appops 命令 |
-| 签名 | 观察 debug/release 签名差异和证书指纹 |
+| AppOps | 选择 op/mode，或粘贴命令输出解析系统裁决 |
+| 签名 | 观察证书指纹，并判断同签名、签名轮换和签名不同三类升级结果 |
+| 签名实测 | 粘贴 debug / release 证书输出并比较 |
 | Keystore | 生成密钥并加密一段文本 |
 | FileProvider | 观察 paths 配置和 content Uri |
-| exported | 判断组件是否应该暴露 |
+| PendingIntent | 判断授权令牌是否显式、不可变、可回收 |
+| Photo Picker | 选择一张图片，观察 Uri grant 和整库权限的差异 |
 | 日志脱敏 | 把敏感日志转换成安全输出 |
 | 事故剧本 | 完成至少一个安全事故判断 |
+| 诊断答题 | 提交问题类型、第一证据和修复动作 |
+| 自由报告 | 写出含现象、证据、根因和修复的文本报告 |
 | 诊断报告 | 写出证据、原因、修复和回归 |
 
 评分不是为了把安全做成游戏，而是为了防止只会点权限弹窗，不会解释系统判断。
@@ -193,6 +200,7 @@ Demo 可以提供几个事故剧本：
 | 日志泄露 | 诊断日志含 token | release 打印完整请求 | 证据链变泄露源 |
 | 覆盖安装失败 | 测试包装不上 | 签名不同 | 包名不是唯一身份 |
 | 分享日志风险 | FileProvider paths 暴露 filesDir | 分享范围过大 | content Uri 也要最小授权 |
+| 后台定位失败 | 前台能定位，后台签到失败 | AppOps foreground 或后台定位缺失 | 前台成功不等于后台放行 |
 
 玩剧本时先不要看答案，先写下自己的第一判断：
 
@@ -384,28 +392,31 @@ Keystore alias：
 必须拆成身份、授权、AppOps、组件边界、签名和数据保护。
 ```
 
-## 第七部分：Demo 开发建议
+## 第七部分：Demo 已覆盖的实验路线
 
-后续实现 `examples/23-security-permission-lab/` 时，建议按下面优先级推进：
+当前 `examples/23-security-permission-lab/` 已按下面路线组织。学习时建议顺着这条链路走，不要只挑权限按钮点：
 
 ```text
 第一优先级：身份与权限观察
   -> 展示 packageName、uid、targetSdk、权限声明和授权状态
 
-第二优先级：AppOps 命令卡
-  -> 引导读者从系统证据判断实际放行
+第二优先级：AppOps 裁决实验
+  -> 选择 op/mode，从系统证据判断实际放行
 
-第三优先级：组件边界与 FileProvider
-  -> exported、Provider authority、paths、Uri grant
+第三优先级：Photo Picker 与媒体授权
+  -> 区分单个 Uri grant、整库媒体权限和部分照片授权
 
-第四优先级：Keystore 与脱敏实验
+第四优先级：签名升级身份实验
+  -> debug/release、证书指纹、signing lineage、覆盖安装失败、双 APK 输出对比
+
+第五优先级：PendingIntent、组件边界与 FileProvider
+  -> exported、Provider authority、paths、Uri grant、immutable/mutable
+
+第六优先级：Keystore 与脱敏实验
   -> 加密一段文本、脱敏 token、导出安全报告
 
-第五优先级：签名与安装事故剧本
-  -> debug/release、证书指纹、覆盖安装失败
-
-第六优先级：安全事故剧本和诊断报告
-  -> 把实验结果变成安全判断
+第七优先级：安全事故剧本和诊断报告
+  -> 先答题，再写自由文本报告，把实验结果变成安全判断，并通过 SAF 导出
 ```
 
 不要一开始就追求模拟所有安全风险。
@@ -419,6 +430,57 @@ Keystore alias：
           -> 边界
               -> 数据保护
                   -> 诊断复盘
+```
+
+## 第七部分补充：剧情模式怎么玩
+
+如果你第一次运行 Demo，不建议从页面中间随便点。
+
+更好的玩法是把自己当成一次安全事故的值班工程师，按下面顺序走：
+
+```text
+第 1 步：选择事故
+  -> 先在安全事故剧本里选一个现象
+
+第 2 步：确认身份
+  -> 看 packageName、uid、pid、processName、targetSdk 和签名指纹
+
+第 3 步：确认授权
+  -> 看 Manifest 声明、runtime grant 和权限说明
+
+第 4 步：确认实际放行
+  -> 选择 AppOps op/mode，或粘贴 adb 输出让 Demo 解析
+
+第 5 步：确认边界
+  -> 看 PendingIntent、exported 组件、FileProvider paths 和 Photo Picker Uri
+
+第 6 步：确认数据保护
+  -> 运行 Keystore 加密 / 解密 / 删除 key 后解密，再生成脱敏日志
+
+第 7 步：提交诊断
+  -> 在诊断答题区选择问题类型、第一证据和修复动作，再写一段自由文本报告
+
+第 8 步：导出报告
+  -> 通过 FileProvider 分享，或通过 SAF 导出到用户选择的位置
+```
+
+Demo 会用几个 UI 细节帮助你不迷路：
+
+```text
+任务板显示已完成 x / 16 和当前建议
+每个关键实验区显示待完成 / 已完成
+答题区在选完三段判断后才允许提交，并对自由文本报告给出 0/4 到 4/4 的反馈
+诊断报告默认收起，完成答题后再展开或导出
+```
+
+这个剧情模式的重点不是“全部点亮”，而是让读者形成一种肌肉记忆：
+
+```text
+先找身份
+再找授权
+再找实际放行
+再看入口和数据出口
+最后写证据链
 ```
 
 ## 第八部分：Demo 的原理观察点
@@ -445,9 +507,10 @@ Keystore alias：
 | Keystore | key alias、密文 | Keystore 管密钥，不是存明文 |
 | 日志脱敏 | 原始日志、脱敏日志 | 证据不能变泄露源 |
 | 签名剧本 | debug/release、证书指纹 | 签名决定升级身份 |
-| 事故报告 | 身份、授权、边界、保护 | 安全问题需要证据链 |
+| 诊断答题 | 问题类型、第一证据、修复动作 | 先自己判断，再对照标准答案 |
+| 事故报告 | 身份、授权、边界、保护、SAF 导出 | 安全问题需要证据链 |
 
-为了让 Demo 真正体现本章精华，建议再加入一张“原理翻译卡”：
+为了让 Demo 真正体现本章精华，可以把它理解成一张“原理翻译卡”：
 
 | 系统原理 | Demo 观察 | 读者应该说出的结论 |
 | --- | --- | --- |
@@ -589,7 +652,7 @@ Keystore 事故：
                   -> 修复：清理密文、重新登录、重建本地索引
 ```
 
-这张表后续也应该映射到 Demo：
+这张表已经映射到 Demo 的主要实验区：
 
 ```text
 每个实验区必须回答：

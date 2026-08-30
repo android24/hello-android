@@ -1,0 +1,5 @@
+<full-backup-content>
+    <exclude
+        domain="file"
+        path="share/" />
+</full-backup-content>

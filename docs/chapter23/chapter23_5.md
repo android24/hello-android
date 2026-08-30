@@ -85,6 +85,31 @@ apksigner verify --verbose --print-certs app-debug.apk
 - 知道 signature permission 不是普通业务 App 能随便拿到的能力。
 - 能把签名问题纳入安装失败和安全事故排查。
 
+## 本节阅读导航
+
+这一节比较长，建议按四层读：
+
+```text
+先看事故
+  -> 测试包为什么覆盖不了线上包
+
+再看身份
+  -> 包名、证书、公钥、SigningDetails 到底谁代表 App
+
+再看校验
+  -> APK 完整性校验和升级身份校验为什么不是一回事
+
+最后看信任边界
+  -> signature permission、同签名组件访问和供应链风险如何串起来
+```
+
+读完不要只记住“签名不一致会失败”，而是要能说清楚：
+
+```text
+系统先确认 APK 自己有没有被篡改，
+再确认它是不是已安装 App 的可信继任者。
+```
+
 ## 第一部分：签名是 App 的长期身份
 
 Android 安装 APK / AAB 产物时，会检查签名。
