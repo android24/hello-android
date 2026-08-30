@@ -50,6 +50,7 @@
 - 第 22 章：存储系统、Scoped Storage、MediaStore 与数据访问机制。
 - 第 23 章：Android 安全模型、权限、签名、AppOps 与数据保护。
 - 第 24 章：系统观测工具：Perfetto、dumpsys、bugreport 与证据链分析。
+- 第 25 章：大型 Android 工程治理：模块边界、构建效率、发布、监控与团队协作。
 
 这几章会逐步串起一条完整路径：
 
@@ -74,6 +75,7 @@
                                                                       -> 存储系统 / MediaStore / SAF / URI 权限管理用户数据边界
                                                                           -> 安全模型 / 权限 / 签名 / AppOps / Keystore 保护敏感能力和数据
                                                                               -> 系统观测工具 / Perfetto / dumpsys / bugreport 把复杂事故转成可复盘证据链
+                                                                                  -> 大型工程治理把边界、构建、发布、监控和协作沉淀成长期稳定能力
 ```
 
 ## 配套工程

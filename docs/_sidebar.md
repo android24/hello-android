@@ -198,3 +198,12 @@
     - [24.7 观测体验问题：误读、隐私、复现与团队协作](chapter24/chapter24_7)
     - [24.8 综合实践：系统证据链分析实验室](chapter24/chapter24_8)
     - [24 附录：从 Perfetto 到 CausalPerf / SmartPerfetto](chapter24/appendix_smart_perfetto)
+- 第25章 大型 Android 工程治理：模块边界、构建效率、发布、监控与团队协作
+    - [25.1 为什么要学习大型 Android 工程治理](chapter25/chapter25_1)
+    - [25.2 模块边界、依赖方向与架构防腐](chapter25/chapter25_2)
+    - [25.3 Gradle、构建效率、缓存与 CI 加速](chapter25/chapter25_3)
+    - [25.4 依赖、资源、配置与多环境治理](chapter25/chapter25_4)
+    - [25.5 发布、签名、灰度、回滚与版本治理](chapter25/chapter25_5)
+    - [25.6 监控、告警、性能基线与事故复盘](chapter25/chapter25_6)
+    - [25.7 团队协作、代码评审、技术债与治理节奏](chapter25/chapter25_7)
+    - [25.8 综合实践：大型工程治理工作台](chapter25/chapter25_8)

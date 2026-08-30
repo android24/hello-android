@@ -35,6 +35,7 @@
 - 第 22 章：走进存储系统，理解 Scoped Storage、MediaStore、SAF 和 URI 权限如何守住用户数据边界。
 - 第 23 章：进入安全模型，理解 UID、权限、签名、AppOps、Keystore 与数据保护如何共同形成系统门禁。
 - 第 24 章：进入系统观测工具，学会用 logcat、dumpsys、bugreport、Perfetto 和性能证据把复杂事故串成证据链。
+- 第 25 章：收束大型工程治理，把模块边界、构建效率、发布灰度、监控复盘和团队协作连成体系。
 
 每一章都像一个小关卡：先读文档拿地图，再运行示例看效果，最后改一处代码留下自己的痕迹。学完一章，你都应该能回答三个问题：我做出了什么？它为什么能运行？如果让我重新写一遍，我会从哪里开始？
 
@@ -308,6 +309,16 @@
   - [24.7 观测体验问题：误读、隐私、复现与团队协作](docs/chapter24/chapter24_7.md)
   - [24.8 综合实践：系统证据链分析实验室](docs/chapter24/chapter24_8.md)
   - [24 附录：从 Perfetto 到 CausalPerf / SmartPerfetto](docs/chapter24/appendix_smart_perfetto.md)
+- 第25章 大型 Android 工程治理：模块边界、构建效率、发布、监控与团队协作
+  - 通关目标：理解大型 Android 工程如何保持可维护、可构建、可发布、可观测和可协作，掌握模块边界、构建效率、依赖资源配置、发布灰度、监控告警、事故复盘和团队治理方法
+  - [25.1 为什么要学习大型 Android 工程治理](docs/chapter25/chapter25_1.md)
+  - [25.2 模块边界、依赖方向与架构防腐](docs/chapter25/chapter25_2.md)
+  - [25.3 Gradle、构建效率、缓存与 CI 加速](docs/chapter25/chapter25_3.md)
+  - [25.4 依赖、资源、配置与多环境治理](docs/chapter25/chapter25_4.md)
+  - [25.5 发布、签名、灰度、回滚与版本治理](docs/chapter25/chapter25_5.md)
+  - [25.6 监控、告警、性能基线与事故复盘](docs/chapter25/chapter25_6.md)
+  - [25.7 团队协作、代码评审、技术债与治理节奏](docs/chapter25/chapter25_7.md)
+  - [25.8 综合实践：大型工程治理工作台](docs/chapter25/chapter25_8.md)
 
 ### 项目说明
 
@@ -375,7 +386,7 @@
 - SurfaceFlinger、渲染链路与应用显示原理
 - 阶段项目：从一次点击追踪到 Framework 调用链
 
-当前 Framework 阶段已经展开到第 24 章。它不是突然跳进源码深水区，而是沿着一条非常具体的应用行为往下走：先从一次点击和一次系统服务调用建立入口，再追踪 Activity 如何被启动、窗口如何被添加、内容如何走向屏幕，然后观察触摸事件如何被系统派发并在 View 树中找到处理者，继续追问 UI 状态变化如何变成屏幕上的下一帧，再回到系统识别 App 的入口，理解安装、包解析、组件、权限和签名，接着进入资源系统，解释字符串、图片、主题和多语言资源为什么能被正确读取，再补齐代码加载主线，理解 Dex、ClassLoader、Dalvik、ART、so、动态加载和热修复如何共同决定 App 代码能否被找到并执行，然后继续追问这些代码运行在哪个进程里，理解 Zygote、应用沙箱、多进程、线程、OOM Adj 和 LMKD 如何共同决定 App 的运行空间与回收命运，再进入稳定性事故调查室，理解 ANR、Crash、tombstone、Watchdog、DropBox 和 bugreport 如何把异常现场变成可诊断证据，随后把后台调度、存储访问和安全模型接起来，理解系统为什么既要让 App 完成任务，又要守住电量、数据、权限和隐私边界，最后进入系统观测工具，把 logcat、dumpsys、bugreport、Perfetto、gfxinfo、meminfo、procstats 和 simpleperf 串成一条能复现、能定位、能复盘的证据链。
+当前 Framework 阶段已经展开到第 25 章。它不是突然跳进源码深水区，而是沿着一条非常具体的应用行为往下走：先从一次点击和一次系统服务调用建立入口，再追踪 Activity 如何被启动、窗口如何被添加、内容如何走向屏幕，然后观察触摸事件如何被系统派发并在 View 树中找到处理者，继续追问 UI 状态变化如何变成屏幕上的下一帧，再回到系统识别 App 的入口，理解安装、包解析、组件、权限和签名，接着进入资源系统，解释字符串、图片、主题和多语言资源为什么能被正确读取，再补齐代码加载主线，理解 Dex、ClassLoader、Dalvik、ART、so、动态加载和热修复如何共同决定 App 代码能否被找到并执行，然后继续追问这些代码运行在哪个进程里，理解 Zygote、应用沙箱、多进程、线程、OOM Adj 和 LMKD 如何共同决定 App 的运行空间与回收命运，再进入稳定性事故调查室，理解 ANR、Crash、tombstone、Watchdog、DropBox 和 bugreport 如何把异常现场变成可诊断证据，随后把后台调度、存储访问和安全模型接起来，理解系统为什么既要让 App 完成任务，又要守住电量、数据、权限和隐私边界，再进入系统观测工具，把 logcat、dumpsys、bugreport、Perfetto、gfxinfo、meminfo、procstats 和 simpleperf 串成一条能复现、能定位、能复盘的证据链，最后回到大型工程治理，把这些能力沉淀进模块边界、构建效率、发布灰度、监控告警、事故复盘和团队协作。
 
 - 第 10 章负责打开入口：建立 Android 系统分层视角，认识 ActivityThread、Context、Handler、Looper、Binder 和 AOSP 源码阅读方法。它像一张进城地图，先告诉你 Framework 这座城市大概有哪些路。
 - 第 11 章负责建立通信主线：从 Binder、AIDL、ServiceManager、SystemServer 到系统服务调用，让你理解 App 为什么不能直接调用系统内部能力，而要通过 Binder 和 system_server 协作。
@@ -392,6 +403,7 @@
 - 第 22 章负责补齐数据访问主线：从 App 私有存储、缓存、MediaStore、Photo Picker 到 SAF 和 URI 权限，理解 Android 为什么从路径访问走向范围访问，以及如何让用户数据既可用又不越界。
 - 第 23 章负责补齐安全边界主线：从 UID、沙箱、runtime permission、AppOps、签名、Keystore 到组件暴露和日志脱敏，理解系统如何判断“谁在访问、能不能访问、访问之后留下什么证据”。
 - 第 24 章负责补齐系统观测主线：从 logcat、dumpsys、bugreport、Perfetto 到 gfxinfo、meminfo、procstats 和 simpleperf，理解复杂事故如何从“感觉不对”变成一份可复现、可验证、可回归的工程证据链。
+- 第 25 章负责收束工程治理主线：从模块边界、构建效率、依赖资源配置到发布灰度、监控告警、事故复盘和团队协作，理解大型 Android 工程如何把个人经验沉淀成可持续运转的工程系统。
 
 这几章串起来后，会形成一条完整的 Framework 入门链路：
 
@@ -416,6 +428,7 @@
                                                                   -> 存储系统 / MediaStore / SAF / URI 权限管理用户数据访问边界
                                                                       -> 安全模型 / 权限 / 签名 / AppOps / Keystore 守住敏感能力和隐私数据
                                                                           -> 系统观测工具 / Perfetto / dumpsys / bugreport 把复杂事故转成可复盘证据链
+                                                                              -> 大型工程治理把边界、构建、发布、监控和协作沉淀成长期稳定能力
 ```
 
 ### 学习顺序
