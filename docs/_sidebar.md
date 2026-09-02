@@ -207,3 +207,12 @@
     - [25.6 监控、告警、性能基线与事故复盘](chapter25/chapter25_6)
     - [25.7 团队协作、代码评审、技术债与治理节奏](chapter25/chapter25_7)
     - [25.8 综合实践：大型工程治理工作台](chapter25/chapter25_8)
+- 第26章 Android 资深工程师毕业项目：从需求、架构、Framework 到诊断与治理
+    - [26.1 为什么需要一个毕业项目](chapter26/chapter26_1)
+    - [26.2 毕业项目需求：做一个可诊断、可治理的课程 App](chapter26/chapter26_2)
+    - [26.3 从业务需求到模块架构设计](chapter26/chapter26_3)
+    - [26.4 从一次用户操作追到 Framework 链路](chapter26/chapter26_4)
+    - [26.5 性能、稳定性、安全与存储的综合检查](chapter26/chapter26_5)
+    - [26.6 用证据链完成一次事故诊断](chapter26/chapter26_6)
+    - [26.7 用工程治理完成一次发版评审](chapter26/chapter26_7)
+    - [26.8 终章答辩：如何证明自己具备资深 Android 工程师能力](chapter26/chapter26_8)

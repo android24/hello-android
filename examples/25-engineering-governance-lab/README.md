@@ -34,6 +34,7 @@
       strings.xml
       themes.xml
   quality/
+    capstone-governance-handoff-template.md
     governance-rules.json
     governance-release-report-template.md
 ```
@@ -298,6 +299,7 @@ remote config
 - 给每个风险增加负责人和截止时间。
 - 把治理报告改成更正式的团队发版评审格式。
 - 把组件契约检查改成真实的模块依赖图解析。
+- 用 `quality/capstone-governance-handoff-template.md` 准备一份进入第 26 章毕业项目的工程治理交接材料。
 
 ## 对应课程内容
 

@@ -41,6 +41,7 @@ examples/
   23-security-permission-lab/
   24-observability-evidence-lab/
   25-engineering-governance-lab/
+  26-senior-android-capstone/
 ```
 
 ## 课程闯关地图
@@ -54,6 +55,7 @@ examples/
 | 质量与性能 | `09` - `10` | 性能、稳定性、源码阅读入口 |
 | Framework 主线 | `11` - `18` | Binder、AMS、WMS、Input、渲染、PMS、资源、ClassLoader |
 | 系统工程实验室 | `19` - `25` | 进程、稳定性、后台调度、存储访问、安全模型、系统观测、工程治理和事故诊断 |
+| 终章毕业项目 | `26` | 把主路径、架构、Framework、诊断、治理和答辩收束成完整作品 |
 
 ## 推荐玩法
 
@@ -88,6 +90,7 @@ examples/
 | `11` - `18` | Framework 调查员 | 能从一次交互追到系统服务和源码入口 |
 | `19` - `24` | 系统诊断工程师 | 能写出进程、稳定性、后台、存储、安全和系统观测证据链报告 |
 | `25` | 工程治理负责人 | 能完成一次发版前治理体检，并写出发布决策报告 |
+| `26` | Android 毕业答辩人 | 能用一个 Capstone 项目证明功能、架构、Framework、诊断和治理能力 |
 
 ## 当前重点实验室
 
@@ -99,6 +102,7 @@ examples/
 - `23-security-permission-lab/`：学习 UID、权限、AppOps、签名、Keystore、组件边界、日志脱敏和安全事故诊断。
 - `24-observability-evidence-lab/`：学习 logcat、dumpsys、Perfetto、bugreport、gfxinfo、meminfo、procstats、simpleperf 和证据链报告。
 - `25-engineering-governance-lab/`：学习模块边界、组件契约、插件风险、构建效率、依赖冲突、发布决策、监控告警和治理报告。
+- `26-senior-android-capstone/`：用终章毕业项目把课程主路径、Framework 因果链、事故诊断、发布治理和答辩报告全部串起来。
 
 这几章组合起来，会形成一个很接近真实工作的闭环：
 
